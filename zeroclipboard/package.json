@@ -1,0 +1,76 @@
+{
+  "name": "zeroclipboard",
+  "title": "ZeroClipboard",
+  "version": "1.3.5",
+  "description": "The ZeroClipboard library provides an easy way to copy text to the clipboard using an invisible Adobe Flash movie and a JavaScript interface.",
+  "keywords": [
+    "flash",
+    "clipboard",
+    "copy",
+    "cut",
+    "paste",
+    "zclip",
+    "clip",
+    "clippy"
+  ],
+  "homepage": "http://zeroclipboard.org/",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/zeroclipboard/zeroclipboard/blob/master/LICENSE"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Jon Rohan",
+      "url": "http://jonrohan.me/"
+    },
+    {
+      "name": "James M. Greene",
+      "email": "james.m.greene@gmail.com",
+      "url": "http://jamesgreene.net/"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zeroclipboard/zeroclipboard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zeroclipboard/zeroclipboard/issues"
+  },
+  "dependencies": {
+    "send": "0"
+  },
+  "devDependencies": {
+    "qunitjs": "~1.12.0",
+    "qunit-composite": "~1.0.1",
+    "grunt": "~0.4.2",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-jshint": "~0.7.2",
+    "grunt-contrib-connect": "~0.5.0",
+    "grunt-contrib-qunit": "~0.3.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-chmod": "~1.0.3",
+    "grunt-mxmlc": "~0.2.0",
+    "grunt-template": "~0.2.1",
+    "grunt-contrib-watch": "~0.5.3"
+  },
+  "main": "./ZeroClipboard.js",
+  "component": {
+    "scripts": {
+      "zeroclipboard": "ZeroClipboard.js"
+    }
+  },
+  "scripts": {
+    "test": "grunt travis --verbose"
+  },
+  "readme": "# ZeroClipboard\r\n\r\nThe ZeroClipboard library provides an easy way to copy text to the clipboard using an invisible [Adobe Flash](http://en.wikipedia.org/wiki/Adobe_Flash) movie and a [JavaScript](http://en.wikipedia.org/wiki/JavaScript) interface. The \"Zero\" signifies that the library is invisible and the user interface is left entirely up to you.\r\n\r\n\r\n## Simple Example\r\n\r\n``` html\r\n<html>\r\n  <body>\r\n    <button id=\"copy-button\" data-clipboard-text=\"Copy Me!\" title=\"Click to copy me.\">Copy to Clipboard</button>\r\n    <script src=\"ZeroClipboard.js\"></script>\r\n    <script src=\"main.js\"></script>\r\n  </body>\r\n</html>\r\n```\r\n\r\n``` js\r\n// main.js\r\nvar client = new ZeroClipboard( document.getElementById(\"copy-button\"), {\r\n  moviePath: \"/path/to/ZeroClipboard.swf\"\r\n} );\r\n\r\nclient.on( \"load\", function(client) {\r\n  // alert( \"movie is loaded\" );\r\n\r\n  client.on( \"complete\", function(client, args) {\r\n    // `this` is the element that was clicked\r\n    this.style.display = \"none\";\r\n    alert(\"Copied text to clipboard: \" + args.text );\r\n  } );\r\n} );\r\n```\r\n\r\nSee the [instructions](docs/instructions.md) for more advanced options in using the library on your site.\r\n\r\nHere is a working [test page](http://zeroclipboard.org/#demo) where you can try out ZeroClipboard in your browser.\r\n\r\n\r\n## Testing ZeroClipboard Locally\r\n\r\nTo test the page [demo page](http://zeroclipboard.org/#demo) locally, clone the [website repo](https://github.com/zeroclipboard/zeroclipboard.org).\r\n\r\n\r\n## Support\r\n\r\nThis library is fully compatible with Flash Player 10, which requires that the clipboard copy operation be initiated by a user click event inside the Flash movie. This is achieved by automatically floating the invisible movie on top of a [DOM](http://en.wikipedia.org/wiki/Document_Object_Model) element of your choice. Standard mouse events are even propagated out to your DOM element, so you can still have rollover and mouse down effects.\r\n\r\nWorks in IE7+ and all of the evergreen browsers.\r\n\r\n\r\n## Contributing\r\n\r\nsee [CONTRIBUTING.md](CONTRIBUTING.md)\r\n\r\n\r\n## Releases\r\n\r\nStarting with version [1.1.7](https://github.com/zeroclipboard/zeroclipboard/releases/tag/v1.1.7), ZeroClipboard uses [semantic versioning](http://semver.org/).\r\n\r\nsee [releases](https://github.com/zeroclipboard/zeroclipboard/releases)\r\n\r\n\r\n## Roadmap\r\n\r\nsee [roadmap.md](docs/roadmap.md)\r\n\r\n\r\n## Last Build\r\n\r\n[![Build Status](https://secure.travis-ci.org/zeroclipboard/zeroclipboard.png?branch=master)](https://travis-ci.org/zeroclipboard/zeroclipboard)\r\n",
+  "readmeFilename": "README.md",
+  "_id": "zeroclipboard@1.3.5",
+  "dist": {
+    "shasum": "6776a12a50bcaa736747442a827abf05aecbd7e3"
+  },
+  "_from": "zeroclipboard@",
+  "_resolved": "https://registry.npmjs.org/zeroclipboard/-/zeroclipboard-1.3.5.tgz"
+}

@@ -1,0 +1,5 @@
+Date,Clients per Month,.COM Clients per Month,.ORG Clients per Month,.EDU Clients per Month,.NET Clients per Month,.Gov Clients per Month,Requests per Month,.COM Requests per Month,.ORG Requests per Month,.EDU Requests per Month,.NET Requests per Month,.Gov Requests per Month,Values per Month without log scale,.COM Values per Month,.ORG Values per Month,.EDU Values per Month,.NET Values per Month,.Gov Values per Month
+11/1/2014,2,0,0,0,1,1,673,0,0,0,15,1,538,0,0,0,525,13
+12/1/2014,1,0,0,0,1,0,424,0,0,0,6,0,60,0,0,0,60,0
+1/1/2015,2,0,0,0,1,0,721,0,0,0,5,0,3793,0,0,0,90,0
+2/1/2015,1,0,0,0,0,0,211,0,0,0,2,0,2711,0,0,0,0,0

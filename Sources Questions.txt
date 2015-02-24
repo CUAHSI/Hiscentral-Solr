@@ -1,0 +1,14 @@
+Marie: could you give us an overview of what is harvested from ODM 
+
+-> Currently we are attempting to harvest the 'sources' table as part of the original harvester's workflow. This is obtained while calling a GetSiteInfo() 
+	web service call, and this primarily returns to us the sourceId, organization name, description, citation, contact information.
+	
+
+and what is currently not harvested, 
+
+-> Other columns currently in the ODM Sources table besides the ones mentioned above are not returned by the GetSiteInfo() web method's source info packet:
+	example: SourceLink, ISOMetaData
+
+and what metadata from the catalog arises from user registration instead of hydroserver? 
+
+-> Are you talking about what we store when a new user subscribes to our site via SSO? If so, we just store their email address (and userId)

@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DataAccess" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgACAAAAAAAAAEAAAAAAAAAAAAkAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>App_Code\DataAccess.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DataAccess_Logging" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACCIhQAAIAAAYAEBAAQAAAAAAEAAAAAgAAAgTDAAAAA=</HashCode>
+      <FileName>App_Code\DataAccess.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emailer" Collapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>App_Code\Emailer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Harvester" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAQAIgAAAAAAEBggAAAAQEAADAAAAAAAggAAABAAAA=</HashCode>
+      <FileName>App_Code\Harvester.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="hiscentral_loggingEntities" Collapsed="true">
+    <Position X="4" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>App_Code\HisCentalLogging.Context.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="log11Service" Collapsed="true">
+    <Position X="4" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIACAAAAAgBAACAACgAACABAAAAAAEAAA=</HashCode>
+      <FileName>App_Code\HisCentalLogging.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="hiscentral" Collapsed="true">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQABgAYEAggEEAAiAACAIgEgAAAIAEgAACAgAAAAA=</HashCode>
+      <FileName>App_Code\hiscentral.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="hiscentral2" Collapsed="true">
+    <Position X="5.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQGBgAYEAggEEAAiAACAIgEoAAAIAEkAgCBgAAAAA=</HashCode>
+      <FileName>App_Code\hiscentral2.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="hiscentral23" Collapsed="true">
+    <Position X="7.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQGBgAYEAggEEAAiAACAIgEoAAAIAEkAgCBgAAAAA=</HashCode>
+      <FileName>App_Code\hiscentral23.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="hiscentralEntities" Collapsed="true">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAIAAAAABAAA=</HashCode>
+      <FileName>App_Code\Model.Context.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ExistingUserToken" Collapsed="true">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAQAAAAAAAAAAAAAAACAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>App_Code\Model.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HISNetwork" Collapsed="true">
+    <Position X="2.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QADUCCQAGAEABSAAAIBiIBEIAPAABEACAwAgAABAIAA=</HashCode>
+      <FileName>App_Code\Model.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OntologyLoader" Collapsed="true">
+    <Position X="5.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>App_Code\OntologyLoader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ServiceStatistics" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAQAAAAAAAQAQAAEAAAACAUAAAAAgCBAAAAAAACAAAA=</HashCode>
+      <FileName>App_Code\ServiceStatistics.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SitesResponse" Collapsed="true">
+    <Position X="2.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAKAAAAACACAAAAAAAgAgCAAEAAAAABAIAAAAAAAAA=</HashCode>
+      <FileName>App_Code\SitesResponse.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUtils" Collapsed="true">
+    <Position X="5.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAgAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>App_Code\TestUtils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TimeSeries" Collapsed="true">
+    <Position X="7.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABCAAAAAAAAACAAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>App_Code\TimeSeries.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TimeValue" Collapsed="true">
+    <Position X="0.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>App_Code\TimeSeries.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VariableType" Collapsed="true">
+    <Position X="2.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAAUAABAAAAAAAAAAAA=</HashCode>
+      <FileName>App_Code\VariableType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VariableTypes" Collapsed="true">
+    <Position X="4" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>App_Code\VariableTypes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebService" Collapsed="true">
+    <Position X="5.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAA=</HashCode>
+      <FileName>App_Code\WebService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="wfsHandler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="7.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAhABAgAAAQAABABIAAAAAIAAAAACACBAAQAAAA=</HashCode>
+      <FileName>App_Code\wfsHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="HisCentral.GlobalClass" Collapsed="true">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACEAAAAAAAAAAAAAAECIBAAAAAAAAAA=</HashCode>
+      <FileName>App_Code\GlobalClass.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Tagger.TaggerService" Collapsed="true">
+    <Position X="4" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAhAAAAwAAAAAAgAIAAAGAAAAIAAI=</HashCode>
+      <FileName>App_Code\TaggerService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Tagger.PendingMappingObject" Collapsed="true">
+    <Position X="7.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIEAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>App_Code\TaggerService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

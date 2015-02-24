@@ -1,0 +1,99 @@
+
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.HISNetworks ADD
+	GmailAddress nvarchar(200) NOT NULL CONSTRAINT DF_HISNetworks_GmailAddress DEFAULT ''
+GO
+ALTER TABLE dbo.HISNetworks SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+
+
+
+
+
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+/****** Object:  Table [dbo].[ExistingUserTokens]    Script Date: 11/19/2013 20:13:33 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ExistingUserTokens](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ExistingUsername] [nvarchar](100) NOT NULL,
+	[GeneratedToken] [nvarchar](200) NOT NULL,
+	[EmailAddressOnFile] [nvarchar](200) NULL,
+ CONSTRAINT [PK_TempExistingUserTokens] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF)
+)
+GO
+/****** Object:  Default [DF_TempExistingUserTokens_EmailAddressOnFile]    Script Date: 11/19/2013 20:13:33 ******/
+ALTER TABLE [dbo].[ExistingUserTokens] ADD  CONSTRAINT [DF_TempExistingUserTokens_EmailAddressOnFile]  DEFAULT ('') FOR [EmailAddressOnFile]
+GO
+
+
+
+USE [hiscentral]
+GO
+
+/****** Object:  View [dbo].[v_stats_variables]    Script Date: 10/21/2013 21:40:06 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[v_stats_variables]
+AS 
+SELECT     dbo.HISNetworks.NetworkID, dbo.HISNetworks.NetworkName, COUNT(dbo.Variables.VariableID) AS VariableCount
+FROM         dbo.HISNetworks INNER JOIN
+                      dbo.Variables ON dbo.HISNetworks.NetworkID = dbo.Variables.networkId
+GROUP BY dbo.HISNetworks.NetworkID, dbo.HISNetworks.NetworkName
+
+GO
+
+
+
+
+USE [hiscentral]
+GO
+
+/****** Object:  View [dbo].[stats_all]    Script Date: 10/21/2013 21:38:13 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[stats_all]
+AS
+SELECT     dbo.v_stats_variables.NetworkID, dbo.v_stats_variables.NetworkName, dbo.v_stats_sites.ymin, dbo.v_stats_sites.ymax, dbo.v_stats_sites.xmax, dbo.v_stats_sites.xmin, 
+                      dbo.v_stats_sites.SiteCount, dbo.v_stats_variables.VariableCount, dbo.v_stats_series.ValueCount, dbo.v_stats_series.earliestRec, 
+                      dbo.v_stats_series.LatestRec
+FROM         dbo.v_stats_variables INNER JOIN
+                      dbo.v_stats_sites ON dbo.v_stats_variables.NetworkID = dbo.v_stats_sites.NetworkID INNER JOIN
+                      dbo.v_stats_series ON dbo.v_stats_sites.NetworkID = dbo.v_stats_series.NetworkID
+
+GO
+
+
+
+
+

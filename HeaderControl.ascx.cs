@@ -1,0 +1,30 @@
+using System;
+using System.Data;
+using System.Configuration;
+using System.Collections;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security;
+public partial class WebUserControl : System.Web.UI.UserControl {
+    protected void Page_Load(object sender, EventArgs e) {
+
+    }
+
+    protected void ImageButton1_Click(object sender, ImageClickEventArgs e) {
+        Response.Redirect("default.aspx");
+    }
+    protected void LinkButton1_Click(object sender, EventArgs e) {
+        FormsAuthentication.SignOut();
+        Context.GetOwinContext().Authentication.SignOut();        
+        Response.Redirect("default.aspx");
+    }
+    protected void LoginView1_ViewChanged(object sender, EventArgs e) {
+
+    }
+}
