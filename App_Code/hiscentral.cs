@@ -26,12 +26,6 @@ using System.IO;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-using SolrNet;
-using SolrNet.Attributes;   //.Utils;
-using Microsoft.Practices.ServiceLocation;
-using SolrNet.Commands.Parameters;
-
-
 /// <summary>
 /// Summary description for hiscentral
 /// </summary>
