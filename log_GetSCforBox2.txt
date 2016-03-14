@@ -1,0 +1,75 @@
+11/13/2015 3:51:42 PM||
+11/13/2015 3:51:42 PM||http://ubuntusolrd3.cloudapp.net:8983/solr/SeriesBoost/select?defType=edismax&q=NetworkID:*&fq=ConceptKeyword:*&fq=Latitude:[35.0000 37.0000]&fq=Longitude:[-75.0000 -71.0000]&fq=BeginDateTime:[* TO 2005-01-01T00:00:00Z]&fq=EndDateTime:[2000-01-01T00:00:00Z TO *]&rows=25001
+11/13/2015 3:51:42 PM||step 2-5                  : 3124
+11/13/2015 3:51:43 PM||---------------------------------------
+11/13/2015 3:51:43 PM||step 6(Catalog parsing xml): 4042
+11/13/2015 3:51:44 PM||step 4(SOLR QTime):          692
+11/13/2015 3:54:11 PM||
+11/13/2015 3:54:11 PM||http://ubuntusolrd3.cloudapp.net:8983/solr/SeriesBoost/select?defType=edismax&q=NetworkID:*&fq=ConceptKeyword:*&fq=Latitude:[35.0000 40.0000]&fq=Longitude:[-75.0000 -71.0000]&fq=BeginDateTime:[* TO 2005-01-01T00:00:00Z]&fq=EndDateTime:[2000-01-01T00:00:00Z TO *]&rows=25001
+11/13/2015 3:54:11 PM||step 2-5                   : 7682
+11/13/2015 3:54:11 PM||---------------------------------------
+11/13/2015 3:54:14 PM||step 6(Catalog parsing xml): 10587
+11/13/2015 3:54:14 PM||step 4(SOLR QTime):          721
+11/13/2015 4:14:46 PM||
+11/13/2015 4:14:46 PM||http://ubuntusolrd3.cloudapp.net:8983/solr/SeriesBoost/select?defType=edismax&q=NetworkID:*&fq=ConceptKeyword:*&fq=Latitude:[35.0000 40.0000]&fq=Longitude:[-100.0000 -90.0000]&fq=BeginDateTime:[* TO 2000-01-01T00:00:00Z]&fq=EndDateTime:[1990-01-01T00:00:00Z TO *]&rows=25001
+11/13/2015 4:14:46 PM||step 2-5                   : 7332
+11/13/2015 4:14:47 PM||---------------------------------------
+11/13/2015 4:14:51 PM||step 6(Catalog parsing xml): 11623
+11/13/2015 4:14:51 PM||step 4(SOLR QTime):          2259
+11/13/2015 4:14:51 PM||# records:                   25001
+2/2/2016 11:10:07 AM||
+2/2/2016 11:10:07 AM||http://ubuntusolrd3.cloudapp.net:8983/solr/wofHarvester/select?defType=edismax&q=NetworkID:*&fq=ConceptKeyword:*&fq=Latitude:[39.0000 40.0000]&fq=Longitude:[-72.0000 -71.0000]&fq=BeginDateTime:[* TO 2005-01-01T00:00:00Z]&fq=EndDateTime:[2000-01-01T00:00:00Z TO *]&rows=25001
+2/2/2016 11:10:07 AM||step 2-5                   : 411
+2/2/2016 11:10:07 AM||---------------------------------------
+2/2/2016 11:10:07 AM||step 6(Catalog parsing xml): 416
+2/2/2016 11:10:07 AM||step 4(SOLR QTime):          232
+2/2/2016 11:10:07 AM||# records:                   0
+2/2/2016 11:10:32 AM||
+2/2/2016 11:10:32 AM||http://ubuntusolrd3.cloudapp.net:8983/solr/wofHarvester/select?defType=edismax&q=NetworkID:*&fq=ConceptKeyword:*&fq=Latitude:[39.0000 40.0000]&fq=Longitude:[-72.0000 -71.0000]&fq=BeginDateTime:[* TO 2005-01-01T00:00:00Z]&fq=EndDateTime:[2000-01-01T00:00:00Z TO *]&rows=25001
+2/2/2016 11:10:32 AM||step 2-5                   : 71
+2/2/2016 11:10:32 AM||---------------------------------------
+2/2/2016 11:10:33 AM||step 6(Catalog parsing xml): 72
+2/2/2016 11:10:33 AM||step 4(SOLR QTime):          6
+2/2/2016 11:10:33 AM||# records:                   0
+2/2/2016 11:11:04 AM||
+2/2/2016 11:11:04 AM||http://ubuntusolrd3.cloudapp.net:8983/solr/wofHarvester/select?defType=edismax&q=NetworkID:*&fq=ConceptKeyword:*&fq=Latitude:[35.0000 40.0000]&fq=Longitude:[-72.0000 -70.0000]&fq=BeginDateTime:[* TO 2005-01-01T00:00:00Z]&fq=EndDateTime:[2000-01-01T00:00:00Z TO *]&rows=25001
+2/2/2016 11:11:04 AM||step 2-5                   : 65
+2/2/2016 11:11:04 AM||---------------------------------------
+2/2/2016 11:11:04 AM||step 6(Catalog parsing xml): 65
+2/2/2016 11:11:04 AM||step 4(SOLR QTime):          32
+2/2/2016 11:11:04 AM||# records:                   0
+2/2/2016 11:13:35 AM||
+2/2/2016 11:13:35 AM||http://ubuntusolrd3.cloudapp.net:8983/solr/wofHarvester/select?defType=edismax&q=NetworkID:*&fq=ConceptKeyword:*&fq=Latitude:[35.0000 40.0000]&fq=Longitude:[-72.0000 -70.0000]&fq=BeginDateTime:[* TO 2005-01-01T00:00:00Z]&fq=EndDateTime:[2000-01-01T00:00:00Z TO *]&rows=25001
+2/2/2016 11:13:35 AM||step 2-5                   : 128571
+2/2/2016 11:13:35 AM||---------------------------------------
+2/2/2016 11:13:35 AM||step 6(Catalog parsing xml): 128571
+2/2/2016 11:13:35 AM||step 4(SOLR QTime):          6
+2/2/2016 11:13:35 AM||# records:                   0
+2/2/2016 11:28:43 AM||
+2/2/2016 11:28:43 AM||http://ubuntusolrd3.cloudapp.net:8983/solr/wofHarvester/select?defType=edismax&q=NetworkID:*&fq=ConceptKeyword:*&fq=Latitude:[40.0000 45.0000]&fq=Longitude:[-75.0000 -70.0000]&fq=BeginDateTime:[* TO 2015-09-22T00:00:00Z]&fq=EndDateTime:[2000-01-01T00:00:00Z TO *]&rows=25001
+2/2/2016 11:28:43 AM||step 2-5                   : 860044
+2/2/2016 11:28:43 AM||---------------------------------------
+2/2/2016 11:28:43 AM||step 6(Catalog parsing xml): 860044
+2/2/2016 11:28:43 AM||step 4(SOLR QTime):          80
+2/2/2016 11:28:43 AM||# records:                   0
+2/2/2016 3:07:26 PM||
+2/2/2016 3:07:41 PM||http://ubuntusolrd3.cloudapp.net:8983/solr/SeriesBoost/select?defType=edismax&q=NetworkID:*&fq=ConceptKeyword:*&fq=Latitude:[40.0000 45.0000]&fq=Longitude:[-75.0000 -70.0000]&fq=BeginDateTime:[* TO 2015-09-22T00:00:00Z]&fq=EndDateTime:[2000-01-01T00:00:00Z TO *]&rows=25001
+2/2/2016 3:07:41 PM||step 2-5                   : 643384
+2/2/2016 3:07:41 PM||---------------------------------------
+2/2/2016 3:07:44 PM||step 6(Catalog parsing xml): 646903
+2/2/2016 3:07:44 PM||step 4(SOLR QTime):          661
+2/2/2016 3:07:45 PM||# records:                   25001
+2/2/2016 3:13:55 PM||
+2/2/2016 3:13:55 PM||http://ubuntusolrd3.cloudapp.net:8983/solr/wofHarvester/select?defType=edismax&q=*:*&fq=NetworkId:*&fq=ConceptKeyword:*&fq=Latitude:[40.0000 42.0000]&fq=Longitude:[-72.0000 -70.0000]&fq=BeginDateTime:[* TO 2015-09-22T00:00:00Z]&fq=EndDateTime:[2000-01-01T00:00:00Z TO *]&rows=25001
+2/2/2016 3:13:55 PM||step 2-5                   : 99166
+2/2/2016 3:13:55 PM||---------------------------------------
+2/2/2016 3:13:55 PM||step 6(Catalog parsing xml): 99440
+2/2/2016 3:13:55 PM||step 4(SOLR QTime):          7
+2/2/2016 3:13:56 PM||# records:                   883
+2/9/2016 12:55:54 PM||
+2/9/2016 12:55:54 PM||http://ubuntusolrtest.cloudapp.net:8983/solr/wofHarvester/select?defType=edismax&q=*:*&fq=NetworkID:*&fq=ConceptKeyword:*&fq=Latitude:[35.0000 36.0000]&fq=Longitude:[-83.0000 -80.0000]&fq=BeginDateTime:[* TO 2005-01-01T00:00:00Z]&fq=EndDateTime:[2000-09-30T00:00:00Z TO *]&rows=25001
+2/9/2016 12:55:54 PM||step 2-5                   : 1271
+2/9/2016 12:55:54 PM||---------------------------------------
+2/9/2016 12:55:54 PM||step 6(Catalog parsing xml): 1496
+2/9/2016 12:55:54 PM||step 4(SOLR QTime):          342
+2/9/2016 12:55:54 PM||# records:                   693

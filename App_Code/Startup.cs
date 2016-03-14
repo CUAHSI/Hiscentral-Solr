@@ -1,5 +1,7 @@
 ﻿using Microsoft.Owin;
 using Owin;
+using SolrNet;
+
 // changed from OwinStartupAttribute to startup
 [assembly: OwinStartup (typeof(WebSite1.Startup))]
 namespace WebSite1

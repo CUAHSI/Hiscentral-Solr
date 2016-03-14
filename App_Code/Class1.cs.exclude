@@ -1,0 +1,162 @@
+﻿    public SeriesRecord[] GetSeriesCatalogForBox2(double xmin, double xmax, double ymin, double ymax, 
+		    				  string conceptKeyword, String networkIDs, 
+						  string beginDate, string endDate) {
+        ServiceStats.AddCount("GetSeriesCatalogForBox2");
+
+        string objecformat = "concept:{0},box({1},{2},{3},{4}),network{5},daterange{6}-{7}";
+        string methodName = "GetSeriesCatalogForBox2";
+        Stopwatch timer = new Stopwatch();
+        timer.Start();
+
+
+        queryLog.InfoFormat(queryLogFormat, methodName, "Start", 0,
+             String.Format(objecformat,
+		 conceptKeyword ?? String.Empty,
+		 xmin, xmax, ymin, ymax, 
+		 networkIDs ?? String.Empty, 
+		 beginDate ?? String.Empty, 
+		 endDate ?? String.Empty
+	    )
+        );
+
+        //added by Yaping
+        //URL encoding http://www.w3schools.com/tags/ref_urlencode.asp
+        //string dtFormat = "yyyy-MM-ddTHH:mm:ssZ";
+        string headerQ;
+        string headerQTime;
+        string headerRows;
+
+        //for multiple networkIDs, 
+        //select?q=NetworkID:%281%203%29
+        string qNetworkIDs;
+        if(networkIDs.Equals("")) {
+            qNetworkIDs = @"NetworkID:*";
+        } else if (networkIDs.Length == 1) {
+            qNetworkIDs =String.Format("NetworkID:{0}", networkIDs);
+        } else {
+            char[] delimiters = new char[] { ',', ' ' };
+	        string[] parts = networkIDs.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+            qNetworkIDs = @"NetworkID:(";
+            foreach (string part in parts)
+            {
+                qNetworkIDs += part + ' ';
+            }
+            qNetworkIDs += ')';
+        }
+
+        //phase query, i.e., multiple terms insequence
+        //select?q=NetworkID:1+AND+ConceptKeyword:%22discharge,stream%22
+        //"temperature*"     case insensitive, and wildcards
+        //:("*stream*" OR "temperature*")
+        //string qConcept = conceptKeyword.Equals("")? @"ConceptKeyword:*" : String.Format("ConceptKeyword:%22{0}%22", conceptKeyword);
+        string qConcept;
+        if (conceptKeyword.Equals(""))
+        {
+            qConcept = @"ConceptKeyword:*";
+        }
+        else if (conceptKeyword.Length == 1)
+        {
+            qConcept = String.Format("ConceptKeyword:%22{0}%22", networkIDs);
+        }
+        else
+        {
+            char[] delimiters = new char[] { ',', ' ' };
+            string[] parts = conceptKeyword.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+            qConcept = @"ConceptKeyword:(";
+            foreach (string part in parts)
+            {
+                qConcept += "%22" + part + "%22 ";
+            }
+            qConcept += ')';
+        }
+
+        int nrows = 25000;   // int.MaxValue; // up to 40000; outofMemory for 60,000
+        string qLat = String.Format("Latitude:[{0:0.0000}%20{1:0.0000}]", ymin, ymax);
+        string qLon = String.Format("Longitude:[{0:0.0000}%20{1:0.0000}]", xmin, xmax);
+        //2010-01-01T00:00:00Z
+        string qBeginDT = String.Format(@"BeginDateTime:[* TO {0}]", endDate + "T00:00:00Z"); // DateTime.ParseExact(endDate, dtFormat, CultureInfo.CurrentCulture).ToString());
+        string qEndDT = String.Format(@"EndDateTime:[{0} TO *]", beginDate + "T00:00:00Z"); // DateTime.ParseExact(beginDate, dtFormat, CultureInfo.CurrentCulture).ToString());
+        string response = null;
+
+        //select?q=NetworkID:1+AND+ConceptKeyword:%22stream+gage+height%22
+        //select?q=NetworkID:1+AND+ConceptKeyword:temperature+AND+DataType:MINIMUM+AND+Latitude:[36.5000%2038.5000]+AND+Longitude:[-83.0000%20-81.0000]
+        //  +AND+BeginDateTime:[*%20TO%202010-01-01T00:00:00Z]+AND+EndDateTime:[2000-01-01T00:00:00Z%20TO%20*]
+
+        string endpoint = "http://ww3.cuahsi.org:8983/solr/SeriesLoc/";        //compare with http://hiscentral.cuahsi.org/
+        string parameters = String.Format(@"{0}select?q={1}+AND+{2}+AND+{3}+AND+{4}+AND+{5}+AND+{6}&rows={7}",
+              endpoint, qNetworkIDs, qConcept, qLat, qLon, qBeginDT, qEndDT, nrows);
+
+        XDocument xDocument;
+        SeriesRecord[] series = null;
+        List<SeriesRecord> seriesList;
+        using (WebClient client = new WebClient())
+        {
+            response = client.DownloadString(parameters);
+            TextReader xmlReader = new StringReader(response);
+            xDocument = XDocument.Load(xmlReader);
+
+            //these 3 variables are returned null, need to fix the parser later
+            /*------------------------------------------------------------------
+            headerQ = (from o in xDocument.Element("response").Element("lst").Elements("str") where o.Attribute("name").Value == "q" select o.Value).FirstOrDefault();
+            headerQTime = (from o in xDocument.Descendants("lst") where o.Attribute("name").Value == "QTime" select o.Value).FirstOrDefault();
+            headerRows = (from o in xDocument.Descendants("lst") where o.Attribute("name").Value == "rows" select o.Value).FirstOrDefault();
+            //------------------------------------------------------------------
+            */
+
+            //If using .Net 4.0 or above, better to use Linq to XML
+            series =
+                (from o in xDocument.Descendants("doc")
+                 //let eleStr = o.Elements("str")
+                 select new SeriesRecord()
+                 {
+                     location = o.Elements("str").Single(x => x.Attribute("name").Value == "SiteCode").Value.ToString(), //???
+                     //SiteCode like 'EPA:SDWRAP:LOUCOTTMC01',  Sitename==NULL
+                     Sitename = o.XPathSelectElement("//str[@name='SiteName']").Elements().Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SiteName").Value.ToString(),
+                     ServURL = o.Elements("str").Single(x => x.Attribute("name").Value == "ServiceWSDL").Value.ToString(),
+                     ServCode = o.Elements("str").Single(x => x.Attribute("name").Value == "NetworkName").Value.ToString(),
+                     latitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Latitude").Value.ToString()),
+                     longitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Longitude").Value.ToString()),
+                     ValueCount = int.Parse(o.Elements("long").Single(x => x.Attribute("name").Value == "Valuecount").Value.ToString()),
+                     VarName = o.Elements("str").Single(x => x.Attribute("name").Value == "VariableName").Value.ToString(),
+                     VarCode = o.Elements("str").Single(x => x.Attribute("name").Value == "VariableCode").Value.ToString(),
+                     beginDate = o.Elements("date").Single(x => x.Attribute("name").Value == "BeginDateTime").Value.ToString(),
+                     endDate = o.Elements("date").Single(x => x.Attribute("name").Value == "EndDateTime").Value.ToString(),
+                     datatype = o.XPathSelectElement("//str[@name='DataType']").Elements().Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "DataType").Value.ToString(),
+                     valuetype = o.Elements("str").Single(x => x.Attribute("name").Value == "ValueType").Value.ToString(),
+                     samplemedium = o.XPathSelectElement("//str[@name='SampleMedium']").Elements().Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SampleMedium").Value.ToString(),
+                     timeunits = o.XPathSelectElement("//str[@name='TimeUnits']").Elements().Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "TimeUnits").Value.ToString(),
+                     conceptKeyword = o.Elements("str").Single(x => x.Attribute("name").Value == "ConceptKeyword").Value.ToString(),
+                     genCategory = o.XPathSelectElement("//str[@name='GeneralCategory']").Elements().Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "GeneralCategory").Value.ToString(),
+                     TimeSupport = o.Elements("long").Single(x => x.Attribute("name").Value == "TimeSupport").Value.ToString(),
+            
+                 }).ToArray(); 
+            
+
+        }
+
+        queryLog.InfoFormat(queryLogFormat, methodName, "end", timer.ElapsedMilliseconds,
+            String.Format(objecformat,
+		conceptKeyword ?? String.Empty,
+		xmin, xmax, ymin, ymax,
+		networkIDs ?? String.Empty,
+		beginDate ?? String.Empty, endDate ?? String.Empty
+	    )
+        );
+        timer.Stop();
+
+        /*
+        Console.WriteLine("{headerQ}     " + headerQ);
+        Console.WriteLine("{headerQTime} " + headerQTime);
+        Console.WriteLine("{rows}        " + headerRows);
+
+        string logFile = String.Format("solr_log.txt");
+        Write2LogFile("=========================================", logFile);
+        Write2LogFile("{headerQ}     " + headerQ, logFile);
+        Write2LogFile("{headerQTime} " + headerQTime, logFile);
+        Write2LogFile("{rows}        " + headerRows, logFile);
+        Write2LogFile("=========================================", logFile);
+        */
+
+        return series;
+
+    }

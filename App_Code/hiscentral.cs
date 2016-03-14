@@ -16,6 +16,20 @@ using com.hp.hpl.jena.util.iterator;
 using com.hp.hpl.jena.ontology;
 
 using log4net;
+using System.Linq;
+using System.Xml.Linq;
+using System.Xml.XPath;
+
+using System.Net;
+using System.Net.Http;
+using System.IO;
+using System.Globalization;
+using System.Text.RegularExpressions;
+
+using SolrNet;
+using SolrNet.Attributes;   //.Utils;
+using Microsoft.Practices.ServiceLocation;
+using SolrNet.Commands.Parameters;
 
 
 /// <summary>
@@ -498,32 +512,6 @@ private ServiceStatistics _ss = null;
     #region Series methods
 
     public struct SeriesRecord {
-        /*
-         * SiteCode 
-	 * SiteName 
-	 * HUCnumeric 
-	 * ServiceWSDL 
-	 * NetworkName 
-	 * Latitude 
-	 * Longitude
-	 * BeginDateTime 
-	 * EndDateTime 
-	 * Valuecount 
-	 * VariableName 
-	 * VariableCode 
-	 * NetworkID 
-	 * TimeUnits 
-	 * HUC 
-	 * GeneralCategory 
-	 * UTCOffset 
-	 * DataType 
-	 * SampleMedium 
-	 * IsRegular 
-	 * ConceptKeyword 
-	 * ConceptID 
-	 * ValueType        
-	 */
-
         public string ServCode;
         public string ServURL;
         public string location;
@@ -545,7 +533,6 @@ private ServiceStatistics _ss = null;
         public string conceptKeyword;
         public string genCategory;
         public string TimeSupport;
-
     }
 
     //private int[] getNetworkIDS(String[] netnames) { 
@@ -573,108 +560,178 @@ private ServiceStatistics _ss = null;
     }
 
     [WebMethod]
-    public SeriesRecord[] GetSeriesCatalogForBox2(double xmin, double xmax, double ymin, double ymax, 
-		    				  string conceptKeyword, String networkIDs, 
-						  string beginDate, string endDate) {
-        ServiceStats.AddCount("GetSeriesCatalogForBox2");
+    public SeriesRecord[] GetSeriesCatalogForBox2(double xmin, double xmax, double ymin, double ymax,
+                              string conceptKeyword, String networkIDs,
+                          string beginDate, string endDate)
+    {
+        // int.MaxValue; outofMemory for 60,000
+        int nrows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
 
-        string objecformat = "concept:{0},box({1},{2},{3},{4}),network{5},daterange{6}-{7}";
-        string methodName = "GetSeriesCatalogForBox2";
-        Stopwatch timer = new Stopwatch();
-        timer.Start();
+        string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
+        if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
 
+        //call requestUrl() to get the url to Solr
+        string url = endpoint + 
+                        requestUrl(xmin, xmax, ymin, ymax,
+                                conceptKeyword, networkIDs,
+                                beginDate, endDate, nrows);
 
-        queryLog.InfoFormat(queryLogFormat, methodName, "Start", 0,
-             String.Format(objecformat,
-		 conceptKeyword ?? String.Empty,
-		 xmin, xmax, ymin, ymax, 
-		 networkIDs ?? String.Empty, 
-		 beginDate ?? String.Empty, 
-		 endDate ?? String.Empty
-	    )
-        );
+        XDocument xDocument;
+        SeriesRecord[] series = null;
+        string response = null;
+        using (WebClient client = new WebClient())
+        {
+            response = client.DownloadString(url);
+            TextReader xmlReader = new StringReader(response);
+            xDocument = XDocument.Load(xmlReader);
 
-        Box box = new Box();
-        box.xmax = xmax;
-        box.xmin = xmin;
-        box.ymax = ymax;
-        box.ymin = ymin;
-
-        string connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
-        SqlConnection con = new SqlConnection(connect);
-
-        SeriesRecord[] series = new SeriesRecord[0];
-
-        String sql = "sp_getSeriesCatalogForBox"; 
-
-	string networkString = ""; 
-        if (networkIDs != null && networkIDs != "") {
-            String[] ids = networkIDs.Split(',');
-            for (int i = 0; i < ids.Length; i++) {
-                if (i > 0) networkString += ",";
-                networkString += ids[i].ToString();
-            }
+            //If using .Net 4.0 or above, better to use Linq to XML
+            // Note: the following fields could be NULL
+            //       SiteName, DataType, SampleMedium, TimeUnits, GeneralCategory
+            series =
+            (from o in xDocument.Descendants("doc")
+                //let eleStr = o.Elements("str")
+                select new SeriesRecord()
+                {
+                    location = o.Elements("str").Single(x => x.Attribute("name").Value == "SiteCode").Value.ToString(), //???
+                    //SiteCode like 'EPA:SDWRAP:LOUCOTTMC01',  Sitename==NULL
+                    Sitename = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SiteName").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SiteName").Value.ToString(),
+                    ServURL = o.Elements("str").Single(x => x.Attribute("name").Value == "ServiceWSDL").Value.ToString(),
+                    ServCode = o.Elements("str").Single(x => x.Attribute("name").Value == "NetworkName").Value.ToString(),
+                    latitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Latitude").Value.ToString()),
+                    longitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Longitude").Value.ToString()),
+                    ValueCount = int.Parse(o.Elements("long").Single(x => x.Attribute("name").Value == "Valuecount").Value.ToString()),
+                    VarName = o.Elements("str").Single(x => x.Attribute("name").Value == "VariableName").Value.ToString(),
+                    VarCode = o.Elements("str").Single(x => x.Attribute("name").Value == "VariableCode").Value.ToString(),
+                    beginDate = o.Elements("date").Single(x => x.Attribute("name").Value == "BeginDateTime").Value.ToString(),
+                    endDate = o.Elements("date").Single(x => x.Attribute("name").Value == "EndDateTime").Value.ToString(),
+                    datatype = o.Descendants("str").Where(e => (string)e.Attribute("name") == "DataType").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "DataType").Value.ToString(),
+                    valuetype = o.Elements("str").Single(x => x.Attribute("name").Value == "ValueType").Value.ToString(),
+                    samplemedium = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SampleMedium").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SampleMedium").Value.ToString(),
+                    timeunits = o.Descendants("str").Where(e => (string)e.Attribute("name") == "TimeUnits").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "TimeUnits").Value.ToString(),
+                    conceptKeyword = o.Elements("str").Single(x => x.Attribute("name").Value == "ConceptKeyword").Value.ToString(),
+                    genCategory = o.Descendants("str").Where(e => (string)e.Attribute("name") == "GeneralCategory").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "GeneralCategory").Value.ToString(),
+                    TimeSupport = o.Elements("long").Single(x => x.Attribute("name").Value == "TimeSupport").Value.ToString(),
+                }).ToArray();          
         }
-
-        using (con) {
-            SqlDataAdapter da = new SqlDataAdapter(sql, con);
-    	    da.SelectCommand.CommandType = CommandType.StoredProcedure;
-            da.SelectCommand.CommandTimeout = 300;
-            da.SelectCommand.Parameters.AddWithValue("@keyword", conceptKeyword);
-            da.SelectCommand.Parameters.AddWithValue("@networks", networkString);
-            da.SelectCommand.Parameters.AddWithValue("@latmax", box.ymax);
-            da.SelectCommand.Parameters.AddWithValue("@latmin", box.ymin);
-            da.SelectCommand.Parameters.AddWithValue("@longmax", box.xmax);
-            da.SelectCommand.Parameters.AddWithValue("@longmin", box.xmin);
-            da.SelectCommand.Parameters.AddWithValue("@bdate", beginDate);
-            da.SelectCommand.Parameters.AddWithValue("@edate", endDate);
-
-            log.DebugFormat(logFormat, methodName, da.SelectCommand.CommandText);
-
-            DataSet ds = new DataSet();
-            da.Fill(ds, "SearchCatalog");
-
-            System.Data.DataRowCollection rows = ds.Tables["SearchCatalog"].Rows;
-            series = new SeriesRecord[rows.Count];
-            DataRow row;
-            for (int i = 0; i < rows.Count; i++) {
-                row = rows[i];
-                series[i] = new SeriesRecord();
-                series[i].location = row[0] != null ? row[0].ToString() : "";
-                series[i].Sitename = row[1] != null ? row[1].ToString() : "";
-                series[i].ServURL = row["ServiceWSDL"] != null ? row["ServiceWSDL"].ToString() : "";
-                series[i].ServCode = row["NetworkName"] != null ? row["NetworkName"].ToString() : "";
-                series[i].latitude = (double)row["latitude"];
-                series[i].longitude = (double)row["longitude"];
-                series[i].ValueCount = (int)row["ValueCount"];
-                series[i].VarName = row["VariableName"] != null ? row["VariableName"].ToString() : "";
-                series[i].VarCode = row["VariableCode"] != null ? row["VariableCode"].ToString() : "";
-                series[i].beginDate = row["BeginDateTime"] != null ? row["BeginDateTime"].ToString() : "";
-                series[i].endDate = row["EndDateTime"] != null ? row["EndDateTime"].ToString() : "";
-                /*  datatype; valuetype;samplemedium;timeunits; conceptKeyword; genCategory;*/
-                series[i].datatype = row["DataType"] != null ? row["DataType"].ToString() : "";
-                series[i].valuetype = row["ValueType"] != null ? row["ValueType"].ToString() : "";
-                series[i].samplemedium = row["SampleMedium"] != null ? row["SampleMedium"].ToString() : "";
-                series[i].timeunits = row["TimeUnits"] != null ? row["TimeUnits"].ToString() : "";
-                series[i].conceptKeyword = row["conceptKeyword"] != null ? row["conceptKeyword"].ToString() : "";
-                series[i].genCategory = row["GeneralCategory"] != null ? row["GeneralCategory"].ToString() : "";
-                series[i].TimeSupport = row["TimeSupport"] != null ? row["TimeSupport"].ToString() : "";
-
-            }
-        }
-        //}
-        queryLog.InfoFormat(queryLogFormat, methodName, "end", timer.ElapsedMilliseconds,
-            String.Format(objecformat,
-		conceptKeyword ?? String.Empty,
-		xmin, xmax, ymin, ymax,
-		networkIDs ?? String.Empty,
-		beginDate ?? String.Empty, endDate ?? String.Empty
-	    )
-        );
-        timer.Stop();
 
         return series;
+    }
 
+    //added by Yaping, Dec.2015
+    public void logTimer(string logFile, string text)
+    {
+        System.IO.TextWriter tw = new System.IO.StreamWriter(logFile, true);
+        text = System.DateTime.Now.ToString() + "||" + text ;
+        tw.WriteLine(text);
+        System.Console.WriteLine(text);
+        Console.WriteLine();
+        Console.WriteLine();
+        tw.Close();
+        return;
+    }
+
+    //added by Yaping, Dec.2015
+    public string requestUrl(double xmin, double xmax, double ymin, double ymax,
+                              string conceptKeyword, string networkIDs,
+                          string beginDate, string endDate, int nrows)
+    {
+        string parameters;
+        string beginDate2, endDate2;
+        string qNetworkIDs;
+        string qConcept;
+        string qLat, qLon;
+                          
+        if (networkIDs.Equals(""))
+        {
+            qNetworkIDs = @"NetworkID:*";
+        }
+        else if (networkIDs.Length == 1)
+        {
+            qNetworkIDs = String.Format("NetworkID:{0}", networkIDs);
+        }
+        else
+        {
+            //for multiple networkIDs, select?q=NetworkID:(1 2 3)
+            string[] parts = networkParser(networkIDs);
+            qNetworkIDs = @"NetworkID:(";
+            foreach (string part in parts)
+            {
+                qNetworkIDs += part + ' ';
+            }
+            qNetworkIDs += ')';
+        }
+
+        //phase query, i.e., multiple terms insequence, "Discharge, stream"
+        //select?q=NetworkID:1+AND+ConceptKeyword:%22Discharge, stream%22
+        qConcept = (conceptKeyword.Equals("") || conceptKeyword.Equals("all", StringComparison.InvariantCultureIgnoreCase)) ?
+            @"ConceptKeyword:*" : String.Format("ConceptKeyword:%22{0}%22", conceptKeyword);
+
+        qLat = String.Format("Latitude:[{0:0.0000} {1:0.0000}]", ymin, ymax);
+        qLon = String.Format("Longitude:[{0:0.0000} {1:0.0000}]", xmin, xmax);
+
+        beginDate2 = DateTime.ParseExact(beginDate, "MM/dd/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
+        endDate2 = DateTime.ParseExact(endDate, "MM/dd/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
+        var qBeginDT = String.Format(@"BeginDateTime:[* TO {0}T00:00:00Z]", endDate2);
+        var qEndDT = String.Format(@"EndDateTime:[{0}T00:00:00Z TO *]", beginDate2);
+
+        //query parameters to solr
+        parameters = String.Format(@"select?defType=edismax&q=*:*&fq={0}&fq={1}&fq={2}&fq={3}&fq={4}&fq={5}&rows={6}",
+                qNetworkIDs, qConcept, qLat, qLon, qBeginDT, qEndDT, nrows);
+        
+        return parameters;
+    }
+
+    //added by Yaping, Sep.2015
+    //input: 1, 2-5, 8; 10..12
+    //able to rmove duplicate networkIDs, e.g., 2, 1-4  =? 1, 2, 3, 4
+    private string[] networkParser(String s)
+    {
+        char[] delimiters = new char[] { ',', ';', ' ' };
+        String[] parts = s.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+        HashSet<string> networkSet = new HashSet<string>();
+        //Regex reRange = new Regex(@"^\s*((?<from>\d+)|(?<from>\d+)(?<sep>(-|\.\.))(?<to>\d+)|(?<sep>(-|\.\.))(?<to>\d+)|(?<from>\d+)(?<sep>(-|\.\.)))\s*$");
+        Regex reRange = new Regex(@"^\s*((?<from>\d+)|(?<from>\d+)(?<sep>(-|\.\.))(?<to>\d+))\s*$");
+        foreach (String part in parts)
+        {
+            Match maRange = reRange.Match(part);
+            if (maRange.Success)
+            {
+                Group gFrom = maRange.Groups["from"];
+                Group gTo = maRange.Groups["to"];
+                Group gSep = maRange.Groups["sep"];
+
+                if (gSep.Success)
+                {
+                    Int32 from = -1;
+                    Int32 to = -1;
+                    if (gFrom.Success)
+                        from = Int32.Parse(gFrom.Value);
+                    if (gTo.Success)
+                        to = Int32.Parse(gTo.Value);
+                    for (Int32 page = from; page <= to; page++)
+                        networkSet.Add(page.ToString());
+                }
+                else if (gFrom.Success)
+                    networkSet.Add(Int32.Parse(gFrom.Value).ToString());
+                else
+                    throw new InvalidOperationException("Input NetworkID string is invalid!");
+            }
+        }
+        return networkSet.ToArray();
+    }
+
+    //added by Yaping, Dec.2015
+    public static void Write2LogFile(string message, string outputFile)
+    {
+        string line = DateTime.Now.ToString() + " | ";
+        line += message;
+
+        FileStream fs = new FileStream(outputFile, FileMode.Append, FileAccess.Write, FileShare.None);
+        StreamWriter writer = new StreamWriter(fs);
+        writer.WriteLine(line);
+        writer.Flush();
+        writer.Close();
     }
 
     [WebMethod]
