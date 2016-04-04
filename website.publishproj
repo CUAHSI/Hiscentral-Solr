@@ -18,10 +18,10 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{d9f4f7c8-bb3c-4c65-925e-86f1773fbb11}</ProjectGuid>
     <SourceWebPhysicalPath>$(MSBuildThisFileDirectory)</SourceWebPhysicalPath>
-    <SourceWebVirtualPath>/Hiscentral-website</SourceWebVirtualPath>
+    <SourceWebVirtualPath>/Hiscentral-Solr</SourceWebVirtualPath>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <SourceWebProject>C:\Repositories\Hiscentral-website</SourceWebProject>
-    <SourceWebMetabasePath>/IISExpress/7.5/LM/W3SVC/21/ROOT</SourceWebMetabasePath>
+    <SourceWebProject>C:\Repos\Hiscentral-Solr</SourceWebProject>
+    <SourceWebMetabasePath>/IISExpress/7.5/LM/W3SVC/8/ROOT</SourceWebMetabasePath>
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

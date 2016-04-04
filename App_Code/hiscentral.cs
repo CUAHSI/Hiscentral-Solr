@@ -851,6 +851,14 @@ private ServiceStatistics _ss = null;
         public string ConceptName;
         public string ConceptPath;
     }
+    public struct SearchableConcept
+    {
+        public string ParentName;
+        public string ConceptName;
+        public int ConceptID;
+        public int ParentId;
+    }
+    public List<SearchableConcept> searchableConcepts = new List<SearchableConcept>();
 
     [WebMethod]
     public OntologyPath[] getSearchablePaths() {
@@ -1103,6 +1111,8 @@ private ServiceStatistics _ss = null;
             da.Fill(ds, "concept");
         }
         con.Close();
+        //get list of Concepts to search
+        readConceptDataIntoList();
 
         int rowcount = ds.Tables["concept"].Rows.Count;
         OntologyNode node = new OntologyNode();
@@ -1116,6 +1126,32 @@ private ServiceStatistics _ss = null;
         return node;
 
     }
+
+
+    private void readConceptDataIntoList()
+    {
+        string sql = "SELECT * from v_conceptHierarchy";
+        DataSet ds = new DataSet();
+        String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
+        SqlConnection con = new SqlConnection(connect);
+
+        using (con)
+        {
+            SqlDataAdapter da2 = new SqlDataAdapter(sql, con);
+            da2.Fill(ds, "searchableConcepts");
+        }
+        con.Close();
+        foreach (DataRow dataRow in ds.Tables["searchableConcepts"].Rows)
+        {
+            var concept = new SearchableConcept();
+            concept.ParentName = dataRow["ParentName"].ToString();
+            concept.ConceptName = dataRow["ConceptName"].ToString();
+            concept.ConceptID = Convert.ToInt32(dataRow["ConceptID"].ToString());
+            concept.ParentId = Convert.ToInt32(dataRow["ParentId"].ToString());
+            searchableConcepts.Add(concept);
+        }
+    }
+
 
 // COUCH: Obsoleted by code revision 2014/05/29
 //    private string getCommaString(String[] ss) {
@@ -1209,20 +1245,22 @@ private ServiceStatistics _ss = null;
 //         con.Close();
 //         return concepts;
 //     }
-
+    //MS added to speed up keyword retrieval by eliminating db retrievals of each node
     private OntologyNode getChildNodes(OntologyNode parentNode) {
         OntologyNode node = new OntologyNode();
-        String sql = "SELECT conceptid,  conceptName from v_conceptHierarchy where parentid = " + parentNode.conceptid + ";";
+        //String sql = "SELECT conceptid,  conceptName from v_conceptHierarchy where parentid = " + parentNode.conceptid + ";";
 
-        DataSet ds = new DataSet();
-        String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
-        SqlConnection con = new SqlConnection(connect);
+        //DataSet ds = new DataSet();
+        //String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
+        //SqlConnection con = new SqlConnection(connect);
 
-        using (con) {
-            SqlDataAdapter da2 = new SqlDataAdapter(sql, con);
-            da2.Fill(ds, "concepts");
-        }
-        con.Close();
+        //using (con) {
+        //    SqlDataAdapter da2 = new SqlDataAdapter(sql, con);
+        //    da2.Fill(ds, "concepts");
+        //}
+        //con.Close();
+
+        var sc = searchableConcepts.Where(x => x.ParentId == parentNode.conceptid).ToList();
 
 
         //should be only one
@@ -1230,14 +1268,16 @@ private ServiceStatistics _ss = null;
         int conceptid;
         int i = 0;
 
-        int rowcount = ds.Tables["concepts"].Rows.Count;
+        int rowcount = sc.Count;
         if (rowcount > 0) {
             OntologyNode[] child = new OntologyNode[rowcount];
-            foreach (DataRow dataRow in ds.Tables["concepts"].Rows) {
-
-                conceptid = (int)dataRow["conceptid"];
+            //foreach (DataRow dataRow in ds.Tables["concepts"].Rows) {
+            foreach (var dataRow in sc)
+            {
+                //conceptid = (int)dataRow["conceptid"];
+                conceptid =  (int)dataRow.ConceptID;
                 //conceptcode = dataRow["conceptCode"].ToString();
-                conceptKeyword = dataRow["conceptName"].ToString();
+                conceptKeyword = dataRow.ConceptName;
                 child[i] = new OntologyNode();
                 child[i].keyword = conceptKeyword;
                 child[i].conceptid = conceptid;
@@ -1251,6 +1291,52 @@ private ServiceStatistics _ss = null;
         }
         return parentNode;
     }
+    //MS deprecated 
+    //private OntologyNode getChildNodes_old(OntologyNode parentNode)
+    //{
+    //    OntologyNode node = new OntologyNode();
+    //    String sql = "SELECT conceptid,  conceptName from v_conceptHierarchy where parentid = " + parentNode.conceptid + ";";
+
+    //    DataSet ds = new DataSet();
+    //    String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
+    //    SqlConnection con = new SqlConnection(connect);
+
+    //    using (con)
+    //    {
+    //        SqlDataAdapter da2 = new SqlDataAdapter(sql, con);
+    //        da2.Fill(ds, "concepts");
+    //    }
+    //    con.Close();
+
+
+    //    //should be only one
+    //    String conceptKeyword;
+    //    int conceptid;
+    //    int i = 0;
+
+    //    int rowcount = ds.Tables["concepts"].Rows.Count;
+    //    if (rowcount > 0)
+    //    {
+    //        OntologyNode[] child = new OntologyNode[rowcount];
+    //        foreach (DataRow dataRow in ds.Tables["concepts"].Rows)
+    //        {
+
+    //            conceptid = (int)dataRow["conceptid"];
+    //            //conceptcode = dataRow["conceptCode"].ToString();
+    //            conceptKeyword = dataRow["conceptName"].ToString();
+    //            child[i] = new OntologyNode();
+    //            child[i].keyword = conceptKeyword;
+    //            child[i].conceptid = conceptid;
+    //            //rentNode.ChildNodes.Add(childNode);
+    //            child[i] = getChildNodes(child[i]);
+    //            //nextIDs.Add(conceptid);
+    //            //conceptcode = dataRow["conceptCode"].ToString();
+    //            i++;
+    //        }
+    //        parentNode.childNodes = child;
+    //    }
+    //    return parentNode;
+    //}
 
     public struct OntologyNode {
         public string keyword;
