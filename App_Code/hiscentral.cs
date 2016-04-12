@@ -558,18 +558,47 @@ private ServiceStatistics _ss = null;
                               string conceptKeyword, String networkIDs,
                           string beginDate, string endDate)
     {
+
+        conceptKeyword = conceptKeyword.Trim();
+
         // int.MaxValue; outofMemory for 60,000
         int nrows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
 
         string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
         if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
 
+        //http://hiscentralrest.azurewebsites.net:80/hiscentral/Ontology/methane
+        //Get conceptKeyword leaves on ontology tree
+        XNamespace ns = "http://hiscentral.cuahsi.org/20100205/";
+        string endpointOntology = "http://hiscentralrest.azurewebsites.net:80/hiscentral/Ontology/" + conceptKeyword + "?format=xml";
+        XDocument xdoc = XDocument.Load(endpointOntology);
+        XElement root = xdoc.Root;
+        var keywordVar = (from o in root.Descendants(ns+"OntologyNode").Descendants(ns + "keyword")
+                           select new string[] 
+                           {
+                               o.Value
+                           }).ToArray();
+
+        string[] leafKeywords = new string[keywordVar.Length];
+        for (int i = 0; i < keywordVar.Length; i++) {
+            leafKeywords[i] = keywordVar[i][0].ToString();
+        }
+        
+        //ArrayList leafKeywords = new ArrayList();
+        //foreach (var d2 in keywordVar)
+        //{
+        //    leafKeywords.Add(d2.ToString());
+        //}
+        
         //call requestUrl() to get the url to Solr
+        //http://prod-ubuntusolr.cloudapp.net:8983/solr/seriesBoostConcept/select?
+        //q=*%3A*&fq=NetworkID%3A228&fq=ConceptKeyword%3A%22Methane%2C+dissolved%22+OR+ConceptKeyword%3A%22Methane%2C+unspecified%22&rows=1000&fl=VariableCode%2CConceptKeyword&wt=xml&indent=true
+        //defType=edismax&q=*:*&fq=NetworkID:*&fq=ConceptKeyword:%22Methane, dissolved%22+OR+ConceptKeyword:%22Methane, unspecified%22&fq=Latitude:[35.0000 37.0000]&fq=Longitude:[-83.0000 -80.0000]&fq=BeginDateTime:[* TO 2015-09-22T00:00:00Z]&fq=EndDateTime:[2000-01-01T00:00:00Z TO *]&rows=25001
+
         string url = endpoint + 
                         requestUrl(xmin, xmax, ymin, ymax,
-                                conceptKeyword, networkIDs,
+                                leafKeywords, networkIDs,
                                 beginDate, endDate, nrows);
-
         XDocument xDocument;
         SeriesRecord[] series = null;
         string response = null;
@@ -627,7 +656,7 @@ private ServiceStatistics _ss = null;
 
     //added by Yaping, Dec.2015
     public string requestUrl(double xmin, double xmax, double ymin, double ymax,
-                              string conceptKeyword, string networkIDs,
+                              string[] conceptKeywordList, string networkIDs,
                           string beginDate, string endDate, int nrows)
     {
         string parameters;
@@ -635,6 +664,7 @@ private ServiceStatistics _ss = null;
         string qNetworkIDs;
         string qConcept;
         string qLat, qLon;
+        string keywordString = String.Empty;
                           
         if (networkIDs.Equals(""))
         {
@@ -656,10 +686,30 @@ private ServiceStatistics _ss = null;
             qNetworkIDs += ')';
         }
 
+        if (conceptKeywordList.Equals("")) 
+        {
+            qConcept = @"ConceptKeyword:*";
+        }
+        else if (conceptKeywordList.Length == 1)
+        {
+            if (conceptKeywordList[0].Equals("all", StringComparison.InvariantCultureIgnoreCase))
+                qConcept = @"ConceptKeyword:*";
+            else
+                qConcept = String.Format("ConceptKeyword:%22{0}%22", conceptKeywordList[0]);
+
+        }
+        else
+        {
+            foreach (var keyword in conceptKeywordList)
+            {
+                keywordString += String.Format("ConceptKeyword:%22{0}%22+OR+", HttpUtility.UrlEncode(keyword)); //"ConceptKeyword:" + keyword + "+OR+";
+            }
+            qConcept = keywordString.Substring(0, keywordString.Length - 4);
+        }
         //phase query, i.e., multiple terms insequence, "Discharge, stream"
         //select?q=NetworkID:1+AND+ConceptKeyword:%22Discharge, stream%22
-        qConcept = (conceptKeyword.Equals("") || conceptKeyword.Equals("all", StringComparison.InvariantCultureIgnoreCase)) ?
-            @"ConceptKeyword:*" : String.Format("ConceptKeyword:%22{0}%22", conceptKeyword);
+        //qConcept = (conceptKeyword.Equals("") || conceptKeyword.Equals("all", StringComparison.InvariantCultureIgnoreCase)) ?
+        //    @"ConceptKeyword:*" : String.Format("ConceptKeyword:%22{0}%22", conceptKeyword);
 
         qLat = String.Format("Latitude:[{0:0.0000} {1:0.0000}]", ymin, ymax);
         qLon = String.Format("Longitude:[{0:0.0000} {1:0.0000}]", xmin, xmax);
@@ -670,8 +720,10 @@ private ServiceStatistics _ss = null;
         var qEndDT = String.Format(@"EndDateTime:[{0}T00:00:00Z TO *]", beginDate2);
 
         //query parameters to solr
-        parameters = String.Format(@"select?defType=edismax&q=*:*&fq={0}&fq={1}&fq={2}&fq={3}&fq={4}&fq={5}&rows={6}",
+        parameters = String.Format(@"select?q=*:*&fq={0}&fq={1}&fq={2}&fq={3}&fq={4}&fq={5}&rows={6}",
                 qNetworkIDs, qConcept, qLat, qLon, qBeginDT, qEndDT, nrows);
+        //parameters = String.Format(@"select?defType=edismax&q=*:*&fq={0}&fq={1}&fq={2}&fq={3}&fq={4}&fq={5}&rows={6}",
+        //        qNetworkIDs, qConcept, qLat, qLon, qBeginDT, qEndDT, nrows);
         
         return parameters;
     }
