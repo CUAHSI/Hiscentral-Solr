@@ -60,9 +60,11 @@
           <br />
           1. To learn how to publish your data in the HIS Central catalog,<a href="UserGuide/HIS Central 2.0 User Guide October 2014.pdf" target="_blank">click here</a>  
           <br />
-          2. To download data from the HIS Central catalog, <a href="http://www.hydrodesktop.org" target="_blank">click here</a> to download the latest version of HydroDesktop.
+          2. To download data from the HIS Central catalog, <a href="http://data.cuahsi.org" target="_blank">data.cuahsi.org</a> to access the latest version of the HydroClient.
           <br />
-                    
+        <%--  3. To download data from the HIS Central catalog, <a href="http://www.hydrodesktop.org" target="_blank">click here</a> to download the latest version of HydroDesktop.
+          <br />
+       --%>             
           
           <h3>Catalog Tools</h3>
           <ul>          

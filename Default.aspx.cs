@@ -24,7 +24,7 @@ public partial class _Default : System.Web.UI.Page
     using (con)
     {
       SqlDataAdapter da = new SqlDataAdapter(sql, con);
-      da.Fill(ds, "count");
+     da.Fill(ds, "count");
     }
 
     con.Close();
