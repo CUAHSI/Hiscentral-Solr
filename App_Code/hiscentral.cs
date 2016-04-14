@@ -762,7 +762,7 @@ public class hiscentral : System.Web.Services.WebService
 
         XDocument xdoc = XDocument.Load(endpointOntology);
         XElement root = xdoc.Root;
-        var keywordVar = (from o in root.Descendants(ns + "OntologyNode").Descendants(ns + "keyword")
+        var keywordVar = (from o in root.Descendants(ns + "keyword")
                           select new string[] 
                            {
                                o.Value
