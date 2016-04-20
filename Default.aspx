@@ -50,7 +50,7 @@
                
           <H2 >
             <b>
-              CUAHSI Water Data Center Catalog of Data Services 2.4 </b></H2>
+              CUAHSI Water Data Center Catalog of Data Services 2.4.2 </b></H2>
           <h2 ><b>Catalog Statistics</b></h2>
           <div class="wrap" id="appendTable" runat="server">
     
