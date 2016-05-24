@@ -1209,39 +1209,126 @@ public class hiscentral : System.Web.Services.WebService
         return getOntologyKeywords();
     }
 
+    //updated by Yaping, May 2016: eliminate access to SQL database
     [WebMethod]
     public OntologyNode getOntologyTree(String conceptKeyword)
     {
         ServiceStats.AddCount("getOntologyTree");
 
         if (conceptKeyword == null || conceptKeyword.Equals("")) conceptKeyword = "Hydrosphere";
-        String sql = "SELECT conceptid, conceptName from v_ConceptsUnionSynonyms where conceptName  = @conceptKeyword";
-        DataSet ds = new DataSet();
-        String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
-        SqlConnection con = new SqlConnection(connect);
 
-        using (con)
-        {
+        //Hydrosphere.xml is downloaded from hiscentral getOntologyTree web service, should exist before running the program
+        XNamespace ns = System.Configuration.ConfigurationManager.AppSettings["ONTnamespace"];
+        string xmlOntology = AppDomain.CurrentDomain.BaseDirectory + "\\" + System.Configuration.ConfigurationManager.AppSettings["ONTxml"];
 
-            SqlDataAdapter da = new SqlDataAdapter(sql, con);
-            da.SelectCommand.Parameters.AddWithValue("conceptKeyword", conceptKeyword);
-            da.Fill(ds, "concept");
-        }
-        con.Close();
+        XElement root = XElement.Load(xmlOntology);
 
-        int rowcount = ds.Tables["concept"].Rows.Count;
-        OntologyNode node = new OntologyNode();
-        if (rowcount > 0)
-        {
-            DataRow row = ds.Tables["concept"].Rows[0];
+        OntologyNode wholeTree = new OntologyNode();
 
-            node.keyword = row[1].ToString();
-            node.conceptid = (int)row[0];
-            return getChildNodes(node);
-        }
-        return node;
+        //get OntologyNode for the entire tree
+        wholeTree = getChild(ns, root);
 
+        if (conceptKeyword.Equals("Hydrosphere", StringComparison.InvariantCultureIgnoreCase)) return wholeTree;
+
+        //if not the entire tree, select OntologyNode for the given conceptKeyword
+        int isFound = 0;
+        OntologyNode selectedNode = new OntologyNode();        
+        selectChild(conceptKeyword, wholeTree, ref isFound, ref selectedNode);
+        return selectedNode;
     }
+
+    static void selectChild(String conceptKeyword, OntologyNode node, ref int isFound, ref OntologyNode selectedNode)
+    {
+        
+        if(node.childNodes == null) return;
+        if (isFound == 1) return; 
+        
+        foreach(var childNode in node.childNodes) {
+            if (isFound == 1) break;
+            if (!conceptKeyword.Equals(childNode.keyword, StringComparison.InvariantCultureIgnoreCase)) {
+                selectChild(conceptKeyword, childNode, ref isFound, ref selectedNode);
+                if(isFound == 1) break;                
+            }
+
+            if(conceptKeyword.Equals(childNode.keyword, StringComparison.InvariantCultureIgnoreCase) && isFound == 0) {
+                isFound = 1;
+                selectedNode = childNode;
+                break;
+            }
+        }
+
+        return;
+    }
+
+    static OntologyNode getChild(XNamespace ns, XElement root)
+    {
+        OntologyNode rootNode = new OntologyNode();
+        rootNode.conceptid = int.Parse(root.Element(ns + "conceptid").Value);
+        rootNode.keyword = (string)root.Element(ns + "keyword").Value;
+
+        return getChildHelper(rootNode, ns, root.Element(ns + "childNodes"), rootNode);
+    }
+
+    static OntologyNode getChildHelper(OntologyNode rootNode, XNamespace ns, XElement node, OntologyNode parentNode)
+    {
+
+        if (node != null)
+        {
+            XElement parent = node;
+            var childNodeList = (from o in node.Elements(ns + "OntologyNode")
+                                 select o).ToList();
+            OntologyNode[] childNodes = new OntologyNode[childNodeList.Count];
+
+            int i = 0;
+            //loop through each child
+            foreach (var childNode in childNodeList)
+            {
+                childNodes[i].conceptid = int.Parse(childNode.Element(ns + "conceptid").Value);
+                childNodes[i].keyword = childNode.Element(ns + "keyword").Value;
+                childNodes[i] = getChildHelper(rootNode, ns, childNode.Element(ns + "childNodes"), childNodes[i]);
+                i++;
+            }
+
+            //update its parent.childIDList
+            parentNode.childNodes = childNodes;
+        }
+
+        return parentNode;
+    }
+
+    //[WebMethod]
+    //public OntologyNode getOntologyTree(String conceptKeyword)
+    //{
+    //    ServiceStats.AddCount("getOntologyTree");
+
+    //    if (conceptKeyword == null || conceptKeyword.Equals("")) conceptKeyword = "Hydrosphere";
+    //    String sql = "SELECT conceptid, conceptName from v_ConceptsUnionSynonyms where conceptName  = @conceptKeyword";
+    //    DataSet ds = new DataSet();
+    //    String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
+    //    SqlConnection con = new SqlConnection(connect);
+
+    //    using (con)
+    //    {
+
+    //        SqlDataAdapter da = new SqlDataAdapter(sql, con);
+    //        da.SelectCommand.Parameters.AddWithValue("conceptKeyword", conceptKeyword);
+    //        da.Fill(ds, "concept");
+    //    }
+    //    con.Close();
+
+    //    int rowcount = ds.Tables["concept"].Rows.Count;
+    //    OntologyNode node = new OntologyNode();
+    //    if (rowcount > 0)
+    //    {
+    //        DataRow row = ds.Tables["concept"].Rows[0];
+
+    //        node.keyword = row[1].ToString();
+    //        node.conceptid = (int)row[0];
+    //        getChildNodes(node);
+    //    }
+    //    return node;
+
+    //}
 
     // COUCH: Obsoleted by code revision 2014/05/29
     //    private string getCommaString(String[] ss) {
@@ -1336,51 +1423,66 @@ public class hiscentral : System.Web.Services.WebService
     //         return concepts;
     //     }
 
-    private OntologyNode getChildNodes(OntologyNode parentNode)
-    {
-        OntologyNode node = new OntologyNode();
-        String sql = "SELECT conceptid,  conceptName from v_conceptHierarchy where parentid = " + parentNode.conceptid + ";";
+    //private void getChildNodes(OntologyNode parentNode)
+    //{
+    //    getChildNodesHelper(parentNode);
+    //    return;
 
-        DataSet ds = new DataSet();
-        String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
-        SqlConnection con = new SqlConnection(connect);
+    //}
+    //private OntologyNode[] getChildNodesHelper(OntologyNode parentNode)
+    //{
+    //    //OntologyNode node = new OntologyNode();
+    //    String sql = "SELECT conceptid,  conceptName from v_conceptHierarchy where parentid = " + parentNode.conceptid + ";";
 
-        using (con)
-        {
-            SqlDataAdapter da2 = new SqlDataAdapter(sql, con);
-            da2.Fill(ds, "concepts");
-        }
-        con.Close();
+    //    DataSet ds = new DataSet();
+    //    String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
+    //    SqlConnection con = new SqlConnection(connect);
+
+    //    using (con)
+    //    {
+    //        SqlDataAdapter da2 = new SqlDataAdapter(sql, con);
+    //        da2.Fill(ds, "concepts");
+    //    }
+    //    con.Close();
 
 
-        //should be only one
-        String conceptKeyword;
-        int conceptid;
-        int i = 0;
+    //    //should be only one
+    //    String conceptKeyword;
+    //    int conceptid;
+    //    int i = 0;
+    //    OntologyNode[] child; 
 
-        int rowcount = ds.Tables["concepts"].Rows.Count;
-        if (rowcount > 0)
-        {
-            OntologyNode[] child = new OntologyNode[rowcount];
-            foreach (DataRow dataRow in ds.Tables["concepts"].Rows)
-            {
+    //    int rowcount = ds.Tables["concepts"].Rows.Count;
 
-                conceptid = (int)dataRow["conceptid"];
-                //conceptcode = dataRow["conceptCode"].ToString();
-                conceptKeyword = dataRow["conceptName"].ToString();
-                child[i] = new OntologyNode();
-                child[i].keyword = conceptKeyword;
-                child[i].conceptid = conceptid;
-                //rentNode.ChildNodes.Add(childNode);
-                child[i] = getChildNodes(child[i]);
-                //nextIDs.Add(conceptid);
-                //conceptcode = dataRow["conceptCode"].ToString();
-                i++;
-            }
-            parentNode.childNodes = child;
-        }
-        return parentNode;
-    }
+    //    if (rowcount == 0) {
+    //        return null;
+    //    } else {
+    //        child = new OntologyNode[rowcount];
+    //        foreach (DataRow dataRow in ds.Tables["concepts"].Rows)
+    //        {
+
+    //            conceptid = (int)dataRow["conceptid"];
+    //            //conceptcode = dataRow["conceptCode"].ToString();
+    //            conceptKeyword = dataRow["conceptName"].ToString();
+    //            child[i] = new OntologyNode();
+    //            child[i].keyword = conceptKeyword;
+    //            child[i].conceptid = conceptid;
+    //            //rentNode.ChildNodes.Add(childNode);
+
+    //            OntologyNode[] childNodes = getChildNodesHelper(child[i]);
+    //            if(childNodes != null)  child[i].childNodes = childNodes;
+
+    //            //parentNode.childNodes[i] = child[i];
+    //            //nextIDs.Add(conceptid);
+    //            //conceptcode = dataRow["conceptCode"].ToString();
+    //            i++;
+    //        }
+    //        parentNode.childNodes = child;
+    //    }
+
+    //    return child;
+    //    //return parentNode;
+    //}
 
     public struct OntologyNode
     {
