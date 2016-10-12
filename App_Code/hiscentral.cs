@@ -25,6 +25,7 @@ using System.Net.Http;
 using System.IO;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Text;
 
 /// <summary>
 /// Summary description for hiscentral
@@ -565,7 +566,45 @@ public class hiscentral : System.Web.Services.WebService
         public string genCategory;
         public string TimeSupport;
     }
+    public struct SeriesRecordFull
+    {
+        public string ServCode;
+        public string ServURL;
+        public string location;
+        public string VarCode;
+        public string VarName;
+        public string beginDate;
+        public string endDate;
+        public string authtoken;
+        public int ValueCount;
 
+        public string Sitename;
+        public double latitude;
+        public double longitude;
+
+        public string datatype;
+        public string valuetype;
+        public string samplemedium;
+        public string timeunits;
+        public string conceptKeyword;
+        public string genCategory;
+        public string TimeSupport;
+        public string SeriesCode;
+
+        public string QCLID;
+        public string QCLDesc;
+        public string Organization;
+        public string TimeUnitAbbrev;
+        public string TimeUnits;
+        public string IsRegular;
+        public string Speciation;
+        public string SourceOrg;
+        public string VariableUnitsAbbrev;
+        public string SourceId;
+        public string SourceDesc;
+        public string MethodId;
+        public string MethodDesc;
+    }
     [WebMethod]
     public SeriesRecord[] GetSeriesCatalogForBox(Box box, String conceptCode,
             int[] networkIDs, string beginDate, string endDate)
@@ -602,6 +641,7 @@ public class hiscentral : System.Web.Services.WebService
         using (WebClient client = new WebClient())
         {
             response = client.DownloadString(url);
+
             TextReader xmlReader = new StringReader(response);
             xDocument = XDocument.Load(xmlReader);
 
@@ -637,6 +677,109 @@ public class hiscentral : System.Web.Services.WebService
 
         return series;
     }
+
+    /// <summary>
+    /// Added by MS to return all 5 parameters (site, var, method, QC level source) for a timeseries to client 
+    /// </summary>
+    /// <param name="xmin"></param>
+    /// <param name="xmax"></param>
+    /// <param name="ymin"></param>
+    /// <param name="ymax"></param>
+    /// <param name="conceptKeyword"></param>
+    /// <param name="networkIDs"></param>
+    /// <param name="beginDate"></param>
+    /// <param name="endDate"></param>
+    /// <returns></returns>
+    [WebMethod]
+    public SeriesRecordFull[] GetSeriesCatalogForBox3(double xmin, double xmax, double ymin, double ymax ,string sampleMedium, string dataType, string valueType,
+                             string conceptKeyword, string networkIDs,
+                         string beginDate, string endDate)
+    {
+
+        int nrows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
+        string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
+        if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
+
+        
+        
+        XDocument xDocument;
+        SeriesRecordFull[] series = null;
+        string response = null;
+        using (WebClient client = new WebClient())
+        {
+            client.Encoding = Encoding.UTF8;
+            ////make initial call to test how many rows are returned:
+            
+            
+            //       + requestUrl(xmin, xmax, ymin, ymax,
+            //                    conceptKeyword, networkIDs,
+            //                    beginDate, endDate, 0);
+            //response = client.DownloadString(url);
+            //TextReader xmlReader = new StringReader(response);
+            //xDocument = XDocument.Load(xmlReader);
+            //var numFound = (from n in xDocument.Descendants("result")
+            //           where n.Attribute("name").Value == "response"
+            //           select n.Attribute("numFound").Value).FirstOrDefault();
+            //if (Convert.ToUInt32(numFound) > nrows) throw new OperationCanceledException("Exceeds max return value");
+            string url = endpoint
+                   + requestUrl(xmin, xmax, ymin, ymax,
+                                conceptKeyword, networkIDs,
+                                beginDate, endDate, nrows);
+
+            response = client.DownloadString(url);
+
+            TextReader xmlReader = new StringReader(response);
+            xDocument = XDocument.Load(xmlReader);
+
+            //If using .Net 4.0 or above, better to use Linq to XML
+            // Note: the following fields could be NULL
+            //       SiteName, DataType, SampleMedium, TimeUnits, GeneralCategory
+            series =
+            (from o in xDocument.Descendants("doc")
+                 //let eleStr = o.Elements("str")
+             select new SeriesRecordFull()
+             {
+                 location = o.Elements("str").Single(x => x.Attribute("name").Value == "SiteCode").Value.ToString(), //???
+                 ////SiteCode like 'EPA:SDWRAP:LOUCOTTMC01',  Sitename==NULL
+                 Sitename = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SiteName").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SiteName").Value.ToString(),
+                 ServURL = o.Elements("str").Single(x => x.Attribute("name").Value == "ServiceWSDL").Value.ToString(),
+                 ServCode = o.Elements("str").Single(x => x.Attribute("name").Value == "NetworkName").Value.ToString(),
+                 latitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Latitude").Value.ToString()),
+                 longitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Longitude").Value.ToString()),
+                 ValueCount = int.Parse(o.Elements("long").Single(x => x.Attribute("name").Value == "Valuecount").Value.ToString()),
+                 VarName = o.Elements("str").Single(x => x.Attribute("name").Value == "VariableName").Value.ToString(),
+                 VarCode = o.Elements("str").Single(x => x.Attribute("name").Value == "VariableCode").Value.ToString(),
+                 beginDate = o.Elements("date").Single(x => x.Attribute("name").Value == "BeginDateTime").Value.ToString(),
+                 endDate = o.Elements("date").Single(x => x.Attribute("name").Value == "EndDateTime").Value.ToString(),
+                 datatype = o.Descendants("str").Where(e => (string)e.Attribute("name") == "DataType").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "DataType").Value.ToString(),
+                 valuetype = o.Elements("str").Single(x => x.Attribute("name").Value == "ValueType").Value.ToString(),
+                 samplemedium = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SampleMedium").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SampleMedium").Value.ToString(),
+                 timeunits = o.Descendants("str").Where(e => (string)e.Attribute("name") == "TimeUnits").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "TimeUnits").Value.ToString(),
+                 conceptKeyword = o.Elements("str").Single(x => x.Attribute("name").Value == "ConceptKeyword").Value.ToString(),
+                 genCategory = o.Descendants("str").Where(e => (string)e.Attribute("name") == "GeneralCategory").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "GeneralCategory").Value.ToString(),
+                 TimeSupport = o.Elements("long").Single(x => x.Attribute("name").Value == "TimeSupport").Value.ToString(),
+                 QCLID = o.Descendants("str").Where(e => (string)e.Attribute("name") == "QCLID").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "QCLID").Value.ToString(),
+                 QCLDesc = o.Descendants("str").Where(e => (string)e.Attribute("name") == "QCLDesc").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "QCLDesc").Value.ToString(),
+                 Organization = o.Descendants("str").Where(e => (string)e.Attribute("name") == "Organization").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "Organization").Value.ToString(),
+                 TimeUnitAbbrev = o.Descendants("str").Where(e => (string)e.Attribute("name") == "TimeUnitAbbrev").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "TimeUnitAbbrev").Value.ToString(),
+                 TimeUnits = o.Descendants("str").Where(e => (string)e.Attribute("name") == "TimeUnits").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "TimeUnits").Value.ToString(),
+                 //IsRegular =  bool.Parse(o.Elements("str").Single(x => x.Attribute("name").Value == "IsRegular").Value.ToString()),
+                 IsRegular = o.Descendants("bool").Where(e => (string)e.Attribute("name") == "IsRegular").Count() == 0 ? "" : o.Elements("bool").Single(x => x.Attribute("name").Value == "IsRegular").Value.ToString(),
+                 //IsRegular = o.Elements("bool").Single(x => x.Attribute("name").Value == "IsRegular").Value.ToString(),
+                 SeriesCode = o.Elements("str").Single(x => x.Attribute("name").Value == "id").Value.ToString(),
+                 Speciation = o.Descendants("str").Where(e => (string)e.Attribute("name") == "Speciation").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "Speciation").Value.ToString(),
+                 SourceOrg = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SourceOrg").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SourceOrg").Value.ToString(),
+                 VariableUnitsAbbrev = o.Descendants("str").Where(e => (string)e.Attribute("name") == "VariableUnitAbbrev").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "VariableUnitAbbrev").Value.ToString(),
+                 SourceId = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SourceID").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SourceID").Value.ToString(),
+                 SourceDesc = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SourceDesc").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SourceDesc").Value.ToString(),
+                 MethodId = o.Descendants("str").Where(e => (string)e.Attribute("name") == "MethodID").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "MethodID").Value.ToString(),
+                 MethodDesc = o.Descendants("str").Where(e => (string)e.Attribute("name") == "MethodDesc").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "MethodDesc").Value.ToString(),
+             }).ToArray();
+        }
+
+        return series;
+    }
+
 
     //Get all synonyms for input keywords
     //added by Yaping, April, 2016
@@ -675,7 +818,7 @@ public class hiscentral : System.Web.Services.WebService
     }
 
     //added by Yaping, Dec.2015
-    public string requestUrl(double xmin, double xmax, double ymin, double ymax,
+    public string requestUrl_old(double xmin, double xmax, double ymin, double ymax,
                               string conceptKeyword, string networkIDs,
                           string beginDate, string endDate, int nrows)
     {
@@ -750,6 +893,102 @@ public class hiscentral : System.Web.Services.WebService
 
         return parameters;
     }
+
+    //modified by Yaping, Sep.2016 to take into accout the out-dated EndDateTime in the database for NASA networks
+    //added by Yaping, Dec.2015 to adjust Concept search
+    public string requestUrl(double xmin, double xmax, double ymin, double ymax,
+                              string conceptKeyword, string networkIDs,
+                          string beginDate, string endDate, int nrows)
+    {
+        string parameters;
+        string beginDate2, endDate2;
+        string qNetworkIDs;
+        string qConcept;
+        string qLat, qLon;
+        string keywordString = String.Empty;
+        HashSet<string> keywordSet = new HashSet<string>();
+
+        //Create query parameter for networkID
+        //Allowing for multiple networks
+        if (networkIDs.Equals(""))
+        {
+            qNetworkIDs = @"NetworkID:*";
+        }
+        else if (networkIDs.Length == 1)
+        {
+            qNetworkIDs = String.Format("NetworkID:{0}", networkIDs);
+        }
+        else
+        {
+            //allowing multiple networkIDs, select?q=NetworkID:(1 2 3)
+            string[] parts = networkParser(networkIDs);
+            qNetworkIDs = @"NetworkID:(";
+            foreach (string part in parts)
+            {
+                qNetworkIDs += part + ' ';
+            }
+            qNetworkIDs += ')';
+        }
+
+        //Create query parameter for conceptKeyword
+        if (conceptKeyword.Equals(""))
+        {
+            qConcept = @"ConceptKeyword:*";
+        }
+        else if (conceptKeyword.Equals("all", StringComparison.InvariantCultureIgnoreCase))
+        {
+            qConcept = @"ConceptKeyword:*";
+        }
+        else
+        {
+            //Get leaf concepts for input conceptKeyword
+            string[] subconceptList = getLeafKeywords(conceptKeyword);
+
+            foreach (var subKeyword in subconceptList)
+            {
+                keywordSet.Add(subKeyword);
+            }
+
+            foreach (var keyword in keywordSet)
+            {
+                keywordString += String.Format("ConceptKeyword:%22{0}%22+OR+", HttpUtility.UrlEncode(keyword));
+            }
+            qConcept = keywordString.Substring(0, keywordString.Length - 4);
+        }
+
+        //query parameter for lat, lon, beginDateTime, endDateTime
+        qLat = String.Format("Latitude:[{0:0.0000} {1:0.0000}]", ymin, ymax);
+        qLon = String.Format("Longitude:[{0:0.0000} {1:0.0000}]", xmin, xmax);
+
+        beginDate2 = DateTime.ParseExact(beginDate, "MM/dd/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
+        endDate2 = DateTime.ParseExact(endDate, "MM/dd/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
+        var qBeginDT = String.Format(@"BeginDateTime:[* TO {0}T00:00:00Z]", endDate2);
+        var qEndDT = String.Format(@"EndDateTime:[{0}T00:00:00Z TO *]", beginDate2);
+        var qBeginDTNASA = "BeginDateTime:[* TO NOW]";
+
+        //query parameters to solr
+        String reqType = "edismax";
+
+        //For nasa networks, EndDateTime is modified to NOW
+        if (networkIDs.Contains("262") || networkIDs.Contains("267") || networkIDs.Contains("274"))
+        {
+            parameters = String.Format(@"select?q=*:*&fq={0}&fq={1}&fq={2}&fq={3}&fq={4}&fq={5}&rows={6}",
+                    qNetworkIDs, qConcept, qLat, qLon, qBeginDTNASA, qEndDT, nrows);
+        }
+        else if (networkIDs.Equals("") || networkIDs.Contains("*"))
+        {
+            parameters = String.Format
+                (@"select?q=*:*&fq=(NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}%22)+OR+(*:* -NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{1}%22)&fq={2}&fq={3}&fq={4}&fq={5}&rows={6}&defType={7}",
+                    qBeginDTNASA, qBeginDT, qConcept, qLat, qLon, qEndDT, nrows, reqType);
+        }
+        else {
+            parameters = String.Format(@"select?q=*:*&fq={0}&fq={1}&fq={2}&fq={3}&fq={4}&fq={5}&rows={6}",
+                    qNetworkIDs, qConcept, qLat, qLon, qBeginDT, qEndDT, nrows);
+        }
+        return parameters;
+    }
+
+
 
     //Get leaf conceptKeywords in Ontology tree for input notion 
     //Added by Yaping, April 2016
@@ -1219,7 +1458,8 @@ public class hiscentral : System.Web.Services.WebService
 
         //Hydrosphere.xml is downloaded from hiscentral getOntologyTree web service, should exist before running the program
         XNamespace ns = System.Configuration.ConfigurationManager.AppSettings["ONTnamespace"];
-        string xmlOntology = AppDomain.CurrentDomain.BaseDirectory + "\\" + System.Configuration.ConfigurationManager.AppSettings["ONTxml"];
+        //need to adjust app living on azure
+        string xmlOntology = Server.MapPath("~") +  System.Configuration.ConfigurationManager.AppSettings["ONTxmlPath"];
 
         XElement root = XElement.Load(xmlOntology);
 
