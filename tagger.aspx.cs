@@ -29,17 +29,8 @@ public partial class tagger : System.Web.UI.Page
         this.uem.Value = User.Identity.Name;
         connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
         
-        string sourceString = "networkId = " + networkid; 
-        SqlDataSource2.SelectCommand="select altvariablename, conceptID, m.conceptKeyword, m.variableID from mappingsapproved as m join variables as v on v.variableid=m.variableID WHERE "+sourceString+" order by datemapped desc";
-        //string selectcom = "SELECT [AltVariableName],variableid,SampleMedium FROM [Variables] where (variableID not in (select variableID from MappingsApproved)) " + sourceString.Replace("WHERE ", " AND (");
-        //if (selectcom.Contains(" AND ("))
-        //{
-        //    selectcom = selectcom + ")";
-        //}
-        string selectcom = "SELECT [AltVariableCode],[AltVariableName],variableid,SampleMedium FROM [Variables] where (variableID not in (select variableID from MappingsApproved)) AND " + sourceString;
-                            
-        SqlDataSource1.SelectCommand = selectcom;
-            //"SELECT [AltVariableName],variableid,SampleMedium FROM [VariablesMapper] where (variableID not in (select variableID from MappingsApproved)) "+sourceString.Replace("WHERE "," AND (");
+        string sourceString = "NetworkID = " + networkid;
+
         GridView1.DataBind();
         GridView2.DataBind();
        // if (GridView1.Rows.Count < 1) {

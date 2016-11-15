@@ -47,7 +47,10 @@ namespace Tagger
             string variableName = "error";
             connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
             con = new SqlConnection(connect);
-            string sql = "Select AltVariableName from Variables where variableid=" + varID;
+            //Modified by Yaping, 11/11/2016
+            //string sql = "Select AltVariableName from Variables where variableid=" + varID;
+            string[] parts = varID.Split('|');
+            string sql = "Select AltVariableName from Mappings where NetworkID = '" +  parts[0] + "' and AltVariableCode = '" + parts[1] + "'";
             using (con)
             {
                 SqlDataAdapter da = new SqlDataAdapter(sql, con);
@@ -71,8 +74,15 @@ namespace Tagger
         public void FinalizeMapping(string varID, string conceptID,string keyword, string userName)
         {
             //string conceptID = conceptIDstring.Substring(4);
-            String sqlupdatestring = "INSERT INTO MappingsApproved (VariableID, ConceptID, conceptKeyword, DateMapped, DateApproved, RegisteringIndividual, ApprovingIndividual, OntologyVersion)" +
-                " VALUES ("+varID+","+conceptID+",'"+keyword+"','"+DateTime.Now.ToString() +"','"+DateTime.Now.ToString()+"','"+userName+"','Automatic','2.1')";
+            //String sqlupdatestring = "INSERT INTO MappingsApproved (VariableID, ConceptID, conceptKeyword, DateMapped, DateApproved, RegisteringIndividual, ApprovingIndividual, OntologyVersion)" +
+            //    " VALUES (" + varID + "," + conceptID + ",'" + keyword + "','" + DateTime.Now.ToString() + "','" + DateTime.Now.ToString() + "','" + userName + "','Automatic','2.1')";
+
+            //Modified by Yaping, 11/11/2016 
+            string[] parts = varID.Split('|');
+            String sqlupdatestring = "Update Mappings set ConceptKeyword = '" + keyword + "', ConceptID = " + conceptID 
+                + ", IsTagged = 1" + ", LastTagged = '" + DateTime.Now.ToString() + "' "
+                + ", WhoTagged = '" + userName + "' "
+                + " where NetworkID = '" + parts[0] + "' and AltVariableCode = '" + parts[1] + "'";
             connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
             con = new SqlConnection(connect);
             con.Open();
