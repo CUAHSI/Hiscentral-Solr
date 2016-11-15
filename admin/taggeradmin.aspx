@@ -48,7 +48,7 @@
                                 <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="False" DataSourceID="SqlDataSource2"
                                     Height="95px" AllowPaging="True" AllowSorting="True" PageSize="5" CssClass="gridview"
                                     OnRowDataBound="HandleRowsDatabound" HorizontalAlign="Right" Width="612px" BorderWidth="0px"
-                                    CellPadding="1" DataKeyNames="variableID,conceptID">
+                                    CellPadding="1" DataKeyNames="variableid">
                                     <Columns>
                                         <asp:CommandField ShowDeleteButton="True">
                                             <ItemStyle Font-Bold="True" Width="55px" HorizontalAlign="Center" />
@@ -77,10 +77,14 @@
                             </ContentTemplate>
                         </asp:UpdatePanel>
                         <asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:CentralHISConnectionString %>"
-                            SelectCommand="select altvariablename, p.conceptID, m.variableID,TextualDescription from mappingsapproved as m join variables as v on v.variableid=m.variableID join mappingspending as p on p.variableID=m.variableid order by m.datemapped desc"
-                            DeleteCommand="DeleteMapping" DeleteCommandType="StoredProcedure">
+                            SelectCommand="SELECT m.AltVariableName, c.ConceptID, m.ConceptKeyword, m.NetworkID, m.AltVariableCode, (convert(varchar(10), m.NetworkID)+'|'+m.AltVariableCode) as variableid  FROM Mappings AS m LEFT JOIN Concepts AS c ON m.ConceptKeyword = c.ConceptName 
+                            where (NetworkID = @NetworkID) and (IsMapped = 1)"
+                            DeleteCommand="DeleteMapping2" DeleteCommandType="StoredProcedure" OnDeleted="LoadItemsBtn_Click" ProviderName="<%$ ConnectionStrings:CentralHISConnectionString.ProviderName %>">
+                          <SelectParameters>
+                            <asp:SessionParameter Name="NetworkID" SessionField="NetworkID" />
+                          </SelectParameters>                            
                             <DeleteParameters>
-                                <asp:ControlParameter Name="variableID" ControlID="GridView2" PropertyName="SelectedValue" />
+                                <asp:ControlParameter Name="variableid" ControlID="GridView2" PropertyName="SelectedValue" />
                             </DeleteParameters>
                         </asp:SqlDataSource>
                     </td>
