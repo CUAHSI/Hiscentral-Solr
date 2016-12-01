@@ -733,17 +733,20 @@ public class hiscentral : System.Web.Services.WebService
 
             //If using .Net 4.0 or above, better to use Linq to XML
             // Note: the following fields could be NULL
-            //       SiteName, DataType, SampleMedium, TimeUnits, GeneralCategory
+            //       SiteName, DataType, SampleMedium, TimeUnits, GeneralCategory, valuetype
+            try
+            {
             series =
             (from o in xDocument.Descendants("doc")
                  //let eleStr = o.Elements("str")
+
              select new SeriesRecordFull()
              {
                  location = o.Elements("str").Single(x => x.Attribute("name").Value == "SiteCode").Value.ToString(), //???
                  ////SiteCode like 'EPA:SDWRAP:LOUCOTTMC01',  Sitename==NULL
                  Sitename = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SiteName").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SiteName").Value.ToString(),
-                 ServURL = o.Elements("str").Single(x => x.Attribute("name").Value == "ServiceWSDL").Value.ToString(),
                  ServCode = o.Elements("str").Single(x => x.Attribute("name").Value == "NetworkName").Value.ToString(),
+                 ServURL = o.Elements("str").Single(x => x.Attribute("name").Value == "ServiceWSDL").Value.ToString(),
                  latitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Latitude").Value.ToString()),
                  longitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Longitude").Value.ToString()),
                  ValueCount = int.Parse(o.Elements("long").Single(x => x.Attribute("name").Value == "Valuecount").Value.ToString()),
@@ -752,12 +755,13 @@ public class hiscentral : System.Web.Services.WebService
                  beginDate = o.Elements("date").Single(x => x.Attribute("name").Value == "BeginDateTime").Value.ToString(),
                  endDate = o.Elements("date").Single(x => x.Attribute("name").Value == "EndDateTime").Value.ToString(),
                  datatype = o.Descendants("str").Where(e => (string)e.Attribute("name") == "DataType").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "DataType").Value.ToString(),
-                 valuetype = o.Elements("str").Single(x => x.Attribute("name").Value == "ValueType").Value.ToString(),
+                 valuetype = o.Descendants("str").Where(e => (string)e.Attribute("name") == "ValueType").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "ValueType").Value.ToString(),
                  samplemedium = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SampleMedium").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SampleMedium").Value.ToString(),
-                 timeunits = o.Descendants("str").Where(e => (string)e.Attribute("name") == "TimeUnits").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "TimeUnits").Value.ToString(),
+                 //timeunits = o.Descendants("str").Where(e => (string)e.Attribute("name") == "TimeUnits").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "TimeUnits").Value.ToString(),
                  conceptKeyword = o.Elements("str").Single(x => x.Attribute("name").Value == "ConceptKeyword").Value.ToString(),
                  genCategory = o.Descendants("str").Where(e => (string)e.Attribute("name") == "GeneralCategory").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "GeneralCategory").Value.ToString(),
-                 TimeSupport = o.Elements("long").Single(x => x.Attribute("name").Value == "TimeSupport").Value.ToString(),
+                 //TimeSupport = o.Elements("long").Single(x => x.Attribute("name").Value == "TimeSupport").Value.ToString(),
+                 TimeSupport = o.Descendants("long").Where(e => (string)e.Attribute("name") == "TimeSupport").Count() == 0 ? "" : o.Descendants("long").Single(x => x.Attribute("name").Value == "TimeSupport").Value.ToString(),
                  QCLID = o.Descendants("str").Where(e => (string)e.Attribute("name") == "QCLID").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "QCLID").Value.ToString(),
                  QCLDesc = o.Descendants("str").Where(e => (string)e.Attribute("name") == "QCLDesc").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "QCLDesc").Value.ToString(),
                  Organization = o.Descendants("str").Where(e => (string)e.Attribute("name") == "Organization").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "Organization").Value.ToString(),
@@ -775,6 +779,12 @@ public class hiscentral : System.Web.Services.WebService
                  MethodId = o.Descendants("str").Where(e => (string)e.Attribute("name") == "MethodID").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "MethodID").Value.ToString(),
                  MethodDesc = o.Descendants("str").Where(e => (string)e.Attribute("name") == "MethodDesc").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "MethodDesc").Value.ToString(),
              }).ToArray();
+            }
+            catch (Exception ex)
+            {
+                //to DO add logging
+                //throw;
+            }
         }
 
         return series;
