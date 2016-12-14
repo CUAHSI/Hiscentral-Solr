@@ -780,6 +780,50 @@ public class hiscentral : System.Web.Services.WebService
         return series;
     }
 
+    public struct ControlledVocabulary
+    {
+        public string cvname;
+        public long cvnum;
+    }
+    //Get CV list
+    //added by Yaping, Dec.2016
+    [WebMethod]
+    public ControlledVocabulary[] GetControlledVocabulary(string cvstr)
+    {
+        string[] cvsearchable = { "DataType", "ValueType", "SampleMedium", "GeneralyCategory" };
+
+        if (!cvsearchable.Contains(cvstr)) return null;
+
+        string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
+        if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
+
+        XDocument xDocument;
+        string response = null;
+        ControlledVocabulary[] cvlist = null;
+
+        using (WebClient client = new WebClient())
+        {
+            client.Encoding = Encoding.UTF8;
+
+            string url = endpoint + String.Format(@"select?q=*:*&facet=true&facet.field={0}&rows=0", cvstr);
+            response = client.DownloadString(url);
+
+            TextReader xmlReader = new StringReader(response);
+            xDocument = XDocument.Load(xmlReader);
+
+            var xnode = xDocument.Descendants("lst").Where (o => (string)o.Attribute("name") == cvstr);
+
+            cvlist =
+            (from p in xnode.Descendants("int")
+             select new ControlledVocabulary()
+             {
+                 cvname = p.Attribute("name").Value.ToString(),
+                 cvnum = long.Parse(p.Value),
+             }).ToArray();
+
+        }
+        return cvlist;
+    }
 
     //Get all synonyms for input keywords
     //added by Yaping, April, 2016
