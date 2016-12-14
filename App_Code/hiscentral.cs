@@ -630,11 +630,11 @@ public class hiscentral : System.Web.Services.WebService
         int nrows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
         string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
         if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
-
+        
         string url = endpoint
                    + requestUrl(xmin, xmax, ymin, ymax,
                                 conceptKeyword, networkIDs,
-                                beginDate, endDate, nrows);
+                                Uri.UnescapeDataString(beginDate), Uri.UnescapeDataString(endDate), nrows);
         XDocument xDocument;
         SeriesRecord[] series = null;
         string response = null;
