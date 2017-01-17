@@ -18,6 +18,7 @@ using com.hp.hpl.jena.ontology;
 using log4net;
 using System.Linq;
 using System.Xml.Linq;
+using System.Xml;
 using System.Xml.XPath;
 
 using System.Net;
@@ -780,53 +781,207 @@ public class hiscentral : System.Web.Services.WebService
         return series;
     }
 
-    public struct ControlledVocabulary
+    /// <summary>
+    /// Added by Y.Xiao, Jan.2017 
+    /// GetControlledVocabulary(string cvId)
+    /// 
+    /// input parameter: 
+    ///     "DataType" | "ValueType" | "SampleMedium" | "GeneralCategory"
+    /// 
+    /// output:
+    ///     struct vocabulary
+    ///     <ControlledVocabularyList>
+    ///         <vocabularyId itemCount="15" name="DataType">
+    ///             <items>
+    ///                 <item>
+    ///                     <term>Derived Value</term>
+    ///                     <defintion>Value that is directly derived from an observation or set of observations</defintion>
+    ///                     <count>34000</count>
+    ///                 </item>
+    ///                 <item>
+    ///                 ...
+    ///                 </item>
+    ///             </items>
+    ///         </vocabularyId>
+    ///     </ControlledVocabularyList>
+    /// </summary>
+    public struct vocabulary
     {
-        public string cvname;
-        public long cvnum;
+        public string vocabularyId;
+        public long itemCount;
+        public item[] items;
     }
-    //Get CV list
-    //added by Yaping, Dec.2016
-    [WebMethod]
-    public ControlledVocabulary[] GetControlledVocabulary(string cvstr)
+     
+    public struct item
     {
-        string[] cvsearchable = { "DataType", "ValueType", "SampleMedium", "GeneralyCategory" };
+        public string term;
+        public string definition;
+        public long count;
+    }
 
-        if (!cvsearchable.Contains(cvstr)) return null;
+    //called by WriteXmlCvDefinition
+    private Dictionary<string, string> GetCVfromSql(string cvId)
+    {
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+        string tablename = cvId + "CV";
+
+
+        String sql = "SELECT Term, Definition FROM " + tablename;
+        DataSet ds = new DataSet();
+        String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
+        SqlConnection con = new SqlConnection(connect);
+        using (con)
+        {
+            SqlDataAdapter da = new SqlDataAdapter(sql, con);
+
+            da.Fill(ds, "rows");
+
+            if (ds.Tables["rows"].Rows.Count >= 1)
+            {
+                //Could return more than one row
+                for (int i = 0; i < ds.Tables["rows"].Rows.Count; i++)
+                {
+                    DataRow dataRow = ds.Tables["rows"].Rows[i];
+                    dict.Add(dataRow[0].ToString(), dataRow[1].ToString());
+                    
+                }
+            }
+
+            ds.Clear();
+
+        }
+        return dict;
+    }
+
+    private void WriteXmlCvDefinition(string filepath, string[] cvlist)
+    {
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+
+        XmlDocument doc = new XmlDocument();
+        XmlDeclaration xmlDeclaration = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
+        XmlElement root = doc.DocumentElement;
+        doc.InsertBefore(xmlDeclaration, root);
+
+        XmlElement element1 = doc.CreateElement(string.Empty, "ControlledVocabularyList", string.Empty);
+        doc.AppendChild(element1);
+        for (int i = 0; i < cvlist.Length; i++) {
+
+            //Get CV defintion from sql 
+            dict = GetCVfromSql(cvlist[i]);
+
+            XmlElement element2 = doc.CreateElement(string.Empty, "vocabularyId", string.Empty); 
+            element2.SetAttribute("name", cvlist[i]);
+            element2.SetAttribute("itemCount", dict.Count.ToString());
+            element1.AppendChild(element2);
+
+            XmlElement eleitems = doc.CreateElement(string.Empty, "items", string.Empty);  
+            element2.AppendChild(eleitems);
+
+            foreach (var item in dict) {
+                XmlElement eleitem = doc.CreateElement(string.Empty, "item", string.Empty); ;
+                eleitems.AppendChild(eleitem);
+
+                XmlElement eleterm = doc.CreateElement(string.Empty, "term", string.Empty);
+                XmlText textkey = doc.CreateTextNode(item.Key);
+                eleterm.AppendChild(textkey);
+
+                XmlElement eledef = doc.CreateElement(string.Empty, "definition", string.Empty);
+                XmlText textvalue = doc.CreateTextNode(item.Value);
+                eledef.AppendChild(textvalue);
+
+                eleitem.AppendChild(eleterm);
+                eleitem.AppendChild(eledef);
+            }
+
+        }
+        doc.Save(filepath);
+
+        return;
+    }
+
+    private Dictionary<string, string> ReadXmlCvDefinition(string filepath, string cvId)
+    {
+        Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
+
+        XDocument xDocument = XDocument.Load(filepath);
+
+        var cvNode = (from o in xDocument.Descendants("vocabularyId")
+                    .Where(x => (string)x.Attribute("name").Value == cvId)
+                    select o);
+
+        dictCvDefinition = (from o in cvNode.Descendants("item")
+                     select new
+                     {
+                        term = o.Element("term").Value.ToString().ToLower(),
+                        defintion = o.Element("definition").Value.ToString()
+                     }).ToDictionary(o => o.term, o => o.defintion);
+                    
+    return dictCvDefinition;
+    }
+
+    [WebMethod]
+    public vocabulary GetControlledVocabulary(string cvId)
+    {
+        string[] cvsearchable = { "DataType", "ValueType", "SampleMedium", "GeneralCategory" };
+
+        Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
+        vocabulary cv = new vocabulary();
+        if (!cvsearchable.Contains(cvId)) return cv;
+
+        cv.vocabularyId = cvId;
 
         string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
         if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
 
+        //archived under  Xml/cvdefinition.xml
+        string XmlCvDefintion = Server.MapPath("~") + System.Configuration.ConfigurationManager.AppSettings["XmlCvDefinition"];
+
+        //write Xml/cvdefinition.xml
+        if (Boolean.Parse(System.Configuration.ConfigurationManager.AppSettings["UpdateCvDefinition"]))
+            WriteXmlCvDefinition(XmlCvDefintion, cvsearchable);
+
+        //read dictCv from Xml/cvdefinition.xml
+        dictCvDefinition = ReadXmlCvDefinition(XmlCvDefintion, cvId);
+
+
         XDocument xDocument;
         string response = null;
-        ControlledVocabulary[] cvlist = null;
+        item[] items = null;
 
         using (WebClient client = new WebClient())
         {
             client.Encoding = Encoding.UTF8;
 
-            string url = endpoint + String.Format(@"select?q=*:*&facet=true&facet.field={0}&rows=0", cvstr);
+            string url = endpoint + String.Format(@"select?q=*:*&facet=true&facet.field={0}&rows=0", cvId);
             response = client.DownloadString(url);
 
             TextReader xmlReader = new StringReader(response);
             xDocument = XDocument.Load(xmlReader);
 
-            var xnode = xDocument.Descendants("lst").Where (o => (string)o.Attribute("name") == cvstr);
+            var xnode = xDocument.Descendants("lst").Where (o => (string)o.Attribute("name") == cvId);
 
-            cvlist =
+            items =
             (from p in xnode.Descendants("int")
-             select new ControlledVocabulary()
+             let t = p.Attribute("name").Value.ToString().ToLower()
+             select new item()
              {
-                 cvname = p.Attribute("name").Value.ToString(),
-                 cvnum = long.Parse(p.Value),
+                 term = t,
+                 definition = dictCvDefinition.ContainsKey(t)? dictCvDefinition[t] : "undefined",
+                 count = long.Parse(p.Value),
              }).ToArray();
 
         }
-        return cvlist;
+
+        cv.items = items;
+        cv.itemCount = items.Length;        
+        
+        return cv;
     }
 
-    //Get all synonyms for input keywords
-    //added by Yaping, April, 2016
+    /// <summary>
+    /// added by Yaping, April, 2016
+    /// Get all synonyms for input keywords
+    /// </summary>
     public HashSet<string> getSearchableConcept(string[] keywords)
     {
         //In the table, SearchableConcept and ConceptName could be identical, thus HashSet is used here
@@ -938,8 +1093,8 @@ public class hiscentral : System.Web.Services.WebService
         return parameters;
     }
 
-    //modified by Yaping, Sep.2016 to take into accout the out-dated EndDateTime in the database for NASA networks
-    //added by Yaping, Dec.2015 to adjust Concept search
+    ///modified by Yaping, Sep.2016 to take into accout the out-dated EndDateTime in the database for NASA networks
+    ///added by Yaping, Dec.2015 to adjust Concept search
     public string requestUrl(double xmin, double xmax, double ymin, double ymax,
                               string conceptKeyword, string networkIDs,
                           string beginDate, string endDate, int nrows)
@@ -1034,8 +1189,8 @@ public class hiscentral : System.Web.Services.WebService
 
 
 
-    //Get leaf conceptKeywords in Ontology tree for input notion 
-    //Added by Yaping, April 2016
+    ///Get leaf conceptKeywords in Ontology tree for input notion 
+    ///Added by Yaping, April 2016
     private string[] getLeafKeywords(string conceptKeyword)
     {
         XNamespace ns = System.Configuration.ConfigurationManager.AppSettings["ONTnamespace"];
