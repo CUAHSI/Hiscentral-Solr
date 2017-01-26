@@ -606,6 +606,28 @@ public class hiscentral : System.Web.Services.WebService
         public string MethodId;
         public string MethodDesc;
     }
+
+    public struct vocabulary
+    {
+        public string vocabularyId;
+        public long itemCount;
+        public item[] items;
+    }
+
+    public struct item
+    {
+        public string term;
+        public string definition;
+        public long count;
+    }
+
+    public struct CountOrData {
+        public long nseries;
+        public string message;
+        public vocabulary[] controlledVocabulary;
+        public SeriesRecordFull[] series;
+    }
+
     [WebMethod]
     public SeriesRecord[] GetSeriesCatalogForBox(Box box, String conceptCode,
             int[] networkIDs, string beginDate, string endDate)
@@ -628,14 +650,15 @@ public class hiscentral : System.Web.Services.WebService
                               string conceptKeyword, String networkIDs,
                           string beginDate, string endDate)
     {
-        int nrows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
-        string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
-        if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
+        int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
+        //string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
+        //if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
         
-        string url = endpoint
-                   + requestUrl(xmin, xmax, ymin, ymax,
+        string url = requestUrl(xmin, xmax, ymin, ymax,
                                 conceptKeyword, networkIDs,
-                                Uri.UnescapeDataString(beginDate), Uri.UnescapeDataString(endDate), nrows);
+                                Uri.UnescapeDataString(beginDate), Uri.UnescapeDataString(endDate))
+        +String.Format(@"&rows={0}", Max_rows);
+
         XDocument xDocument;
         SeriesRecord[] series = null;
         string response = null;
@@ -679,6 +702,8 @@ public class hiscentral : System.Web.Services.WebService
         return series;
     }
 
+
+    //Jan.2017, YX, abstracted getSeriesFull()
     /// <summary>
     /// Added by MS to return all 5 parameters (site, var, method, QC level source) for a timeseries to client 
     /// </summary>
@@ -697,35 +722,38 @@ public class hiscentral : System.Web.Services.WebService
                          string beginDate, string endDate)
     {
 
-        int nrows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
-        string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
-        if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
+        int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
 
-        
-        
+        //rows is cut off to MAX_rows
+        string url = requestUrl(xmin, xmax, ymin, ymax,
+                                conceptKeyword, networkIDs,
+                                beginDate, endDate) 
+                   + String.Format(@"&rows={0}", Max_rows);
+
+        SeriesRecordFull[] series = getSeriesFull(url);
+
+        return series;
+    }
+
+    /// <summary>
+    /// Added by Y.Xiao, Jan.2017 
+    /// GetCountOrData(string cvId)
+    /// 
+    /// input parameter: 
+    ///     "DataType" | "ValueType" | "SampleMedium" | "GeneralCategory"
+    /// 
+    /// output:
+    /// </summary>
+    /// 
+    //Jan.2019, YX, abstracted from GetSeriesCatalogForBox3()
+    private SeriesRecordFull[] getSeriesFull(string url)
+    {
         XDocument xDocument;
         SeriesRecordFull[] series = null;
         string response = null;
         using (WebClient client = new WebClient())
         {
             client.Encoding = Encoding.UTF8;
-            ////make initial call to test how many rows are returned:
-            
-            
-            //       + requestUrl(xmin, xmax, ymin, ymax,
-            //                    conceptKeyword, networkIDs,
-            //                    beginDate, endDate, 0);
-            //response = client.DownloadString(url);
-            //TextReader xmlReader = new StringReader(response);
-            //xDocument = XDocument.Load(xmlReader);
-            //var numFound = (from n in xDocument.Descendants("result")
-            //           where n.Attribute("name").Value == "response"
-            //           select n.Attribute("numFound").Value).FirstOrDefault();
-            //if (Convert.ToUInt32(numFound) > nrows) throw new OperationCanceledException("Exceeds max return value");
-            string url = endpoint
-                   + requestUrl(xmin, xmax, ymin, ymax,
-                                conceptKeyword, networkIDs,
-                                beginDate, endDate, nrows);
 
             response = client.DownloadString(url);
 
@@ -781,43 +809,91 @@ public class hiscentral : System.Web.Services.WebService
         return series;
     }
 
+    private long GetCount(string url) {
+        XDocument xDocument;
+        string response = null;
+        long nseries;
+        using (WebClient client = new WebClient())
+        {
+            response = client.DownloadString(url);
+            TextReader xmlReader = new StringReader(response);
+            xDocument = XDocument.Load(xmlReader);
+            var numFound = (from n in xDocument.Descendants("result")
+                            where n.Attribute("name").Value == "response"
+                            select n.Attribute("numFound").Value).FirstOrDefault().ToString();
+            nseries = long.Parse(numFound);
+        }
+        return nseries;
+    }
+
+
     /// <summary>
-    /// Added by Y.Xiao, Jan.2017 
-    /// GetControlledVocabulary(string cvId)
-    /// 
-    /// input parameter: 
-    ///     "DataType" | "ValueType" | "SampleMedium" | "GeneralCategory"
-    /// 
-    /// output:
-    ///     struct vocabulary
-    ///     <ControlledVocabularyList>
-    ///         <vocabularyId itemCount="15" name="DataType">
-    ///             <items>
-    ///                 <item>
-    ///                     <term>Derived Value</term>
-    ///                     <defintion>Value that is directly derived from an observation or set of observations</defintion>
-    ///                     <count>34000</count>
-    ///                 </item>
-    ///                 <item>
-    ///                 ...
-    ///                 </item>
-    ///             </items>
-    ///         </vocabularyId>
-    ///     </ControlledVocabularyList>
+    /// Jan. 2017, YX
+    /// non-nullable field: isCount, xmin,xmax,ymin,ymax, beginDate, endDate 
     /// </summary>
-    public struct vocabulary
-    {
-        public string vocabularyId;
-        public long itemCount;
-        public item[] items;
+    /// <param name="isCount"></param>
+    /// <param name="xmin"></param>
+    /// <param name="xmax"></param>
+    /// <param name="ymin"></param>
+    /// <param name="ymax"></param>
+    /// <param name="sampleMedium"></param>
+    /// <param name="dataType"></param>
+    /// <param name="valueType"></param>
+    /// <param name="generalCategory"></param>
+    /// <param name="conceptKeyword"></param>
+    /// <param name="networkIDs"></param>
+    /// <param name="beginDate"></param>
+    /// <param name="endDate"></param>
+    /// <returns></returns>
+    ///  
+    [WebMethod]
+    public CountOrData GetCountOrData(bool noData, bool getCV, double xmin, double xmax, double ymin, double ymax,
+                            string sampleMedium, string dataType, string valueType, string generalCategory,
+                            string conceptKeyword, string networkIDs,
+                            string beginDate, string endDate) {
+
+        CountOrData countOrData = new CountOrData(); 
+        long nseries;
+        int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
+        if (beginDate.Equals("")) beginDate = "01/01/1900";
+        if (endDate.Equals("")) endDate = "01/01/2100";
+
+        string urlbase = requestUrlwithCV(xmin, xmax, ymin, ymax,
+                     sampleMedium, dataType, valueType, generalCategory,
+                     conceptKeyword, networkIDs,
+                     beginDate, endDate);
+
+        string url = urlbase;
+        if(noData == true) url = urlbase + "&rows=0";
+
+        //Get total nseries
+        nseries = GetCount(url);
+        countOrData.nseries = nseries;
+
+        //returned series is limited by Max_rows
+        if(nseries > Max_rows) {
+            countOrData.message = "the number of series returned exceeds the maximum of " + Max_rows;
+            return countOrData;
+        }
+
+        if (getCV == true)
+        {
+            //string urlBaseQuery = urlbase + String.Format("&facet=true&facet.field={0}&facet.field={1}&facet.field={2}&facet.field={3}",
+            //                     "DataType", "ValueType", "SampleMedium", "GeneralCategory");
+            vocabulary[] cvlist = { GetControlledVocabulary("DataType", url),
+                                    GetControlledVocabulary("ValueType", url),
+                                    GetControlledVocabulary("SampleMedium", url),
+                                    GetControlledVocabulary("GeneralCategory", url)};
+            countOrData.controlledVocabulary = cvlist;
+        }
+
+        SeriesRecordFull[] series = getSeriesFull(url);
+        countOrData.series = series;
+
+        return countOrData;
     }
-     
-    public struct item
-    {
-        public string term;
-        public string definition;
-        public long count;
-    }
+
+
 
     //called by WriteXmlCvDefinition
     private Dictionary<string, string> GetCVfromSql(string cvId)
@@ -833,7 +909,6 @@ public class hiscentral : System.Web.Services.WebService
         using (con)
         {
             SqlDataAdapter da = new SqlDataAdapter(sql, con);
-
             da.Fill(ds, "rows");
 
             if (ds.Tables["rows"].Rows.Count >= 1)
@@ -843,12 +918,9 @@ public class hiscentral : System.Web.Services.WebService
                 {
                     DataRow dataRow = ds.Tables["rows"].Rows[i];
                     dict.Add(dataRow[0].ToString(), dataRow[1].ToString());
-                    
                 }
             }
-
             ds.Clear();
-
         }
         return dict;
     }
@@ -919,30 +991,25 @@ public class hiscentral : System.Web.Services.WebService
     return dictCvDefinition;
     }
 
-    [WebMethod]
-    public vocabulary GetControlledVocabulary(string cvId)
+    private vocabulary GetControlledVocabulary(string cvId, string urlBaseQuery)
     {
         string[] cvsearchable = { "DataType", "ValueType", "SampleMedium", "GeneralCategory" };
-
-        Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
         vocabulary cv = new vocabulary();
         if (!cvsearchable.Contains(cvId)) return cv;
 
-        cv.vocabularyId = cvId;
-
-        string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
-        if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
+        Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
 
         //archived under  Xml/cvdefinition.xml
         string XmlCvDefintion = Server.MapPath("~") + System.Configuration.ConfigurationManager.AppSettings["XmlCvDefinition"];
 
         //write Xml/cvdefinition.xml
+        //if the first time run this program, make sure
+        //     <add key="UpdateCvDefinition" value="true" />
         if (Boolean.Parse(System.Configuration.ConfigurationManager.AppSettings["UpdateCvDefinition"]))
             WriteXmlCvDefinition(XmlCvDefintion, cvsearchable);
 
         //read dictCv from Xml/cvdefinition.xml
         dictCvDefinition = ReadXmlCvDefinition(XmlCvDefintion, cvId);
-
 
         XDocument xDocument;
         string response = null;
@@ -952,13 +1019,13 @@ public class hiscentral : System.Web.Services.WebService
         {
             client.Encoding = Encoding.UTF8;
 
-            string url = endpoint + String.Format(@"select?q=*:*&facet=true&facet.field={0}&rows=0", cvId);
+            string url = urlBaseQuery + String.Format(@"&facet=true&facet.field={0}", cvId);
             response = client.DownloadString(url);
 
             TextReader xmlReader = new StringReader(response);
             xDocument = XDocument.Load(xmlReader);
 
-            var xnode = xDocument.Descendants("lst").Where (o => (string)o.Attribute("name") == cvId);
+            var xnode = xDocument.Descendants("lst").Where(o => (string)o.Attribute("name") == cvId);
 
             items =
             (from p in xnode.Descendants("int")
@@ -966,17 +1033,56 @@ public class hiscentral : System.Web.Services.WebService
              select new item()
              {
                  term = t,
-                 definition = dictCvDefinition.ContainsKey(t)? dictCvDefinition[t] : "undefined",
+                 definition = dictCvDefinition.ContainsKey(t) ? dictCvDefinition[t] : "undefined",
                  count = long.Parse(p.Value),
              }).ToArray();
 
         }
 
+        cv.vocabularyId = cvId;
         cv.items = items;
-        cv.itemCount = items.Length;        
-        
+        cv.itemCount = items.Length;
+
         return cv;
     }
+
+    /// <summary>
+    /// Added by Y.Xiao, Jan.2017 
+    /// GetControlledVocabulary(string cvId)
+    /// 
+    /// input parameter: 
+    ///     "DataType" | "ValueType" | "SampleMedium" | "GeneralCategory"
+    /// 
+    /// output:
+    ///     struct vocabulary
+    ///     <ControlledVocabularyList>
+    ///         <vocabularyId itemCount="15" name="DataType">
+    ///             <items>
+    ///                 <item>
+    ///                     <term>Derived Value</term>
+    ///                     <defintion>Value that is directly derived from an observation or set of observations</defintion>
+    ///                     <count>34000</count>
+    ///                 </item>
+    ///                 <item>
+    ///                 ...
+    ///                 </item>
+    ///             </items>
+    ///         </vocabularyId>
+    ///     </ControlledVocabularyList>
+    /// </summary>
+    [WebMethod]
+    public vocabulary GetControlledVocabulary(string cvId)
+    {
+        string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
+        if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
+
+        string urlBaseQuery = endpoint + "select?q=*:*&rows=0";
+
+        vocabulary cv = GetControlledVocabulary(cvId, urlBaseQuery);
+
+        return cv;
+    }
+
 
     /// <summary>
     /// added by Yaping, April, 2016
@@ -1093,11 +1199,58 @@ public class hiscentral : System.Web.Services.WebService
         return parameters;
     }
 
+    //Jan.2017, YX, called by requestUrlwithCV()
+    private string getQueryString(string field, string query)
+    {
+        string parameters;
+        query = query.Trim();
+
+        if (query.Equals(""))
+        {
+            parameters = String.Format(@"{0}:*", field);
+        }
+        else if (query.Length == 1)
+        {
+            parameters = String.Format("{0}:{1}", field, query);
+        }
+        else
+        {
+            string[] parts = query.Split(',');
+            parameters = String.Empty;
+            
+            for (int i = 0; i < parts.Length-1; i++)
+            {
+                parameters = parameters + String.Format(@"{0}:%22{1}%22+OR+", field, parts[i].Trim());  // "%2B";
+            }
+            parameters += String.Format(@"{0}:%22{1}%22", field, parts[parts.Length - 1].Trim()); 
+        }
+        return parameters;  
+    }
+
+
+    //Jan.2017, YX, based on requestUrl(), adding filter query by fields: 
+    //       SampleMedium, DataType, ValueType, GeneralCategory  
+    private string requestUrlwithCV(double xmin, double xmax, double ymin, double ymax,
+                        string sampleMedium, string dataType, string valueType, string generalCategory,
+                        string conceptKeyword, string networkIDs,
+                        string beginDate, string endDate)
+    {
+        string url = requestUrl(xmin, xmax, ymin, ymax, conceptKeyword, networkIDs, beginDate, endDate);
+
+        string qSampleMedium = getQueryString("SampleMedium", sampleMedium);
+        string qDataType = getQueryString("DataType", dataType);
+        string qValueType = getQueryString("ValueType", valueType);
+        string qGeneralCategory = getQueryString("GeneralCategory", generalCategory);
+        url = url + String.Format(@"&fq={0}&fq={1}&fq={2}&fq={3}", qSampleMedium, qDataType, qValueType, qGeneralCategory);
+
+        return url;
+    }
+
     ///modified by Yaping, Sep.2016 to take into accout the out-dated EndDateTime in the database for NASA networks
     ///added by Yaping, Dec.2015 to adjust Concept search
-    public string requestUrl(double xmin, double xmax, double ymin, double ymax,
+    private string requestUrl(double xmin, double xmax, double ymin, double ymax,
                               string conceptKeyword, string networkIDs,
-                          string beginDate, string endDate, int nrows)
+                          string beginDate, string endDate)
     {
         string parameters;
         string beginDate2, endDate2;
@@ -1106,6 +1259,10 @@ public class hiscentral : System.Web.Services.WebService
         string qLat, qLon;
         string keywordString = String.Empty;
         HashSet<string> keywordSet = new HashSet<string>();
+
+        //int nrows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
+        string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
+        if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
 
         //Create query parameter for networkID
         //Allowing for multiple networks
@@ -1171,19 +1328,20 @@ public class hiscentral : System.Web.Services.WebService
         //For nasa networks, EndDateTime is modified to NOW
         if (networkIDs.Contains("262") || networkIDs.Contains("267") || networkIDs.Contains("274"))
         {
-            parameters = String.Format(@"select?q=*:*&fq={0}&fq={1}&fq={2}&fq={3}&fq={4}&fq={5}&rows={6}",
-                    qNetworkIDs, qConcept, qLat, qLon, qBeginDTNASA, qEndDT, nrows);
+            parameters = String.Format(@"&fq={0}&fq={1}&fq={2}", qNetworkIDs, qBeginDTNASA, qEndDT);
         }
         else if (networkIDs.Equals("") || networkIDs.Contains("*"))
         {
             parameters = String.Format
-                (@"select?q=*:*&fq=(NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}%22)+OR+(*:* -NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{1}%22)&fq={2}&fq={3}&fq={4}&fq={5}&rows={6}&defType={7}",
-                    qBeginDTNASA, qBeginDT, qConcept, qLat, qLon, qEndDT, nrows, reqType);
+                (@"&fq=(NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}%22)+OR+(*:* -NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{1}%22)&fq={2}&defType={3}",
+                    qBeginDTNASA, qBeginDT, qEndDT, reqType);
         }
         else {
-            parameters = String.Format(@"select?q=*:*&fq={0}&fq={1}&fq={2}&fq={3}&fq={4}&fq={5}&rows={6}",
-                    qNetworkIDs, qConcept, qLat, qLon, qBeginDT, qEndDT, nrows);
+            parameters = String.Format(@"&fq={0}&fq={1}&fq={2}", qNetworkIDs, qBeginDT, qEndDT);
         }
+
+        parameters = endpoint + "select?q=*:*" + parameters + String.Format(@"&fq={0}&fq={1}&fq={2}", qConcept, qLat, qLon);
+
         return parameters;
     }
 
