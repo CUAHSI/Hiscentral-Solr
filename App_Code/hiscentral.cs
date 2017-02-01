@@ -100,29 +100,118 @@ public class hiscentral : System.Web.Services.WebService
         public string servURL;
     }
 
+    public struct SiteInfo
+    {
+        public string SiteName;
+        public string SiteCode;
+        public double Latitude;
+        public double Longitude;
+        public string HUC;
+        public int HUCnumeric;
+        public string servCode;
+        public string servURL;
+        public int count;
+        public string NetworkName;
+    }
+
+
+    [WebMethod]
+    public SiteInfo[] GetSites(double xmin, double xmax, double ymin, double ymax,
+                            string conceptKeyword, string networkIDs,
+                            string beginDate, string endDate)
+    {
+        int Max_sites = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnsites"]);
+
+        if (beginDate.Trim().Equals("")) beginDate = "01/01/1900";
+        if (endDate.Trim().Equals("")) endDate = "01/01/2100";
+        string baseUrl = requestUrl(xmin, xmax, ymin, ymax,
+                                conceptKeyword, networkIDs,
+                                beginDate, endDate);
+        string url = baseUrl
+                    + "&facet=true&facet.field=SiteCode"
+                    + String.Format(@"&rows={0}", 0);
+
+        SiteInfo[] sites;
+        XDocument xDocument;
+        string response = null;
+        using (WebClient client = new WebClient())
+        {
+            client.Encoding = Encoding.UTF8;
+            response = client.DownloadString(url);
+            TextReader xmlReader = new StringReader(response);
+            xDocument = XDocument.Load(xmlReader);
+
+            var xnode = xDocument.Descendants("lst").Where(o => (string)o.Attribute("name") == "SiteCode");
+
+            sites =
+            (from p in xnode.Descendants("int")
+             let t = p.Attribute("name").Value.ToString()
+             select new SiteInfo()
+             {
+                 SiteCode = t,
+                 count = int.Parse(p.Value),
+             }).ToArray();
+        }
+
+        using (WebClient client = new WebClient())
+        {
+            client.Encoding = Encoding.UTF8;
+
+            for (int i=0; i<sites.Length; i++) {
+                //only return 1 row for a sitecode
+                url = baseUrl + String.Format(@"&fq=SiteCode:%22{0}%22&rows={1}", sites[i].SiteCode, 1);
+                response = client.DownloadString(url);
+                TextReader xmlReader = new StringReader(response);
+                xDocument = XDocument.Load(xmlReader);
+
+                SiteInfo oneSite = new SiteInfo();
+                oneSite =
+                (from o in xDocument.Descendants("doc")
+                select new SiteInfo()
+                 {
+                    SiteCode = o.Elements("str").Single(x => x.Attribute("name").Value == "SiteCode").Value.ToString(), //???
+                    //SiteCode like 'EPA:SDWRAP:LOUCOTTMC01',  Sitename==NULL
+                    SiteName = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SiteName").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SiteName").Value.ToString(),
+                    servURL = o.Elements("str").Single(x => x.Attribute("name").Value == "ServiceWSDL").Value.ToString(),
+                    NetworkName = o.Elements("str").Single(x => x.Attribute("name").Value == "NetworkName").Value.ToString(),
+                    Latitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Latitude").Value.ToString()),
+                    Longitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Longitude").Value.ToString()),
+                 }).ToArray().FirstOrDefault();
+
+                sites[i].SiteName = oneSite.SiteName;
+                sites[i].servURL = oneSite.servURL;
+                sites[i].NetworkName = oneSite.NetworkName;
+                sites[i].Latitude = oneSite.Latitude;
+                sites[i].Longitude = oneSite.Longitude;
+            }
+        }
+
+        return sites;
+    }
+
     /*
-     * GetSitesInBox2
-     * 
-     * Input Parameters: 
-     * 
-     * 	Lat/Long Box, 
-     * 	Ontology Concept (optional), 
-     * 	// Begin Date (removed/ignored), 
-     * 	// End Date (removed/ignored), 
-     * 	// Number of Data Values (removed/ignored), 
-     * 	A comma separated list of NetworkIDs (Optional)
-     * 
-     * Returns: A list of all sites that fall within the bounding box, have variables that are mapped 
-     * to or fall under the Ontology Concept, overlap the date range of interest, have a minimum number 
-     * of data values, and are within the list of services.  
-     * Return Format: A list of WaterML siteInfo elements that includes enough information to identify 
-     * the service from which the sites were extracted and the HUC Code and HUC Name for the HUC in which 
-     * the sites are located (as a general rule, anywhere the siteInfo element is used it should contain  
-     * the HUC Code and HUC Name).
-     *
-     * COUCH: HUC Code and HUC Name are no longer returned. 
-     * COUCH: GetSitesInBox and GetSitesInBox2 differ only in input format. 
-     */
+    * GetSitesInBox2
+    * 
+    * Input Parameters: 
+    * 
+    * 	Lat/Long Box, 
+    * 	Ontology Concept (optional), 
+    * 	// Begin Date (removed/ignored), 
+    * 	// End Date (removed/ignored), 
+    * 	// Number of Data Values (removed/ignored), 
+    * 	A comma separated list of NetworkIDs (Optional)
+    * 
+    * Returns: A list of all sites that fall within the bounding box, have variables that are mapped 
+    * to or fall under the Ontology Concept, overlap the date range of interest, have a minimum number 
+    * of data values, and are within the list of services.  
+    * Return Format: A list of WaterML siteInfo elements that includes enough information to identify 
+    * the service from which the sites were extracted and the HUC Code and HUC Name for the HUC in which 
+    * the sites are located (as a general rule, anywhere the siteInfo element is used it should contain  
+    * the HUC Code and HUC Name).
+    *
+    * COUCH: HUC Code and HUC Name are no longer returned. 
+    * COUCH: GetSitesInBox and GetSitesInBox2 differ only in input format. 
+    */
 
     [WebMethod]
     public Site[] GetSitesInBox2(
@@ -607,6 +696,20 @@ public class hiscentral : System.Web.Services.WebService
         public string MethodDesc;
     }
 
+    public struct FacetField
+    {
+        public string facetName;
+        public long facetCount;
+        public FacetFieldValue[] facetValues;
+    }
+
+    public struct FacetFieldValue
+    {
+        public string term;
+        public string definition;
+        public long count;
+    }
+
     public struct vocabulary
     {
         public string vocabularyId;
@@ -624,7 +727,8 @@ public class hiscentral : System.Web.Services.WebService
     public struct CountOrData {
         public long nseries;
         public string message;
-        public vocabulary[] controlledVocabulary;
+        //public FacetField[] facet_fields;
+        public vocabulary[] facet_fields;
         public SeriesRecordFull[] series;
     }
 
@@ -721,7 +825,6 @@ public class hiscentral : System.Web.Services.WebService
                              string conceptKeyword, string networkIDs,
                          string beginDate, string endDate)
     {
-
         int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
 
         //rows is cut off to MAX_rows
@@ -831,23 +934,24 @@ public class hiscentral : System.Web.Services.WebService
     /// Jan. 2017, YX
     /// non-nullable field: isCount, xmin,xmax,ymin,ymax, beginDate, endDate 
     /// </summary>
-    /// <param name="isCount"></param>
-    /// <param name="xmin"></param>
-    /// <param name="xmax"></param>
-    /// <param name="ymin"></param>
-    /// <param name="ymax"></param>
-    /// <param name="sampleMedium"></param>
-    /// <param name="dataType"></param>
-    /// <param name="valueType"></param>
-    /// <param name="generalCategory"></param>
-    /// <param name="conceptKeyword"></param>
-    /// <param name="networkIDs"></param>
-    /// <param name="beginDate"></param>
-    /// <param name="endDate"></param>
+    /// <param name="noData">true|false</param>
+    /// <param name="getCV">true|false</param>
+    /// <param name="xmin">required</param>
+    /// <param name="xmax">required</param>
+    /// <param name="ymin">required</param>
+    /// <param name="ymax">required</param>
+    /// <param name="sampleMedium">default:*</param>
+    /// <param name="dataType">default:*</param>
+    /// <param name="valueType">default:*</param>
+    /// <param name="generalCategory">default:*</param>
+    /// <param name="conceptKeyword">default:*</param>
+    /// <param name="networkIDs">default:*</param>
+    /// <param name="beginDate">default:01/01/1900</param>
+    /// <param name="endDate">default:01/01/2100</param>
     /// <returns></returns>
     ///  
     [WebMethod]
-    public CountOrData GetCountOrData(bool noData, bool getCV, double xmin, double xmax, double ymin, double ymax,
+    public CountOrData GetCountOrData(bool noData, bool facet, double xmin, double xmax, double ymin, double ymax,
                             string sampleMedium, string dataType, string valueType, string generalCategory,
                             string conceptKeyword, string networkIDs,
                             string beginDate, string endDate) {
@@ -855,8 +959,10 @@ public class hiscentral : System.Web.Services.WebService
         CountOrData countOrData = new CountOrData(); 
         long nseries;
         int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
-        if (beginDate.Equals("")) beginDate = "01/01/1900";
-        if (endDate.Equals("")) endDate = "01/01/2100";
+
+
+        if (beginDate.Trim().Equals("")) beginDate = "01/01/1900";
+        if(endDate.Trim().Equals("")) endDate = "01/01/2100";
 
         string urlbase = requestUrlwithCV(xmin, xmax, ymin, ymax,
                      sampleMedium, dataType, valueType, generalCategory,
@@ -871,24 +977,27 @@ public class hiscentral : System.Web.Services.WebService
         countOrData.nseries = nseries;
 
         //returned series is limited by Max_rows
-        if(nseries > Max_rows) {
+        if(nseries > Max_rows && facet == false) {
             countOrData.message = "the number of series returned exceeds the maximum of " + Max_rows;
             return countOrData;
         }
 
-        if (getCV == true)
+        if (facet == true)
         {
-            //string urlBaseQuery = urlbase + String.Format("&facet=true&facet.field={0}&facet.field={1}&facet.field={2}&facet.field={3}",
-            //                     "DataType", "ValueType", "SampleMedium", "GeneralCategory");
-            vocabulary[] cvlist = { GetControlledVocabulary("DataType", url),
-                                    GetControlledVocabulary("ValueType", url),
-                                    GetControlledVocabulary("SampleMedium", url),
-                                    GetControlledVocabulary("GeneralCategory", url)};
-            countOrData.controlledVocabulary = cvlist;
+            int cvDefinitionSurpressed = 1;
+            vocabulary[] cvlist = { GetControlledVocabulary("DataType", url, cvDefinitionSurpressed),
+                                    GetControlledVocabulary("ValueType", url, cvDefinitionSurpressed),
+                                    GetControlledVocabulary("SampleMedium", url, cvDefinitionSurpressed),
+                                    GetControlledVocabulary("GeneralCategory", url, cvDefinitionSurpressed),
+                                    GetControlledVocabulary("NetworkID", url, cvDefinitionSurpressed)};
+            countOrData.facet_fields = cvlist;
         }
 
-        SeriesRecordFull[] series = getSeriesFull(url);
-        countOrData.series = series;
+        if (noData == false)
+        {
+            SeriesRecordFull[] series = getSeriesFull(url);
+            countOrData.series = series;
+        }
 
         return countOrData;
     }
@@ -991,25 +1100,32 @@ public class hiscentral : System.Web.Services.WebService
     return dictCvDefinition;
     }
 
-    private vocabulary GetControlledVocabulary(string cvId, string urlBaseQuery)
+    private vocabulary GetControlledVocabulary(string cvId, string urlBaseQuery, int cvDefinitionSurpressed)
     {
         string[] cvsearchable = { "DataType", "ValueType", "SampleMedium", "GeneralCategory" };
         vocabulary cv = new vocabulary();
-        if (!cvsearchable.Contains(cvId)) return cv;
+        if (! (cvsearchable.Contains(cvId) || cvId.Equals("NetworkID")) ) return cv;
 
+        //no CV definition returned
         Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
+        if (cvDefinitionSurpressed == 0)
+        {
 
-        //archived under  Xml/cvdefinition.xml
-        string XmlCvDefintion = Server.MapPath("~") + System.Configuration.ConfigurationManager.AppSettings["XmlCvDefinition"];
+            //archived under  Xml/cvdefinition.xml
+            string XmlCvDefintion = Server.MapPath("~") + System.Configuration.ConfigurationManager.AppSettings["XmlCvDefinition"];
 
-        //write Xml/cvdefinition.xml
-        //if the first time run this program, make sure
-        //     <add key="UpdateCvDefinition" value="true" />
-        if (Boolean.Parse(System.Configuration.ConfigurationManager.AppSettings["UpdateCvDefinition"]))
-            WriteXmlCvDefinition(XmlCvDefintion, cvsearchable);
+            //write Xml/cvdefinition.xml
+            //if the first time run this program, make sure
+            //     <add key="UpdateCvDefinition" value="true" />
+            if (Boolean.Parse(System.Configuration.ConfigurationManager.AppSettings["UpdateCvDefinition"]))
+                WriteXmlCvDefinition(XmlCvDefintion, cvsearchable);
 
-        //read dictCv from Xml/cvdefinition.xml
-        dictCvDefinition = ReadXmlCvDefinition(XmlCvDefintion, cvId);
+            //read dictCv from Xml/cvdefinition.xml
+            dictCvDefinition = ReadXmlCvDefinition(XmlCvDefintion, cvId);
+        }
+
+        string url = urlBaseQuery + String.Format(@"&facet=true&facet.field={0}", cvId);
+        if (cvId.Equals("NetworkID")) url = urlBaseQuery;
 
         XDocument xDocument;
         string response = null;
@@ -1018,25 +1134,24 @@ public class hiscentral : System.Web.Services.WebService
         using (WebClient client = new WebClient())
         {
             client.Encoding = Encoding.UTF8;
-
-            string url = urlBaseQuery + String.Format(@"&facet=true&facet.field={0}", cvId);
             response = client.DownloadString(url);
-
             TextReader xmlReader = new StringReader(response);
             xDocument = XDocument.Load(xmlReader);
 
             var xnode = xDocument.Descendants("lst").Where(o => (string)o.Attribute("name") == cvId);
 
+            //only return the items with facet_cout !=0
             items =
             (from p in xnode.Descendants("int")
              let t = p.Attribute("name").Value.ToString().ToLower()
+             where long.Parse(p.Value) != 0
              select new item()
              {
                  term = t,
-                 definition = dictCvDefinition.ContainsKey(t) ? dictCvDefinition[t] : "undefined",
+                 definition = cvDefinitionSurpressed == 1 || cvId.Equals("NetworkID")? 
+                            null: (dictCvDefinition.ContainsKey(t) ? dictCvDefinition[t] : "undefined"),
                  count = long.Parse(p.Value),
              }).ToArray();
-
         }
 
         cv.vocabularyId = cvId;
@@ -1047,7 +1162,7 @@ public class hiscentral : System.Web.Services.WebService
     }
 
     /// <summary>
-    /// Added by Y.Xiao, Jan.2017 
+    /// YX Jan.2017 
     /// GetControlledVocabulary(string cvId)
     /// 
     /// input parameter: 
@@ -1078,14 +1193,14 @@ public class hiscentral : System.Web.Services.WebService
 
         string urlBaseQuery = endpoint + "select?q=*:*&rows=0";
 
-        vocabulary cv = GetControlledVocabulary(cvId, urlBaseQuery);
+        vocabulary cv = GetControlledVocabulary(cvId, urlBaseQuery, 0);
 
         return cv;
     }
 
 
     /// <summary>
-    /// added by Yaping, April, 2016
+    /// YX Apr.2016
     /// Get all synonyms for input keywords
     /// </summary>
     public HashSet<string> getSearchableConcept(string[] keywords)
@@ -1122,7 +1237,7 @@ public class hiscentral : System.Web.Services.WebService
         return synonyms;
     }
 
-    //added by Yaping, Dec.2015
+    ///YX Dec.2015
     public string requestUrl_old(double xmin, double xmax, double ymin, double ymax,
                               string conceptKeyword, string networkIDs,
                           string beginDate, string endDate, int nrows)
@@ -1199,7 +1314,7 @@ public class hiscentral : System.Web.Services.WebService
         return parameters;
     }
 
-    //Jan.2017, YX, called by requestUrlwithCV()
+    ///YX Jan.2017, called by requestUrlwithCV()
     private string getQueryString(string field, string query)
     {
         string parameters;
@@ -1228,8 +1343,8 @@ public class hiscentral : System.Web.Services.WebService
     }
 
 
-    //Jan.2017, YX, based on requestUrl(), adding filter query by fields: 
-    //       SampleMedium, DataType, ValueType, GeneralCategory  
+    ///YX Jan.2017, add filter query by fields 
+    ///       SampleMedium, DataType, ValueType, GeneralCategory  
     private string requestUrlwithCV(double xmin, double xmax, double ymin, double ymax,
                         string sampleMedium, string dataType, string valueType, string generalCategory,
                         string conceptKeyword, string networkIDs,
@@ -1246,8 +1361,18 @@ public class hiscentral : System.Web.Services.WebService
         return url;
     }
 
-    ///modified by Yaping, Sep.2016 to take into accout the out-dated EndDateTime in the database for NASA networks
-    ///added by Yaping, Dec.2015 to adjust Concept search
+    ///YX Dec.2015, to adjust Concept search
+    ///
+    /// YX Sep.2016, to take into accout the out-dated EndDateTime in the database for NASA networks
+    ///
+    /// YX Jan.2017, 
+    /// to allow multiple conceptKeyword input: empty, "all"(case insensitive), "*", or '|' separated string
+    /// <param name="conceptKeyword">Precipitation | Temperature | Carbon, total</param>   
+    /// 
+    /// to allow multiple networkID input: empty, "all"(case insensitive), "*", 
+    ///                   or ',', ';', ' ' separated string
+    /// <param name="networkIDs">1, 3, 52</</param>
+    /// 
     private string requestUrl(double xmin, double xmax, double ymin, double ymax,
                               string conceptKeyword, string networkIDs,
                           string beginDate, string endDate)
@@ -1266,7 +1391,7 @@ public class hiscentral : System.Web.Services.WebService
 
         //Create query parameter for networkID
         //Allowing for multiple networks
-        if (networkIDs.Equals(""))
+        if (networkIDs.Equals("") || conceptKeyword.Equals("*"))
         {
             qNetworkIDs = @"NetworkID:*";
         }
@@ -1287,7 +1412,7 @@ public class hiscentral : System.Web.Services.WebService
         }
 
         //Create query parameter for conceptKeyword
-        if (conceptKeyword.Equals(""))
+        if (conceptKeyword.Equals("") || conceptKeyword.Equals("*"))
         {
             qConcept = @"ConceptKeyword:*";
         }
@@ -1297,12 +1422,16 @@ public class hiscentral : System.Web.Services.WebService
         }
         else
         {
-            //Get leaf concepts for input conceptKeyword
-            string[] subconceptList = getLeafKeywords(conceptKeyword);
-
-            foreach (var subKeyword in subconceptList)
+            string[] keywords = conceptKeyword.Split('|');
+            foreach (var keyword in keywords)
             {
-                keywordSet.Add(subKeyword);
+                //Get leaf concepts for input conceptKeyword
+                string[] subconceptList = getLeafKeywords(keyword.Trim());
+
+                foreach (var subKeyword in subconceptList)
+                {
+                    keywordSet.Add(subKeyword);
+                }
             }
 
             foreach (var keyword in keywordSet)
@@ -1336,7 +1465,8 @@ public class hiscentral : System.Web.Services.WebService
                 (@"&fq=(NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}%22)+OR+(*:* -NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{1}%22)&fq={2}&defType={3}",
                     qBeginDTNASA, qBeginDT, qEndDT, reqType);
         }
-        else {
+        else
+        {
             parameters = String.Format(@"&fq={0}&fq={1}&fq={2}", qNetworkIDs, qBeginDT, qEndDT);
         }
 
@@ -1344,7 +1474,6 @@ public class hiscentral : System.Web.Services.WebService
 
         return parameters;
     }
-
 
 
     ///Get leaf conceptKeywords in Ontology tree for input notion 
