@@ -1426,8 +1426,10 @@ public class hiscentral : System.Web.Services.WebService
             foreach (var keyword in keywords)
             {
                 //Get leaf concepts for input conceptKeyword
-                string[] subconceptList = getLeafKeywords(keyword.Trim());
+                string[] subconceptList = filterKeywords(getLeafKeywords(keyword.Trim()));
+                //string[] subconceptList = getLeafKeywords(keyword.Trim());
 
+                
                 foreach (var subKeyword in subconceptList)
                 {
                     keywordSet.Add(subKeyword);
@@ -1475,6 +1477,18 @@ public class hiscentral : System.Web.Services.WebService
         return parameters;
     }
 
+    private string[] filterKeywords(string[] allKeywords)
+    {
+        HashSet<string> keywordSet = new HashSet<string>();
+        string filename = Server.MapPath("~") + System.Configuration.ConfigurationManager.AppSettings["conceptKeywordsNow"];
+        var lines = File.ReadLines(filename);
+        foreach (var line in lines)
+        {
+            keywordSet.Add(line.ToString().Trim());
+        }
+        
+        return keywordSet.ToArray();
+    }
 
     ///Get leaf conceptKeywords in Ontology tree for input notion 
     ///Added by Yaping, April 2016
