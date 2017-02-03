@@ -1426,8 +1426,7 @@ public class hiscentral : System.Web.Services.WebService
             foreach (var keyword in keywords)
             {
                 //Get leaf concepts for input conceptKeyword
-                string[] subconceptList = filterKeywords(getLeafKeywords(keyword.Trim()));
-                //string[] subconceptList = getLeafKeywords(keyword.Trim());
+                string[] subconceptList = getLeafKeywords(keyword.Trim());
 
                 
                 foreach (var subKeyword in subconceptList)
@@ -1477,7 +1476,7 @@ public class hiscentral : System.Web.Services.WebService
         return parameters;
     }
 
-    private string[] filterKeywords(string[] allKeywords)
+    private HashSet<string> filterKeywords()
     {
         HashSet<string> keywordSet = new HashSet<string>();
         string filename = Server.MapPath("~") + System.Configuration.ConfigurationManager.AppSettings["conceptKeywordsNow"];
@@ -1487,7 +1486,7 @@ public class hiscentral : System.Web.Services.WebService
             keywordSet.Add(line.ToString().Trim());
         }
         
-        return keywordSet.ToArray();
+        return keywordSet;
     }
 
     ///Get leaf conceptKeywords in Ontology tree for input notion 
@@ -1949,8 +1948,9 @@ public class hiscentral : System.Web.Services.WebService
     }
 
     //updated by Yaping, May 2016: eliminate access to SQL database
+    //YX Feb.2016, get the tree for available conceptKeywords in current database
     [WebMethod]
-    public OntologyNode getOntologyTree(String conceptKeyword)
+    public OntologyNode getOntologyTree(String conceptKeyword, bool fullTree)
     {
         ServiceStats.AddCount("getOntologyTree");
 
@@ -1964,33 +1964,51 @@ public class hiscentral : System.Web.Services.WebService
         XElement root = XElement.Load(xmlOntology);
 
         OntologyNode wholeTree = new OntologyNode();
+        HashSet<string> keywordAvail;
 
         //get OntologyNode for the entire tree
-        wholeTree = getChild(ns, root);
+        if (fullTree == true)
+        {
+            //set available keyword set is set dummy as it is not needed in getChild() call
+            keywordAvail = new HashSet<string>();
+        }
+        else
+        {
+            //get the available keyword set
+            keywordAvail = filterKeywords();
+        }
+        
+        wholeTree = getChild(ns, root, fullTree, keywordAvail);
 
         if (conceptKeyword.Equals("Hydrosphere", StringComparison.InvariantCultureIgnoreCase)) return wholeTree;
 
         //if not the entire tree, select OntologyNode for the given conceptKeyword
         int isFound = 0;
+
         OntologyNode selectedNode = new OntologyNode();        
         selectChild(conceptKeyword, wholeTree, ref isFound, ref selectedNode);
         return selectedNode;
     }
 
+
+
     static void selectChild(String conceptKeyword, OntologyNode node, ref int isFound, ref OntologyNode selectedNode)
     {
-        
-        if(node.childNodes == null) return;
-        if (isFound == 1) return; 
-        
-        foreach(var childNode in node.childNodes) {
+
+        if (node.childNodes == null) return;
+        if (isFound == 1) return;
+
+        foreach (var childNode in node.childNodes)
+        {
             if (isFound == 1) break;
-            if (!conceptKeyword.Equals(childNode.keyword, StringComparison.InvariantCultureIgnoreCase)) {
+            if (!conceptKeyword.Equals(childNode.keyword, StringComparison.InvariantCultureIgnoreCase))
+            {
                 selectChild(conceptKeyword, childNode, ref isFound, ref selectedNode);
-                if(isFound == 1) break;                
+                if (isFound == 1) break;
             }
 
-            if(conceptKeyword.Equals(childNode.keyword, StringComparison.InvariantCultureIgnoreCase) && isFound == 0) {
+            if (conceptKeyword.Equals(childNode.keyword, StringComparison.InvariantCultureIgnoreCase) && isFound == 0)
+            {
                 isFound = 1;
                 selectedNode = childNode;
                 break;
@@ -2000,75 +2018,49 @@ public class hiscentral : System.Web.Services.WebService
         return;
     }
 
-    static OntologyNode getChild(XNamespace ns, XElement root)
+
+    static OntologyNode getChild(XNamespace ns, XElement root, bool fullTree, HashSet<string> keywordAvail)
     {
         OntologyNode rootNode = new OntologyNode();
         rootNode.conceptid = int.Parse(root.Element(ns + "conceptid").Value);
         rootNode.keyword = (string)root.Element(ns + "keyword").Value;
 
-        return getChildHelper(rootNode, ns, root.Element(ns + "childNodes"), rootNode);
+        return getChildHelper(rootNode, ns, root.Element(ns + "childNodes"), rootNode, fullTree, keywordAvail);
     }
 
-    static OntologyNode getChildHelper(OntologyNode rootNode, XNamespace ns, XElement node, OntologyNode parentNode)
+    static OntologyNode getChildHelper(OntologyNode rootNode, XNamespace ns, XElement node, OntologyNode parentNode,
+                                       bool fullTree, HashSet<string> keywordAvail)
     {
-
         if (node != null)
         {
             XElement parent = node;
             var childNodeList = (from o in node.Elements(ns + "OntologyNode")
                                  select o).ToList();
-            OntologyNode[] childNodes = new OntologyNode[childNodeList.Count];
+            List<OntologyNode> childNodes = new List<OntologyNode>(); // new OntologyNode[childNodeList.Count];
 
-            int i = 0;
             //loop through each child
             foreach (var childNode in childNodeList)
             {
-                childNodes[i].conceptid = int.Parse(childNode.Element(ns + "conceptid").Value);
-                childNodes[i].keyword = childNode.Element(ns + "keyword").Value;
-                childNodes[i] = getChildHelper(rootNode, ns, childNode.Element(ns + "childNodes"), childNodes[i]);
-                i++;
+                //if leaf node and the keyword is not found in the available keyword set, skip and not creating new OntologyNode
+                if ( fullTree == false &&
+                     !keywordAvail.Contains(childNode.Element(ns + "keyword").Value) &&
+                     childNode.Element(ns + "childNodes") == null)
+                    continue;
+
+                OntologyNode newNode = new OntologyNode();
+                newNode.conceptid = int.Parse(childNode.Element(ns + "conceptid").Value);
+                newNode.keyword = childNode.Element(ns + "keyword").Value;
+                newNode = getChildHelper(rootNode, ns, childNode.Element(ns + "childNodes"), newNode, fullTree, keywordAvail);
+
+                childNodes.Add(newNode);
             }
 
             //update its parent.childIDList
-            parentNode.childNodes = childNodes;
+            parentNode.childNodes = childNodes.ToArray();
         }
-
         return parentNode;
     }
 
-    //[WebMethod]
-    //public OntologyNode getOntologyTree(String conceptKeyword)
-    //{
-    //    ServiceStats.AddCount("getOntologyTree");
-
-    //    if (conceptKeyword == null || conceptKeyword.Equals("")) conceptKeyword = "Hydrosphere";
-    //    String sql = "SELECT conceptid, conceptName from v_ConceptsUnionSynonyms where conceptName  = @conceptKeyword";
-    //    DataSet ds = new DataSet();
-    //    String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
-    //    SqlConnection con = new SqlConnection(connect);
-
-    //    using (con)
-    //    {
-
-    //        SqlDataAdapter da = new SqlDataAdapter(sql, con);
-    //        da.SelectCommand.Parameters.AddWithValue("conceptKeyword", conceptKeyword);
-    //        da.Fill(ds, "concept");
-    //    }
-    //    con.Close();
-
-    //    int rowcount = ds.Tables["concept"].Rows.Count;
-    //    OntologyNode node = new OntologyNode();
-    //    if (rowcount > 0)
-    //    {
-    //        DataRow row = ds.Tables["concept"].Rows[0];
-
-    //        node.keyword = row[1].ToString();
-    //        node.conceptid = (int)row[0];
-    //        getChildNodes(node);
-    //    }
-    //    return node;
-
-    //}
 
     // COUCH: Obsoleted by code revision 2014/05/29
     //    private string getCommaString(String[] ss) {
