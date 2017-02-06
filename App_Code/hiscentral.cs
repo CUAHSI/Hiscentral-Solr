@@ -977,9 +977,9 @@ public class hiscentral : System.Web.Services.WebService
         countOrData.nseries = nseries;
 
         //returned series is limited by Max_rows
-        if(nseries > Max_rows && facet == false) {
+        if(nseries > Max_rows) {
             countOrData.message = "the number of series returned exceeds the maximum of " + Max_rows;
-            return countOrData;
+            if(facet == false) return countOrData;
         }
 
         if (facet == true)
@@ -995,6 +995,7 @@ public class hiscentral : System.Web.Services.WebService
 
         if (noData == false)
         {
+            url = urlbase + String.Format("&rows={0}", Max_rows);
             SeriesRecordFull[] series = getSeriesFull(url);
             countOrData.series = series;
         }
