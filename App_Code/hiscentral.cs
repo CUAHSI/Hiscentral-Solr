@@ -1948,10 +1948,17 @@ public class hiscentral : System.Web.Services.WebService
         return getOntologyKeywords();
     }
 
+    [WebMethod]
+    public OntologyNode getOntologyTree(String conceptKeyword)
+    {
+        //get the full tree
+        return getOntologywithOption(conceptKeyword, true);
+    }
+
     //updated by Yaping, May 2016: eliminate access to SQL database
     //YX Feb.2016, get the tree for available conceptKeywords in current database
     [WebMethod]
-    public OntologyNode getOntologyTree(String conceptKeyword, bool fullTree)
+    public OntologyNode getOntologywithOption(String conceptKeyword, bool fullTree)
     {
         ServiceStats.AddCount("getOntologyTree");
 
