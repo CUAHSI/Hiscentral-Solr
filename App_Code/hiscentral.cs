@@ -111,12 +111,11 @@ public class hiscentral : System.Web.Services.WebService
         public string servCode;
         public string servURL;
         public int count;
-        public string NetworkName;
     }
 
 
     [WebMethod]
-    public SiteInfo[] GetSites(double xmin, double xmax, double ymin, double ymax,
+    public Site[] GetSites(double xmin, double xmax, double ymin, double ymax,
                             string conceptKeyword, string networkIDs,
                             string beginDate, string endDate)
     {
@@ -128,12 +127,33 @@ public class hiscentral : System.Web.Services.WebService
                                 conceptKeyword, networkIDs,
                                 beginDate, endDate);
         string url = baseUrl
-                    + "&facet=true&facet.field=SiteCode"
-                    + String.Format(@"&rows={0}", 0);
+                    + "&fl=SiteName,SiteCode,NetworkName,ServiceWSDL,Latitude,Longitude"
+                    //&facet=true&facet.field=SiteCode"
+                    + String.Format(@"&rows={0}", Max_sites);
 
-        SiteInfo[] sites;
+        Site[] sites = null;
         XDocument xDocument;
         string response = null;
+
+        //using (WebClient client = new WebClient())
+        //{
+        //    client.Encoding = Encoding.UTF8;
+        //    response = client.DownloadString(url);
+        //    TextReader xmlReader = new StringReader(response);
+        //    xDocument = XDocument.Load(xmlReader);
+
+        //    var xnode = xDocument.Descendants("lst").Where(o => (string)o.Attribute("name") == "SiteCode");
+
+        //    sites =
+        //    (from p in xnode.Descendants("int")
+        //     let t = p.Attribute("name").Value.ToString()
+        //     select new SiteInfo()
+        //     {
+        //         SiteCode = t,
+        //         count = int.Parse(p.Value),
+        //     }).ToArray();
+        //}
+
         using (WebClient client = new WebClient())
         {
             client.Encoding = Encoding.UTF8;
@@ -141,49 +161,33 @@ public class hiscentral : System.Web.Services.WebService
             TextReader xmlReader = new StringReader(response);
             xDocument = XDocument.Load(xmlReader);
 
-            var xnode = xDocument.Descendants("lst").Where(o => (string)o.Attribute("name") == "SiteCode");
+            //var sitecodeList = from o in xDocument.Descendants("doc")
+            //        select o.Elements("str").Single(x => x.Attribute("name").Value == "SiteCode").Value.ToString();
+            //var sitecodeDistinctList = sitecodeList.GroupBy(s => s).Select(s => s.First());
 
-            sites =
-            (from p in xnode.Descendants("int")
-             let t = p.Attribute("name").Value.ToString()
-             select new SiteInfo()
+            var sitesUngrouped = (from o in xDocument.Descendants("doc")
+             select new Site()
              {
-                 SiteCode = t,
-                 count = int.Parse(p.Value),
+                 SiteCode = o.Elements("str").Single(x => x.Attribute("name").Value == "SiteCode").Value.ToString(),
+                 SiteName = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SiteName").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SiteName").Value.ToString(),
+                 servURL = o.Elements("str").Single(x => x.Attribute("name").Value == "ServiceWSDL").Value.ToString(),
+                 servCode = o.Elements("str").Single(x => x.Attribute("name").Value == "NetworkName").Value.ToString(),
+                 Latitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Latitude").Value.ToString()),
+                 Longitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Longitude").Value.ToString()),
              }).ToArray();
-        }
 
-        using (WebClient client = new WebClient())
-        {
-            client.Encoding = Encoding.UTF8;
+            sites = (from site in sitesUngrouped
+                     group site by site.SiteCode into g
+                     select new Site()
+                     {
+                         SiteCode = g.First().SiteCode,
+                         SiteName = g.First().SiteName,
+                         servURL = g.First().servURL,
+                         servCode = g.First().servCode,
+                         Latitude = g.First().Latitude,
+                         Longitude = g.First().Longitude,
 
-            for (int i=0; i<sites.Length; i++) {
-                //only return 1 row for a sitecode
-                url = baseUrl + String.Format(@"&fq=SiteCode:%22{0}%22&rows={1}", sites[i].SiteCode, 1);
-                response = client.DownloadString(url);
-                TextReader xmlReader = new StringReader(response);
-                xDocument = XDocument.Load(xmlReader);
-
-                SiteInfo oneSite = new SiteInfo();
-                oneSite =
-                (from o in xDocument.Descendants("doc")
-                select new SiteInfo()
-                 {
-                    SiteCode = o.Elements("str").Single(x => x.Attribute("name").Value == "SiteCode").Value.ToString(), //???
-                    //SiteCode like 'EPA:SDWRAP:LOUCOTTMC01',  Sitename==NULL
-                    SiteName = o.Descendants("str").Where(e => (string)e.Attribute("name") == "SiteName").Count() == 0 ? "" : o.Elements("str").Single(x => x.Attribute("name").Value == "SiteName").Value.ToString(),
-                    servURL = o.Elements("str").Single(x => x.Attribute("name").Value == "ServiceWSDL").Value.ToString(),
-                    NetworkName = o.Elements("str").Single(x => x.Attribute("name").Value == "NetworkName").Value.ToString(),
-                    Latitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Latitude").Value.ToString()),
-                    Longitude = double.Parse(o.Elements("double").Single(x => x.Attribute("name").Value == "Longitude").Value.ToString()),
-                 }).ToArray().FirstOrDefault();
-
-                sites[i].SiteName = oneSite.SiteName;
-                sites[i].servURL = oneSite.servURL;
-                sites[i].NetworkName = oneSite.NetworkName;
-                sites[i].Latitude = oneSite.Latitude;
-                sites[i].Longitude = oneSite.Longitude;
-            }
+                     }).ToArray(); 
         }
 
         return sites;
@@ -263,85 +267,95 @@ public class hiscentral : System.Web.Services.WebService
       * COUCH: GetSitesInBox and GetSitesInBox2 differ only in input formats.  
       */
 
+
+
     [WebMethod]
     public Site[] GetSitesInBox(Box box, string conceptKeyword, int[] networkIDs)
     {
 
-
-        string objecformat = "concept:{0},box({1},{2},{3},{4}),network({5}";
-        string methodName = "GetSitesInBox";
-        Stopwatch timer = new Stopwatch();
-        timer.Start();
-
-        String netString = "";
-        if (networkIDs != null && networkIDs.Length != 0)
-        {
-            for (int i = 0; i < networkIDs.Length; i++)
-            {
-                if (i > 0) netString += ",";
-                netString += networkIDs[i].ToString();
-            }
-        }
-
-        log.InfoFormat(logFormat, methodName, "Start", 0,
-           String.Format(objecformat,
-               conceptKeyword ?? String.Empty,
-               box.xmin, box.xmax, box.ymin, box.ymax,
-               netString));//Marie - Network String
-
-        string connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
-        SqlConnection con = new SqlConnection(connect);
-        // allow blank keywords through
-        Site[] sites = new Site[0];
-
-        String sql = "sp_getSitesInBox";
-
-
-        using (con)
-        {
-            SqlDataAdapter da = new SqlDataAdapter(sql, con);
-            da.SelectCommand.CommandTimeout = 300;
-            da.SelectCommand.CommandType = CommandType.StoredProcedure;
-
-            da.SelectCommand.Parameters.AddWithValue("@conceptName", conceptKeyword);
-            da.SelectCommand.Parameters.AddWithValue("@latmax", box.ymax);
-            da.SelectCommand.Parameters.AddWithValue("@latmin", box.ymin);
-            da.SelectCommand.Parameters.AddWithValue("@longmax", box.xmax);
-            da.SelectCommand.Parameters.AddWithValue("@longmin", box.xmin);
-            da.SelectCommand.Parameters.AddWithValue("@networks", netString);
-            DataSet ds = new DataSet();
-            da.Fill(ds, "SearchCatalog");
-
-            System.Data.DataRowCollection rows = ds.Tables["SearchCatalog"].Rows;
-            sites = new Site[rows.Count];
-            DataRow row;
-            for (int i = 0; i < rows.Count; i++)
-            {
-                row = rows[i];
-                sites[i] = new Site();
-                sites[i].SiteCode = row["SiteCode"] != null ? row["SiteCode"].ToString() : "";
-                sites[i].SiteName = row["SiteName"] != null ? row["SiteName"].ToString() : "";
-                sites[i].servURL = row["ServiceWSDL"] != null ? row["ServiceWSDL"].ToString() : "";
-                sites[i].servCode = row["NetworkName"] != null ? row["NetworkName"].ToString() : "";
-                //sites[i].HUCnumeric = row["HUCnumeric"] != null ? (int)row["HUCnumeric"] : 0;
-                sites[i].Latitude = (double)row["latitude"];
-                sites[i].Longitude = (double)row["longitude"];
-
-
-            }
-        }
-        log.InfoFormat(logFormat, methodName, "end", timer.ElapsedMilliseconds,
-         String.Format(objecformat,
-             conceptKeyword ?? String.Empty,
-             box.xmin, box.xmax, box.ymin, box.ymax,
-             netString));//marie-networkString
-        timer.Stop();
-        return sites;
+        return GetSites(box.xmin, box.xmax, box.ymin, box.ymax,
+                        conceptKeyword, string.Join(" ", networkIDs.Select(i => i.ToString()).ToArray()),
+                        " ", " ");
     }
 
-    #endregion
+        //public Site[] GetSitesInBox(Box box, string conceptKeyword, int[] networkIDs)
+        //{
 
-    #region variable queries:
+
+        //    string objecformat = "concept:{0},box({1},{2},{3},{4}),network({5}";
+        //    string methodName = "GetSitesInBox";
+        //    Stopwatch timer = new Stopwatch();
+        //    timer.Start();
+
+        //    String netString = "";
+        //    if (networkIDs != null && networkIDs.Length != 0)
+        //    {
+        //        for (int i = 0; i < networkIDs.Length; i++)
+        //        {
+        //            if (i > 0) netString += ",";
+        //            netString += networkIDs[i].ToString();
+        //        }
+        //    }
+
+        //    log.InfoFormat(logFormat, methodName, "Start", 0,
+        //       String.Format(objecformat,
+        //           conceptKeyword ?? String.Empty,
+        //           box.xmin, box.xmax, box.ymin, box.ymax,
+        //           netString));//Marie - Network String
+
+        //    string connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
+        //    SqlConnection con = new SqlConnection(connect);
+        //    // allow blank keywords through
+        //    Site[] sites = new Site[0];
+
+        //    String sql = "sp_getSitesInBox";
+
+
+        //    using (con)
+        //    {
+        //        SqlDataAdapter da = new SqlDataAdapter(sql, con);
+        //        da.SelectCommand.CommandTimeout = 300;
+        //        da.SelectCommand.CommandType = CommandType.StoredProcedure;
+
+        //        da.SelectCommand.Parameters.AddWithValue("@conceptName", conceptKeyword);
+        //        da.SelectCommand.Parameters.AddWithValue("@latmax", box.ymax);
+        //        da.SelectCommand.Parameters.AddWithValue("@latmin", box.ymin);
+        //        da.SelectCommand.Parameters.AddWithValue("@longmax", box.xmax);
+        //        da.SelectCommand.Parameters.AddWithValue("@longmin", box.xmin);
+        //        da.SelectCommand.Parameters.AddWithValue("@networks", netString);
+        //        DataSet ds = new DataSet();
+        //        da.Fill(ds, "SearchCatalog");
+
+        //        System.Data.DataRowCollection rows = ds.Tables["SearchCatalog"].Rows;
+        //        sites = new Site[rows.Count];
+        //        DataRow row;
+        //        for (int i = 0; i < rows.Count; i++)
+        //        {
+        //            row = rows[i];
+        //            sites[i] = new Site();
+        //            sites[i].SiteCode = row["SiteCode"] != null ? row["SiteCode"].ToString() : "";
+        //            sites[i].SiteName = row["SiteName"] != null ? row["SiteName"].ToString() : "";
+        //            sites[i].servURL = row["ServiceWSDL"] != null ? row["ServiceWSDL"].ToString() : "";
+        //            sites[i].servCode = row["NetworkName"] != null ? row["NetworkName"].ToString() : "";
+        //            //sites[i].HUCnumeric = row["HUCnumeric"] != null ? (int)row["HUCnumeric"] : 0;
+        //            sites[i].Latitude = (double)row["latitude"];
+        //            sites[i].Longitude = (double)row["longitude"];
+
+
+        //        }
+        //    }
+        //    log.InfoFormat(logFormat, methodName, "end", timer.ElapsedMilliseconds,
+        //     String.Format(objecformat,
+        //         conceptKeyword ?? String.Empty,
+        //         box.xmin, box.xmax, box.ymin, box.ymax,
+        //         netString));//marie-networkString
+        //    timer.Stop();
+        //    return sites;
+        //}
+
+        #endregion
+
+        #region variable queries:
     [WebMethod]
     public MappedVariable[] GetMappedVariables2(String conceptids, String Networkids)
     {
@@ -656,6 +670,7 @@ public class hiscentral : System.Web.Services.WebService
         public string genCategory;
         public string TimeSupport;
     }
+
     public struct SeriesRecordFull
     {
         public string ServCode;
@@ -710,25 +725,10 @@ public class hiscentral : System.Web.Services.WebService
         public long count;
     }
 
-    public struct vocabulary
-    {
-        public string vocabularyId;
-        public long itemCount;
-        public item[] items;
-    }
-
-    public struct item
-    {
-        public string term;
-        public string definition;
-        public long count;
-    }
-
     public struct CountOrData {
         public long nseries;
         public string message;
-        //public FacetField[] facet_fields;
-        public vocabulary[] facet_fields;
+        public FacetField[] facet_fields;
         public SeriesRecordFull[] series;
     }
 
@@ -838,16 +838,7 @@ public class hiscentral : System.Web.Services.WebService
         return series;
     }
 
-    /// <summary>
-    /// Added by Y.Xiao, Jan.2017 
-    /// GetCountOrData(string cvId)
-    /// 
-    /// input parameter: 
-    ///     "DataType" | "ValueType" | "SampleMedium" | "GeneralCategory"
-    /// 
-    /// output:
-    /// </summary>
-    /// 
+
     //Jan.2019, YX, abstracted from GetSeriesCatalogForBox3()
     private SeriesRecordFull[] getSeriesFull(string url)
     {
@@ -984,12 +975,14 @@ public class hiscentral : System.Web.Services.WebService
 
         if (facet == true)
         {
-            int cvDefinitionSurpressed = 1;
-            vocabulary[] cvlist = { GetControlledVocabulary("DataType", url, cvDefinitionSurpressed),
-                                    GetControlledVocabulary("ValueType", url, cvDefinitionSurpressed),
-                                    GetControlledVocabulary("SampleMedium", url, cvDefinitionSurpressed),
-                                    GetControlledVocabulary("GeneralCategory", url, cvDefinitionSurpressed),
-                                    GetControlledVocabulary("NetworkID", url, cvDefinitionSurpressed)};
+            bool isFacetDefinition = false;
+            FacetField[] cvlist = { GetFacetField("DataType", url, isFacetDefinition),
+                                    GetFacetField("ValueType", url, isFacetDefinition),
+                                    GetFacetField("SampleMedium", url, isFacetDefinition),
+                                    GetFacetField("GeneralCategory", url, isFacetDefinition),
+                                    GetFacetField("ConceptKeyword", url, isFacetDefinition),
+                                    GetFacetField("Organization", url, isFacetDefinition),
+                                    GetFacetField("NetworkID", url, isFacetDefinition)};
             countOrData.facet_fields = cvlist;
         }
 
@@ -1000,9 +993,92 @@ public class hiscentral : System.Web.Services.WebService
             countOrData.series = series;
         }
 
+
+        //temporally for Liza
+        //write:   ServCode,latitude,longitude,conceptKeyword, VarCode,VarName,Sitename,ValueCount,Organization
+
+        string outputFile = Server.MapPath("~") + "tempforLiza/output.txt";
+        FileStream fs = new FileStream(outputFile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+        StreamWriter writer = new StreamWriter(fs);
+        if (countOrData.series != null)
+        {
+            writer.WriteLine("ServCode;latitude;longitude;conceptKeyword;VarCode;VarName;datatype;valuetype,sample medium;Sitename;ValueCount;Organization");
+            foreach (var s in countOrData.series)
+            {
+                writer.WriteLine(String.Format("{0}; {1}; {2}; {3}; {4}; {5}; {6}; {7}; {8}; {9}; {10}; {11}", 
+                                s.ServCode, s.latitude, s.longitude, s.conceptKeyword, s.VarCode, s.VarName,
+                                s.datatype, s.valuetype, s.samplemedium,
+                                    s.Sitename, s.ValueCount, s.Organization));
+            }
+            writer.Flush();
+            writer.Close();
+        }
+
         return countOrData;
     }
 
+
+    private FacetField GetFacetField(string facetfield, string urlBaseQuery, bool isFacetDefinition)
+    {
+        string[] allfacetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory", "NetworkID",  "ConceptKeyword",
+                                    "Organization", "SiteCode", "VariableCode"};
+        string[] cvsearchable = { "DataType", "ValueType", "SampleMedium", "GeneralCategory" };
+        FacetField facet = new FacetField();
+        if (!(allfacetfields.Contains(facetfield))) return facet;
+
+        //no CV definition returned
+        Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
+        if (isFacetDefinition == true)
+        {
+
+            //archived under  Xml/cvdefinition.xml
+            string XmlCvDefintion = Server.MapPath("~") + System.Configuration.ConfigurationManager.AppSettings["XmlCvDefinition"];
+
+            //write Xml/cvdefinition.xml
+            //if the first time run this program, make sure
+            //     <add key="UpdateCvDefinition" value="true" />
+            if (Boolean.Parse(System.Configuration.ConfigurationManager.AppSettings["UpdateCvDefinition"]))
+                WriteXmlCvDefinition(XmlCvDefintion, cvsearchable);
+
+            //read dictCv from Xml/cvdefinition.xml
+            dictCvDefinition = ReadXmlCvDefinition(XmlCvDefintion, facetfield);
+        }
+
+        string url = urlBaseQuery + String.Format(@"&facet=true&facet.field={0}", facetfield);
+
+        XDocument xDocument;
+        string response = null;
+        FacetFieldValue[] facetvalues = null;
+
+        using (WebClient client = new WebClient())
+        {
+            client.Encoding = Encoding.UTF8;
+            response = client.DownloadString(url);
+            TextReader xmlReader = new StringReader(response);
+            xDocument = XDocument.Load(xmlReader);
+
+            var xnode = xDocument.Descendants("lst").Where(o => (string)o.Attribute("name") == facetfield);
+
+            //only return the items with facet_cout !=0
+            facetvalues =
+            (from p in xnode.Descendants("int")
+             let t = p.Attribute("name").Value.ToString().ToLower()
+             where long.Parse(p.Value) != 0
+             select new FacetFieldValue()
+             {
+                 term = t,
+                 definition = isFacetDefinition == false || !cvsearchable.Contains(facetfield) ?
+                            null : (dictCvDefinition.ContainsKey(t) ? dictCvDefinition[t] : "undefined"),
+                 count = long.Parse(p.Value),
+             }).ToArray();
+        }
+
+        facet.facetName = facetfield;
+        facet.facetCount = facetvalues.Length;
+        facet.facetValues = facetvalues;
+
+        return facet;
+    }
 
 
     //called by WriteXmlCvDefinition
@@ -1101,67 +1177,6 @@ public class hiscentral : System.Web.Services.WebService
     return dictCvDefinition;
     }
 
-    private vocabulary GetControlledVocabulary(string cvId, string urlBaseQuery, int cvDefinitionSurpressed)
-    {
-        string[] cvsearchable = { "DataType", "ValueType", "SampleMedium", "GeneralCategory" };
-        vocabulary cv = new vocabulary();
-        if (! (cvsearchable.Contains(cvId) || cvId.Equals("NetworkID")) ) return cv;
-
-        //no CV definition returned
-        Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
-        if (cvDefinitionSurpressed == 0)
-        {
-
-            //archived under  Xml/cvdefinition.xml
-            string XmlCvDefintion = Server.MapPath("~") + System.Configuration.ConfigurationManager.AppSettings["XmlCvDefinition"];
-
-            //write Xml/cvdefinition.xml
-            //if the first time run this program, make sure
-            //     <add key="UpdateCvDefinition" value="true" />
-            if (Boolean.Parse(System.Configuration.ConfigurationManager.AppSettings["UpdateCvDefinition"]))
-                WriteXmlCvDefinition(XmlCvDefintion, cvsearchable);
-
-            //read dictCv from Xml/cvdefinition.xml
-            dictCvDefinition = ReadXmlCvDefinition(XmlCvDefintion, cvId);
-        }
-
-        string url = urlBaseQuery + String.Format(@"&facet=true&facet.field={0}", cvId);
-        if (cvId.Equals("NetworkID")) url = urlBaseQuery;
-
-        XDocument xDocument;
-        string response = null;
-        item[] items = null;
-
-        using (WebClient client = new WebClient())
-        {
-            client.Encoding = Encoding.UTF8;
-            response = client.DownloadString(url);
-            TextReader xmlReader = new StringReader(response);
-            xDocument = XDocument.Load(xmlReader);
-
-            var xnode = xDocument.Descendants("lst").Where(o => (string)o.Attribute("name") == cvId);
-
-            //only return the items with facet_cout !=0
-            items =
-            (from p in xnode.Descendants("int")
-             let t = p.Attribute("name").Value.ToString().ToLower()
-             where long.Parse(p.Value) != 0
-             select new item()
-             {
-                 term = t,
-                 definition = cvDefinitionSurpressed == 1 || cvId.Equals("NetworkID")? 
-                            null: (dictCvDefinition.ContainsKey(t) ? dictCvDefinition[t] : "undefined"),
-                 count = long.Parse(p.Value),
-             }).ToArray();
-        }
-
-        cv.vocabularyId = cvId;
-        cv.items = items;
-        cv.itemCount = items.Length;
-
-        return cv;
-    }
-
     /// <summary>
     /// YX Jan.2017 
     /// GetControlledVocabulary(string cvId)
@@ -1187,14 +1202,14 @@ public class hiscentral : System.Web.Services.WebService
     ///     </ControlledVocabularyList>
     /// </summary>
     [WebMethod]
-    public vocabulary GetControlledVocabulary(string cvId)
+    public FacetField GetControlledVocabulary(string cvId)
     {
         string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
         if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
 
         string urlBaseQuery = endpoint + "select?q=*:*&rows=0";
 
-        vocabulary cv = GetControlledVocabulary(cvId, urlBaseQuery, 0);
+        FacetField cv = GetFacetField(cvId, urlBaseQuery, true);
 
         return cv;
     }
