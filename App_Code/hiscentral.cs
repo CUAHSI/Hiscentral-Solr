@@ -455,6 +455,71 @@ public class hiscentral : System.Web.Services.WebService
         public string conceptCode;
     }
 
+    /// <summary>
+    /// added by YX, Mar. 2017 to access solr database
+    /// </summary>
+    /// <param name="xmin"></param>
+    /// <param name="xmax"></param>
+    /// <param name="ymin"></param>
+    /// <param name="ymax"></param>
+    /// <param name="conceptKeyword"></param>
+    /// <param name="networkIDs"></param>
+    /// <param name="beginDate"></param>
+    /// <param name="endDate"></param>
+    /// <returns></returns>
+    [WebMethod]
+    public MappedVariable[] GetVariables(double xmin, double xmax, double ymin, double ymax,
+                            string conceptKeyword, string networkIDs,
+                            string beginDate, string endDate)
+    {
+        int Max_sites = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnvariables"]);
+
+        if (beginDate.Trim().Equals("")) beginDate = "01/01/1900";
+        if (endDate.Trim().Equals("")) endDate = "01/01/2100";
+        string baseUrl = requestUrl(xmin, xmax, ymin, ymax,
+                                conceptKeyword, networkIDs,
+                                beginDate, endDate);
+        string url = baseUrl
+                    + "&fl=VariableName,VariableCode,NetworkName,ServiceWSDL,ConceptKeyword"
+                    + String.Format(@"&rows={0}", Max_sites);
+
+        MappedVariable[] variables = null;
+        XDocument xDocument;
+        string response = null;
+
+        using (WebClient client = new WebClient())
+        {
+            client.Encoding = Encoding.UTF8;
+            response = client.DownloadString(url);
+            TextReader xmlReader = new StringReader(response);
+            xDocument = XDocument.Load(xmlReader);
+
+            var varsUngrouped = (from o in xDocument.Descendants("doc")
+                                  select new MappedVariable()
+                                  {
+                                      variableCode = o.Elements("str").Single(x => x.Attribute("name").Value == "VariableCode").Value.ToString(),
+                                      variableName = o.Descendants("str").Where(e => (string)e.Attribute("name") == "VariableName").Count() == 0 ?
+                                            "" : o.Elements("str").Single(x => x.Attribute("name").Value == "VariableName").Value.ToString(),
+                                      WSDL = o.Elements("str").Single(x => x.Attribute("name").Value == "ServiceWSDL").Value.ToString(),
+                                      servCode = o.Elements("str").Single(x => x.Attribute("name").Value == "NetworkName").Value.ToString(),
+                                      conceptKeyword = o.Elements("str").Single(x => x.Attribute("name").Value == "ConceptKeyword").Value.ToString(),
+                                  }).ToArray();
+
+            variables = (from v in varsUngrouped
+                     group v by v.variableCode into g
+                     select new MappedVariable()
+                     {
+                         variableCode = g.First().variableCode,
+                         variableName = g.First().variableName,
+                         WSDL = g.First().WSDL,
+                         servCode = g.First().servCode,
+                         conceptKeyword = g.First().conceptKeyword,
+                     }).ToArray();
+        }
+
+        return variables;
+    }
+
     #endregion
 
     # region ServiceInfo struct and queries
@@ -713,12 +778,13 @@ public class hiscentral : System.Web.Services.WebService
 
     public struct FacetField
     {
-        public string facetName;
-        public long facetCount;
-        public FacetFieldValue[] facetValues;
+        public string name;
+        public long itemCount;
+        public item[] items;
+        //public FacetFieldValue[] facetValues;
     }
 
-    public struct FacetFieldValue
+    public struct item
     {
         public string term;
         public string definition;
@@ -975,18 +1041,22 @@ public class hiscentral : System.Web.Services.WebService
 
         if (facet == true)
         {
+            string[] facetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory", "NetworkID",  "ConceptKeyword",
+                                    "Organization"};
             bool isFacetDefinition = false;
-            FacetField[] cvlist = { GetFacetField("DataType", url, isFacetDefinition),
-                                    GetFacetField("ValueType", url, isFacetDefinition),
-                                    GetFacetField("SampleMedium", url, isFacetDefinition),
-                                    GetFacetField("GeneralCategory", url, isFacetDefinition),
-                                    GetFacetField("ConceptKeyword", url, isFacetDefinition),
-                                    GetFacetField("Organization", url, isFacetDefinition),
-                                    GetFacetField("NetworkID", url, isFacetDefinition)};
-            countOrData.facet_fields = cvlist;
+            //FacetField[] 
+            countOrData.facet_fields = GetFacetField(facetfields, url, isFacetDefinition);
+
+            //FacetField[] cvlist = { GetFacetField("DataType", url, isFacetDefinition),
+            //                        GetFacetField("ValueType", url, isFacetDefinition),
+            //                        GetFacetField("SampleMedium", url, isFacetDefinition),
+            //                        GetFacetField("GeneralCategory", url, isFacetDefinition),
+            //                        GetFacetField("ConceptKeyword", url, isFacetDefinition),
+            //                        GetFacetField("Organization", url, isFacetDefinition),
+            //                        GetFacetField("NetworkID", url, isFacetDefinition)};
         }
 
-        if (noData == false)
+        if (noData == false && nseries <= Max_rows)
         {
             url = urlbase + String.Format("&rows={0}", Max_rows);
             SeriesRecordFull[] series = getSeriesFull(url);
@@ -997,39 +1067,36 @@ public class hiscentral : System.Web.Services.WebService
         //temporally for Liza
         //write:   ServCode,latitude,longitude,conceptKeyword, VarCode,VarName,Sitename,ValueCount,Organization
 
-        string outputFile = Server.MapPath("~") + "tempforLiza/output.txt";
-        FileStream fs = new FileStream(outputFile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
-        StreamWriter writer = new StreamWriter(fs);
-        if (countOrData.series != null)
-        {
-            writer.WriteLine("ServCode;latitude;longitude;conceptKeyword;VarCode;VarName;datatype;valuetype,sample medium;Sitename;ValueCount;Organization");
-            foreach (var s in countOrData.series)
-            {
-                writer.WriteLine(String.Format("{0}; {1}; {2}; {3}; {4}; {5}; {6}; {7}; {8}; {9}; {10}; {11}", 
-                                s.ServCode, s.latitude, s.longitude, s.conceptKeyword, s.VarCode, s.VarName,
-                                s.datatype, s.valuetype, s.samplemedium,
-                                    s.Sitename, s.ValueCount, s.Organization));
-            }
-            writer.Flush();
-            writer.Close();
-        }
+        //string outputFile = Server.MapPath("~") + "tempforLiza/output.txt";
+        //FileStream fs = new FileStream(outputFile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+        //StreamWriter writer = new StreamWriter(fs);
+        //if (countOrData.series != null)
+        //{
+        //    writer.WriteLine("ServCode;latitude;longitude;conceptKeyword;VarCode;VarName;datatype;valuetype,sample medium;Sitename;ValueCount;Organization");
+        //    foreach (var s in countOrData.series)
+        //    {
+        //        writer.WriteLine(String.Format("{0}; {1}; {2}; {3}; {4}; {5}; {6}; {7}; {8}; {9}; {10}; {11}", 
+        //                        s.ServCode, s.latitude, s.longitude, s.conceptKeyword, s.VarCode, s.VarName,
+        //                        s.datatype, s.valuetype, s.samplemedium,
+        //                            s.Sitename, s.ValueCount, s.Organization));
+        //    }
+        //    writer.Flush();
+        //    writer.Close();
+        //}
 
         return countOrData;
     }
 
-
-    private FacetField GetFacetField(string facetfield, string urlBaseQuery, bool isFacetDefinition)
+    private FacetField[] GetFacetField(string[] facetfields, string urlBaseQuery, bool isFacetDefinition)
     {
-        string[] allfacetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory", "NetworkID",  "ConceptKeyword",
-                                    "Organization", "SiteCode", "VariableCode"};
         string[] cvsearchable = { "DataType", "ValueType", "SampleMedium", "GeneralCategory" };
-        FacetField facet = new FacetField();
-        if (!(allfacetfields.Contains(facetfield))) return facet;
 
         //no CV definition returned
         Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
         if (isFacetDefinition == true)
         {
+            //currently facetfields should have one element only when isFacetDefition=true
+            string facetfield = facetfields[0];
 
             //archived under  Xml/cvdefinition.xml
             string XmlCvDefintion = Server.MapPath("~") + System.Configuration.ConfigurationManager.AppSettings["XmlCvDefinition"];
@@ -1044,11 +1111,19 @@ public class hiscentral : System.Web.Services.WebService
             dictCvDefinition = ReadXmlCvDefinition(XmlCvDefintion, facetfield);
         }
 
-        string url = urlBaseQuery + String.Format(@"&facet=true&facet.field={0}", facetfield);
+        //03/30/2017, add rows=0
+        // multiple facet fields
+        string facetQuery = null;
+        foreach(string q in facetfields)
+        {
+            facetQuery += String.Format(@"&facet.field={0}", q);
+        }
+
+        string url = urlBaseQuery + "&rows=0&facet=true" + facetQuery;
 
         XDocument xDocument;
         string response = null;
-        FacetFieldValue[] facetvalues = null;
+        item[] facetvalues = null;
 
         using (WebClient client = new WebClient())
         {
@@ -1057,6 +1132,13 @@ public class hiscentral : System.Web.Services.WebService
             TextReader xmlReader = new StringReader(response);
             xDocument = XDocument.Load(xmlReader);
 
+        }
+
+        List<FacetField> facetList = new List<FacetField>();
+        foreach (string facetfield in facetfields)
+        {
+            FacetField facet = new FacetField();
+
             var xnode = xDocument.Descendants("lst").Where(o => (string)o.Attribute("name") == facetfield);
 
             //only return the items with facet_cout !=0
@@ -1064,21 +1146,86 @@ public class hiscentral : System.Web.Services.WebService
             (from p in xnode.Descendants("int")
              let t = p.Attribute("name").Value.ToString().ToLower()
              where long.Parse(p.Value) != 0
-             select new FacetFieldValue()
+             select new item()
              {
                  term = t,
                  definition = isFacetDefinition == false || !cvsearchable.Contains(facetfield) ?
                             null : (dictCvDefinition.ContainsKey(t) ? dictCvDefinition[t] : "undefined"),
                  count = long.Parse(p.Value),
              }).ToArray();
+
+            facet.name = facetfield;
+            facet.itemCount = facetvalues.Length;
+            facet.items = facetvalues;
+
+            facetList.Add(facet);
         }
 
-        facet.facetName = facetfield;
-        facet.facetCount = facetvalues.Length;
-        facet.facetValues = facetvalues;
-
-        return facet;
+        return facetList.ToArray();
     }
+
+    //private FacetField GetFacetField(string facetfield, string urlBaseQuery, bool isFacetDefinition)
+    //{
+    //    string[] allfacetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory", "NetworkID",  "ConceptKeyword",
+    //                                "Organization", "SiteCode", "VariableCode"};
+    //    string[] cvsearchable = { "DataType", "ValueType", "SampleMedium", "GeneralCategory" };
+    //    FacetField facet = new FacetField();
+    //    if (!(allfacetfields.Contains(facetfield))) return facet;
+
+    //    //no CV definition returned
+    //    Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
+    //    if (isFacetDefinition == true)
+    //    {
+
+    //        //archived under  Xml/cvdefinition.xml
+    //        string XmlCvDefintion = Server.MapPath("~") + System.Configuration.ConfigurationManager.AppSettings["XmlCvDefinition"];
+
+    //        //write Xml/cvdefinition.xml
+    //        //if the first time run this program, make sure
+    //        //     <add key="UpdateCvDefinition" value="true" />
+    //        if (Boolean.Parse(System.Configuration.ConfigurationManager.AppSettings["UpdateCvDefinition"]))
+    //            WriteXmlCvDefinition(XmlCvDefintion, cvsearchable);
+
+    //        //read dictCv from Xml/cvdefinition.xml
+    //        dictCvDefinition = ReadXmlCvDefinition(XmlCvDefintion, facetfield);
+    //    }
+
+    //    //03/30/2017, add rows=0
+    //    string url = urlBaseQuery + String.Format(@"&rows=0&&facet=true&facet.field={0}", facetfield);
+
+    //    XDocument xDocument;
+    //    string response = null;
+    //    item[] facetvalues = null;
+
+    //    using (WebClient client = new WebClient())
+    //    {
+    //        client.Encoding = Encoding.UTF8;
+    //        response = client.DownloadString(url);
+    //        TextReader xmlReader = new StringReader(response);
+    //        xDocument = XDocument.Load(xmlReader);
+
+    //        var xnode = xDocument.Descendants("lst").Where(o => (string)o.Attribute("name") == facetfield);
+
+    //        //only return the items with facet_cout !=0
+    //        facetvalues =
+    //        (from p in xnode.Descendants("int")
+    //         let t = p.Attribute("name").Value.ToString().ToLower()
+    //         where long.Parse(p.Value) != 0
+    //         select new item()
+    //         {
+    //             term = t,
+    //             definition = isFacetDefinition == false || !cvsearchable.Contains(facetfield) ?
+    //                        null : (dictCvDefinition.ContainsKey(t) ? dictCvDefinition[t] : "undefined"),
+    //             count = long.Parse(p.Value),
+    //         }).ToArray();
+    //    }
+
+    //    facet.name = facetfield;
+    //    facet.itemCount = facetvalues.Length;
+    //    facet.items = facetvalues;
+
+    //    return facet;
+    //}
 
 
     //called by WriteXmlCvDefinition
@@ -1207,11 +1354,12 @@ public class hiscentral : System.Web.Services.WebService
         string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
         if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
 
-        string urlBaseQuery = endpoint + "select?q=*:*&rows=0";
+        string urlBaseQuery = endpoint + "select?q=*:*";
 
-        FacetField cv = GetFacetField(cvId, urlBaseQuery, true);
+        string[] cvStr = { cvId };
+        FacetField[] cv = GetFacetField(cvStr, urlBaseQuery, true);
 
-        return cv;
+        return cv[0];
     }
 
 

@@ -83,7 +83,12 @@ public partial class admin_network : System.Web.UI.Page
   }
   protected void btnHarvest_Click(object sender, EventArgs e)
   {
-    Response.Redirect("harvest.aspx");
+        string networkid = "";
+        if (Session["NetworkID"] != null)
+        {
+            networkid = Session["NetworkID"].ToString();
+        }
+        Response.Redirect("http://dev-harvester.cloudapp.net/update.php?id="+ networkid);
   }
   protected void btnStats_Click(object sender, EventArgs e)
   {
