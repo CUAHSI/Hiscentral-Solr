@@ -820,17 +820,16 @@ public class hiscentral : System.Web.Services.WebService
                               string conceptKeyword, String networkIDs,
                           string beginDate, string endDate)
     {
-        int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
-        //string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
-        //if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
-        
+        SeriesRecord[] series = null;
+        if (!validLatLonDateTime(xmin, xmax, ymin, ymax, beginDate, endDate)) return series;
+
+        int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);      
         string url = requestUrl(xmin, xmax, ymin, ymax,
                                 conceptKeyword, networkIDs,
                                 Uri.UnescapeDataString(beginDate), Uri.UnescapeDataString(endDate))
-        +String.Format(@"&rows={0}", Max_rows);
+                    +String.Format(@"&rows={0}", Max_rows);
 
         XDocument xDocument;
-        SeriesRecord[] series = null;
         string response = null;
         using (WebClient client = new WebClient())
         {
@@ -869,6 +868,12 @@ public class hiscentral : System.Web.Services.WebService
              }).ToArray();
         }
 
+        //--------------------------------------------------
+        //modify endDateTime for NASA networks
+        //assuming NASA data is updated 2 days ago until NOW
+        //--------------------------------------------------
+        series = updateSeries_NasaEndDT(series, endDate);
+
         return series;
     }
 
@@ -891,6 +896,9 @@ public class hiscentral : System.Web.Services.WebService
                              string conceptKeyword, string networkIDs,
                          string beginDate, string endDate)
     {
+        SeriesRecordFull[] series = null;
+        if (!validLatLonDateTime(xmin, xmax, ymin, ymax, beginDate, endDate)) return series;
+
         int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
 
         //rows is cut off to MAX_rows
@@ -899,7 +907,13 @@ public class hiscentral : System.Web.Services.WebService
                                 beginDate, endDate) 
                    + String.Format(@"&rows={0}", Max_rows);
 
-        SeriesRecordFull[] series = getSeriesFull(url);
+        series = getSeriesFull(url);
+
+        //--------------------------------------------------
+        //modify endDateTime for NASA networks
+        //assuming NASA data is updated 2 days ago until NOW
+        //--------------------------------------------------
+        series = updateSeriesFull_NasaEndDT(series, endDate);
 
         return series;
     }
@@ -986,6 +1000,26 @@ public class hiscentral : System.Web.Services.WebService
         return nseries;
     }
 
+    private bool validLatLonDateTime(double xmin, double xmax, double ymin, double ymax, string beginDate, string endDate)
+    {
+        try
+        {
+            if (xmin > xmax || ymin > ymax)
+                throw new InvalidOperationException("xmin should be less/equal than xmax | ymin should be less/equal than ymax");
+
+            DateTime beginDT_query;
+            DateTime.TryParse(beginDate, out beginDT_query);
+            DateTime endDT_query;
+            DateTime.TryParse(endDate, out endDT_query);
+            if (DateTime.Compare(beginDT_query, endDT_query) > 0)
+                throw new InvalidOperationException("beginDateTime shoud be prior to endDateTime");
+        } catch (FormatException e)
+        {
+            throw new FormatException();
+        }
+
+        return true;
+    }
 
     /// <summary>
     /// Jan. 2017, YX 
@@ -1038,21 +1072,13 @@ public class hiscentral : System.Web.Services.WebService
                             string conceptKeyword, string networkIDs,
                             string beginDate, string endDate) {
 
+        CountOrData countOrData = new CountOrData();
+
         //-------------------------
         //Validate input parameters
         //-------------------------
-        if (xmin > xmax || ymin > ymax)
-            throw new InvalidOperationException("xmin should be less/equal than xmax | ymin should be less/equal than ymax");
+        if (!validLatLonDateTime(xmin, xmax, ymin, ymax, beginDate, endDate)) return countOrData;
 
-        DateTime beginDT_query;
-        DateTime.TryParse(beginDate, out beginDT_query);
-        DateTime endDT_query;
-        DateTime.TryParse(endDate, out endDT_query);
-        if (DateTime.Compare(beginDT_query, endDT_query) > 0)
-            throw new InvalidOperationException("beginDateTime shoud be prior to endDateTime"); 
-
-
-        CountOrData countOrData = new CountOrData(); 
         long nseries;
         int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
 
@@ -1095,7 +1121,7 @@ public class hiscentral : System.Web.Services.WebService
             //modify endDateTime for NASA networks
             //assuming NASA data is updated 2 days ago until NOW
             //--------------------------------------------------
-            countOrData.series = updateNasaEndDT(series, endDate);
+            countOrData.series = updateSeriesFull_NasaEndDT(series, endDate);
         }
 
 
@@ -1122,22 +1148,50 @@ public class hiscentral : System.Web.Services.WebService
         return countOrData;
     }
 
-    private SeriesRecordFull[] updateNasaEndDT(SeriesRecordFull[] series, string endDate)
+
+    private SeriesRecord[] updateSeries_NasaEndDT(SeriesRecord[] series, string endDate)
     {
         DateTime endDT_query;
         DateTime.TryParse(endDate, out endDT_query);
 
         for (int i = 0; i < series.Length; i++)
         {
-            DateTime endDT_stored;
-            DateTime.TryParse(series[i].endDate, out endDT_stored);
-            //query time ends after stored time
-            if (DateTime.Compare(endDT_query, endDT_stored) > 0)
-                //assuming NASA data is updated 2 days ago until NOW
-                if ((DateTime.Today - endDT_query).TotalDays > 1)
-                    series[i].endDate = endDT_query.ToString("yyyy-MM-ddThh:mm:ssZ");
-                else
-                    series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
+            series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
+
+            //DateTime endDT_stored;
+            //DateTime.TryParse(series[i].endDate, out endDT_stored);
+
+            ////query time ends after stored time
+            //if (DateTime.Compare(endDT_query, endDT_stored) > 0)
+            //    //assuming NASA data is updated 2 days ago until NOW
+            //    if ((DateTime.Today - endDT_query).TotalDays > 1)
+            //        series[i].endDate = endDT_query.ToString("yyyy-MM-ddThh:mm:ssZ");
+            //    else
+            //        series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
+        }
+
+        return series;
+    }
+
+
+    private SeriesRecordFull[] updateSeriesFull_NasaEndDT(SeriesRecordFull[] series, string endDate)
+    {
+        DateTime endDT_query;
+        DateTime.TryParse(endDate, out endDT_query);
+
+        for (int i = 0; i < series.Length; i++)
+        {
+            series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
+
+            //DateTime endDT_stored;
+            //DateTime.TryParse(series[i].endDate, out endDT_stored);
+            ////query time ends after stored time
+            //if (DateTime.Compare(endDT_query, endDT_stored) > 0)
+            //    //assuming NASA data is updated 2 days ago until NOW
+            //    if ((DateTime.Today - endDT_query).TotalDays > 1)
+            //        series[i].endDate = endDT_query.ToString("yyyy-MM-ddThh:mm:ssZ");
+            //    else
+            //        series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
         }
 
         return series;
