@@ -988,24 +988,49 @@ public class hiscentral : System.Web.Services.WebService
 
 
     /// <summary>
-    /// Jan. 2017, YX
-    /// non-nullable field: isCount, xmin,xmax,ymin,ymax, beginDate, endDate 
-    /// </summary>
+    /// Jan. 2017, YX 
+    /// required parameters:
     /// <param name="noData">true|false</param>
     /// <param name="getCV">true|false</param>
-    /// <param name="xmin">required</param>
-    /// <param name="xmax">required</param>
-    /// <param name="ymin">required</param>
-    /// <param name="ymax">required</param>
-    /// <param name="sampleMedium">default:*</param>
-    /// <param name="dataType">default:*</param>
-    /// <param name="valueType">default:*</param>
-    /// <param name="generalCategory">default:*</param>
-    /// <param name="conceptKeyword">default:*</param>
-    /// <param name="networkIDs">default:*</param>
-    /// <param name="beginDate">default:01/01/1900</param>
-    /// <param name="endDate">default:01/01/2100</param>
-    /// <returns></returns>
+    /// <param name="xmin">-180.</param>
+    /// <param name="xmax">180.</param>
+    /// <param name="ymin">-90</param>
+    /// <param name="ymax">90</param>
+    /// 
+    /// default all: blank
+    /// <param name="sampleMedium"></param>
+    /// <param name="dataType"></param>
+    /// <param name="valueType"></param>
+    /// <param name="generalCategory"></param>
+    ///
+    /// allowed conceptKeyword input, case insensitive
+    /// <param name="conceptKeyword"></param>
+    /// <param name="conceptKeyword">*</param>
+    /// <param name="conceptKeyword">all</param>
+    ///    '|' separated string
+    /// <param name="conceptKeyword">Precipitation | Temperature | Carbon, total</param>   
+    /// 
+    /// allowed networkID input, case insensitive
+    /// <param name="networkIDs"></param>
+    /// <param name="networkIDs">all</param>  
+    /// <param name="networkIDs">*</param>
+    /// <param name="networkIDs"></param>
+    /// <param name="networkIDs">1, 3, 52</param>   
+    /// <param name="networkIDs">1 3 52</param>
+    ///  
+    /// allowed datetime format
+    /// <param name="beginDate">2011-05-21T00:00:00Z</param>
+    /// <param name="beginDate">2011-05-21 09:30</param>
+    /// <param name="beginDate">2011-05-21</param>
+    /// <param name="beginDate">3/20/2000 8:20</param>
+    /// <param name="beginDate">3/9/2000 8:20:30</param>
+    /// <param name="beginDate">05/21/2011</param>
+    /// <param name="beginDate">5/21/2011</param>
+    /// 
+    /// default beginDate/endDate
+    /// <param name="beginDate"></param>  default: 1900-01-01
+    /// <param name="endDate"></param>    default: 2100-01-01 
+    /// </summary>
     ///  
     [WebMethod]
     public CountOrData GetCountOrData(bool noData, bool facet, double xmin, double xmax, double ymin, double ymax,
@@ -1013,13 +1038,26 @@ public class hiscentral : System.Web.Services.WebService
                             string conceptKeyword, string networkIDs,
                             string beginDate, string endDate) {
 
+        //-------------------------
+        //Validate input parameters
+        //-------------------------
+        if (xmin > xmax || ymin > ymax)
+            throw new InvalidOperationException("xmin should be less/equal than xmax | ymin should be less/equal than ymax");
+
+        DateTime beginDT_query;
+        DateTime.TryParse(beginDate, out beginDT_query);
+        DateTime endDT_query;
+        DateTime.TryParse(endDate, out endDT_query);
+        if (DateTime.Compare(beginDT_query, endDT_query) > 0)
+            throw new InvalidOperationException("beginDateTime shoud be prior to endDateTime"); 
+
+
         CountOrData countOrData = new CountOrData(); 
         long nseries;
         int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
 
-
-        if (beginDate.Trim().Equals("")) beginDate = "01/01/1900";
-        if(endDate.Trim().Equals("")) endDate = "01/01/2100";
+        //object xmin2 = (object)xmin;
+        //if(xmin2 == null) xmin = double.Pa;
 
         string urlbase = requestUrlwithCV(xmin, xmax, ymin, ymax,
                      sampleMedium, dataType, valueType, generalCategory,
@@ -1041,26 +1079,23 @@ public class hiscentral : System.Web.Services.WebService
 
         if (facet == true)
         {
-            string[] facetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory", "NetworkID",  "ConceptKeyword",
-                                    "Organization"};
+            string[] facetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory",
+                                    "NetworkID",  "ConceptKeyword", "Organization"};
             bool isFacetDefinition = false;
             //FacetField[] 
             countOrData.facet_fields = GetFacetField(facetfields, url, isFacetDefinition);
-
-            //FacetField[] cvlist = { GetFacetField("DataType", url, isFacetDefinition),
-            //                        GetFacetField("ValueType", url, isFacetDefinition),
-            //                        GetFacetField("SampleMedium", url, isFacetDefinition),
-            //                        GetFacetField("GeneralCategory", url, isFacetDefinition),
-            //                        GetFacetField("ConceptKeyword", url, isFacetDefinition),
-            //                        GetFacetField("Organization", url, isFacetDefinition),
-            //                        GetFacetField("NetworkID", url, isFacetDefinition)};
         }
 
         if (noData == false && nseries <= Max_rows)
         {
             url = urlbase + String.Format("&rows={0}", Max_rows);
             SeriesRecordFull[] series = getSeriesFull(url);
-            countOrData.series = series;
+
+            //--------------------------------------------------
+            //modify endDateTime for NASA networks
+            //assuming NASA data is updated 2 days ago until NOW
+            //--------------------------------------------------
+            countOrData.series = updateNasaEndDT(series, endDate);
         }
 
 
@@ -1086,6 +1121,314 @@ public class hiscentral : System.Web.Services.WebService
 
         return countOrData;
     }
+
+    private SeriesRecordFull[] updateNasaEndDT(SeriesRecordFull[] series, string endDate)
+    {
+        DateTime endDT_query;
+        DateTime.TryParse(endDate, out endDT_query);
+
+        for (int i = 0; i < series.Length; i++)
+        {
+            DateTime endDT_stored;
+            DateTime.TryParse(series[i].endDate, out endDT_stored);
+            //query time ends after stored time
+            if (DateTime.Compare(endDT_query, endDT_stored) > 0)
+                //assuming NASA data is updated 2 days ago until NOW
+                if ((DateTime.Today - endDT_query).TotalDays > 1)
+                    series[i].endDate = endDT_query.ToString("yyyy-MM-ddThh:mm:ssZ");
+                else
+                    series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
+        }
+
+        return series;
+    }
+
+    ///YX Jan.2017, add filter query by: 
+    ///   SampleMedium
+    ///   DataType
+    ///   ValueType
+    ///   GeneralCategory  
+    private string requestUrlwithCV(double xmin, double xmax, double ymin, double ymax,
+                        string sampleMedium, string dataType, string valueType, string generalCategory,
+                        string conceptKeyword, string networkIDs,
+                        string beginDate, string endDate)
+    {
+        //get url without CV filter query
+        string url = requestUrl(xmin, xmax, ymin, ymax, conceptKeyword, networkIDs, beginDate, endDate);
+
+        string qSampleMedium = getQueryString("SampleMedium", sampleMedium);
+        string qDataType = getQueryString("DataType", dataType);
+        string qValueType = getQueryString("ValueType", valueType);
+        string qGeneralCategory = getQueryString("GeneralCategory", generalCategory);
+        url = url + String.Format(@"&fq={0}&fq={1}&fq={2}&fq={3}", qSampleMedium, qDataType, qValueType, qGeneralCategory);
+
+        return url;
+    }
+
+    ///YX Dec.2015, to adjust Concept search
+    ///
+    /// YX Sep.2016, to take into accout the out-dated EndDateTime in the database for NASA networks
+    ///
+    /// YX Jan.2017,
+    ///        , , 
+    private string requestUrl(double xmin, double xmax, double ymin, double ymax,
+                              string conceptKeyword, string networkIDs,
+                          string beginDate, string endDate)
+    {
+        string parameters;
+        //string beginDate2 = null;
+        //string endDate2 = null;
+        string qNetworkIDs;
+        string qConcept;
+        string qLat, qLon;
+        string keywordString = String.Empty;
+        HashSet<string> keywordSet = new HashSet<string>();
+
+        string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
+        if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
+
+        //--------------------------------------
+        //Create query parameter for networkID
+        //--------------------------------------
+        if (networkIDs.Equals("") || conceptKeyword.Equals("*"))
+        {
+            qNetworkIDs = @"NetworkID:*";
+        }
+        else if (networkIDs.Length == 1)
+        {
+            qNetworkIDs = String.Format("NetworkID:{0}", networkIDs);
+        }
+        else
+        {
+            //allowing multiple networkIDs, select?q=NetworkID:(1 2 3)
+            string[] parts = networkParser(networkIDs);
+            qNetworkIDs = @"NetworkID:(";
+            foreach (string part in parts)
+            {
+                qNetworkIDs += part + ' ';
+            }
+            qNetworkIDs += ')';
+        }
+
+        //----------------------------------------------------
+        //Create query parameter for conceptKeyword
+        //----------------------------------------------------
+        if (conceptKeyword.Equals("") || conceptKeyword.Equals("*"))
+        {
+            qConcept = @"ConceptKeyword:*";
+        }
+        else if (conceptKeyword.Equals("all", StringComparison.InvariantCultureIgnoreCase))
+        {
+            qConcept = @"ConceptKeyword:*";
+        }
+        else
+        {
+            string[] keywords = conceptKeyword.Split('|');
+            foreach (var keyword in keywords)
+            {
+                //add synonym 
+                keywordSet.Add(keyword);
+
+                //Get leaf concepts for input conceptKeyword
+                //modify to get leaf keywords from partial Ontology tree only, Yaping, May 2017
+                //if not found in partial ontology tree, return null
+                string[] subconceptList = getLeafKeywordsPartial(keyword.Trim());
+
+                if (subconceptList != null)
+                {
+                    foreach (var subKeyword in subconceptList)
+                    {
+                        keywordSet.Add(subKeyword);
+                    }
+                }
+            }
+
+            foreach (var keyword in keywordSet)
+            {
+                keywordString += String.Format("ConceptKeyword:%22{0}%22+OR+", HttpUtility.UrlEncode(keyword));
+            }
+            qConcept = keywordString.Substring(0, keywordString.Length - 4);
+        }
+
+        //----------------------------------------------------
+        //Create query parameter for Latitude/Longitude
+        //----------------------------------------------------
+        qLat = String.Format("Latitude:[{0:0.0000} {1:0.0000}]", ymin, ymax);
+        qLon = String.Format("Longitude:[{0:0.0000} {1:0.0000}]", xmin, xmax);
+
+        //----------------------------------------------------
+        //Create query parameter for beginDateTime/endDateTime
+        //----------------------------------------------------
+        beginDate = validateDT(beginDate, "1900-01-01");
+        endDate = validateDT(endDate, "2100-01-01");
+
+        //----------------------------------------------------
+        //Modify query parameter for beginDateTime/endDateTime
+        //NASA networks: 262, 267, 274, these networks are harvested on a half-year basis 
+        //   and the endDateTime is not updated  
+        //----------------------------------------------------
+        var qBeginDT = String.Format(@"BeginDateTime:[* TO {0}T00:00:00Z]", endDate);
+        var qEndDT = String.Format(@"EndDateTime:[{0}T00:00:00Z TO *]", beginDate);
+
+        //extending NASA endDateTime to NOW
+        var qBeginDT_Extend = "BeginDateTime:[* TO NOW]";
+
+        //excluding those with: stored beginDateTime > queried endDateTime 
+        var qBeginDT_Exclude = String.Format(@"-BeginDateTime:[{0}T00:00:00Z TO *]", endDate);
+
+        //for those with: 
+        //
+
+
+        //-------------------------
+        //query parameters to solr
+        //-------------------------
+        String reqType = "edismax";
+
+        //For nasa networks, EndDateTime is modified to NOW
+        //May 9, 2017  excluding those BeginDateTime > endDate2
+        if (networkIDs.Contains("262") || networkIDs.Contains("267") || networkIDs.Contains("274"))
+        {
+            parameters = String.Format(@"&fq={0}&fq={1}&fq={2}&fq={3}", qNetworkIDs, qBeginDT_Extend, qEndDT, qBeginDT_Exclude);
+        }
+        else if (networkIDs.Equals("") || networkIDs.Contains("*"))
+        {
+            //parameters = String.Format
+            //    (@"&fq=(NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}%22)+OR+(*:* -NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{1}%22)&fq={2}&defType={3}",
+            //        qBeginDTNASA, qBeginDT, qEndDT, reqType);
+            parameters = String.Format(@"&fq=(NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}+AND+{1}+AND+{2}%22)",
+                                        qBeginDT_Extend, qEndDT, qBeginDT_Exclude)
+                        + String.Format(@"+OR+(*:* -NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}+AND+{1}%22)",
+                                        qBeginDT, qEndDT)
+                        + String.Format(@"&defType={0}", reqType);
+        }
+        else
+        {
+            parameters = String.Format(@"&fq={0}&fq={1}&fq={2}", qNetworkIDs, qBeginDT, qEndDT);
+        }
+
+        parameters = endpoint + "select?q=*:*" + parameters + String.Format(@"&fq={0}&fq={1}&fq={2}", qConcept, qLat, qLon);
+        return parameters;
+    }
+
+
+    private string validateDT(string dt, string defaultDT)
+    {
+        DateTime testDateTime;
+        string msgDTformat = "Example format: \n"
+                            + "5/21/2011 \n"
+                            + "05/21/2011 \n"
+                            + "3/9/2000 8:20:30 \n"
+                            + "3/20/2000 8:20 \n"
+                            + "2011-05-21 \n"
+                            + "2011-05-21 09:30 \n"
+                            + "2011-05-21T00:00:00Z \n";
+
+        if (dt.Equals(""))
+            dt = defaultDT;
+        else if (DateTime.TryParse(dt, out testDateTime))
+            dt = testDateTime.ToString("yyyy-MM-dd");
+        else
+            throw new FormatException("DateTime is not in the right format. " + msgDTformat);
+
+        return dt;
+    }
+
+
+    ///Get leaf conceptKeywords in the small Ontology tree, with the available conceptkeywords only in our database 
+    ///Added by Yaping, May 2017
+    private string[] getLeafKeywordsPartial(string conceptKeyword)
+    {
+        //false: not returning the full tree
+        conceptKeyword = conceptKeyword.Trim();
+        OntologyNode ontNode = getOntologywithOption(conceptKeyword, false);
+
+        if (ontNode.keyword == null) return null;
+
+        //traverse the tree root node
+        string[] leafKeywords = traverseTree(ontNode);
+
+        //Get all synonums for conceptKeywords
+        leafKeywords = getSearchableConcept(leafKeywords).ToArray();
+
+        return leafKeywords;
+    }
+
+
+    //Traverse the ontology subtree, Yaping, May 2017
+    private string[] traverseTree(OntologyNode root)
+    {
+        List<string> keywordList = new List<string>();
+        HashSet<string> keywordSet = new HashSet<string>();
+
+        Queue<OntologyNode> queue = new Queue<OntologyNode>();
+        queue.Enqueue(root);
+        keywordSet.Add(root.keyword);
+
+        while (queue.Any())
+        {
+            OntologyNode currentNode = queue.Dequeue();
+            if (currentNode.childNodes != null)
+            {
+                foreach (var child in currentNode.childNodes)
+                {
+                    //since struct is never null, convert to object before comparing with null 
+                    //object b = null;
+                    //object childschild = child.childNodes;
+
+                    //if leaf, add to keywordlist
+                    //if ( childschild == b) keywordList.Add(child.keyword);
+                    //otherwise, add to the queue
+                    string key = child.keyword;
+                    keywordSet.Add(child.keyword);
+
+                    queue.Enqueue(child);
+                }
+            }
+        }
+        return keywordSet.ToArray(); ;
+    }
+
+
+    ///Get leaf conceptKeywords in Ontology tree for input notion 
+    ///Added by Yaping, April 2016
+    private string[] getLeafKeywords(string conceptKeyword)
+    {
+        XNamespace ns = System.Configuration.ConfigurationManager.AppSettings["ONTnamespace"];
+        string[] leafKeywords = null;
+
+        conceptKeyword = conceptKeyword.Trim();
+        string endpointOntology = System.Configuration.ConfigurationManager.AppSettings["ONTendpoint"] + conceptKeyword + "?format=xml";
+
+        try
+        {
+            XDocument xdoc = XDocument.Load(endpointOntology);
+            XElement root = xdoc.Root;
+            var keywordVar = (from o in root.Descendants(ns + "keyword")
+                              select new string[]
+                               {
+                               o.Value
+                               }).ToArray();
+
+            leafKeywords = new string[keywordVar.Length];
+            for (int i = 0; i < keywordVar.Length; i++)
+            {
+                leafKeywords[i] = keywordVar[i][0].ToString();
+            }
+
+            //Get all synonums for conceptKeywords
+            leafKeywords = getSearchableConcept(leafKeywords).ToArray();
+        }
+        catch (Exception e)
+        {
+            //no keyword found in ontology tree;
+            return null;
+        }
+
+        return leafKeywords;
+    }
+
+
 
     private FacetField[] GetFacetField(string[] facetfields, string urlBaseQuery, bool isFacetDefinition)
     {
@@ -1131,7 +1474,6 @@ public class hiscentral : System.Web.Services.WebService
             response = client.DownloadString(url);
             TextReader xmlReader = new StringReader(response);
             xDocument = XDocument.Load(xmlReader);
-
         }
 
         List<FacetField> facetList = new List<FacetField>();
@@ -1164,75 +1506,12 @@ public class hiscentral : System.Web.Services.WebService
         return facetList.ToArray();
     }
 
-    //private FacetField GetFacetField(string facetfield, string urlBaseQuery, bool isFacetDefinition)
-    //{
-    //    string[] allfacetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory", "NetworkID",  "ConceptKeyword",
-    //                                "Organization", "SiteCode", "VariableCode"};
-    //    string[] cvsearchable = { "DataType", "ValueType", "SampleMedium", "GeneralCategory" };
-    //    FacetField facet = new FacetField();
-    //    if (!(allfacetfields.Contains(facetfield))) return facet;
-
-    //    //no CV definition returned
-    //    Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
-    //    if (isFacetDefinition == true)
-    //    {
-
-    //        //archived under  Xml/cvdefinition.xml
-    //        string XmlCvDefintion = Server.MapPath("~") + System.Configuration.ConfigurationManager.AppSettings["XmlCvDefinition"];
-
-    //        //write Xml/cvdefinition.xml
-    //        //if the first time run this program, make sure
-    //        //     <add key="UpdateCvDefinition" value="true" />
-    //        if (Boolean.Parse(System.Configuration.ConfigurationManager.AppSettings["UpdateCvDefinition"]))
-    //            WriteXmlCvDefinition(XmlCvDefintion, cvsearchable);
-
-    //        //read dictCv from Xml/cvdefinition.xml
-    //        dictCvDefinition = ReadXmlCvDefinition(XmlCvDefintion, facetfield);
-    //    }
-
-    //    //03/30/2017, add rows=0
-    //    string url = urlBaseQuery + String.Format(@"&rows=0&&facet=true&facet.field={0}", facetfield);
-
-    //    XDocument xDocument;
-    //    string response = null;
-    //    item[] facetvalues = null;
-
-    //    using (WebClient client = new WebClient())
-    //    {
-    //        client.Encoding = Encoding.UTF8;
-    //        response = client.DownloadString(url);
-    //        TextReader xmlReader = new StringReader(response);
-    //        xDocument = XDocument.Load(xmlReader);
-
-    //        var xnode = xDocument.Descendants("lst").Where(o => (string)o.Attribute("name") == facetfield);
-
-    //        //only return the items with facet_cout !=0
-    //        facetvalues =
-    //        (from p in xnode.Descendants("int")
-    //         let t = p.Attribute("name").Value.ToString().ToLower()
-    //         where long.Parse(p.Value) != 0
-    //         select new item()
-    //         {
-    //             term = t,
-    //             definition = isFacetDefinition == false || !cvsearchable.Contains(facetfield) ?
-    //                        null : (dictCvDefinition.ContainsKey(t) ? dictCvDefinition[t] : "undefined"),
-    //             count = long.Parse(p.Value),
-    //         }).ToArray();
-    //    }
-
-    //    facet.name = facetfield;
-    //    facet.itemCount = facetvalues.Length;
-    //    facet.items = facetvalues;
-
-    //    return facet;
-    //}
-
 
     //called by WriteXmlCvDefinition
-    private Dictionary<string, string> GetCVfromSql(string cvId)
+    private Dictionary<string, string> GetCVfromSql(string cvField)
     {
         Dictionary<string, string> dict = new Dictionary<string, string>();
-        string tablename = cvId + "CV";
+        string tablename = cvField + "CV";
 
 
         String sql = "SELECT Term, Definition FROM " + tablename;
@@ -1307,7 +1586,6 @@ public class hiscentral : System.Web.Services.WebService
     private Dictionary<string, string> ReadXmlCvDefinition(string filepath, string cvId)
     {
         Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
-
         XDocument xDocument = XDocument.Load(filepath);
 
         var cvNode = (from o in xDocument.Descendants("vocabularyId")
@@ -1321,12 +1599,12 @@ public class hiscentral : System.Web.Services.WebService
                         defintion = o.Element("definition").Value.ToString()
                      }).ToDictionary(o => o.term, o => o.defintion);
                     
-    return dictCvDefinition;
+        return dictCvDefinition;
     }
 
     /// <summary>
     /// YX Jan.2017 
-    /// GetControlledVocabulary(string cvId)
+    /// GetControlledVocabulary(string cvField)
     /// 
     /// input parameter: 
     ///     "DataType" | "ValueType" | "SampleMedium" | "GeneralCategory"
@@ -1349,14 +1627,14 @@ public class hiscentral : System.Web.Services.WebService
     ///     </ControlledVocabularyList>
     /// </summary>
     [WebMethod]
-    public FacetField GetControlledVocabulary(string cvId)
+    public FacetField GetControlledVocabulary(string cvField)
     {
         string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
         if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
 
         string urlBaseQuery = endpoint + "select?q=*:*";
 
-        string[] cvStr = { cvId };
+        string[] cvStr = { cvField };
         FacetField[] cv = GetFacetField(cvStr, urlBaseQuery, true);
 
         return cv[0];
@@ -1401,82 +1679,6 @@ public class hiscentral : System.Web.Services.WebService
         return synonyms;
     }
 
-    ///YX Dec.2015
-    public string requestUrl_old(double xmin, double xmax, double ymin, double ymax,
-                              string conceptKeyword, string networkIDs,
-                          string beginDate, string endDate, int nrows)
-    {
-        string parameters;
-        string beginDate2, endDate2;
-        string qNetworkIDs;
-        string qConcept;
-        string qLat, qLon;
-        string keywordString = String.Empty;
-        HashSet<string> keywordSet = new HashSet<string>();
-
-        //Create query parameter for networkID
-        //Allowing for multiple networks
-        if (networkIDs.Equals(""))
-        {
-            qNetworkIDs = @"NetworkID:*";
-        }
-        else if (networkIDs.Length == 1)
-        {
-            qNetworkIDs = String.Format("NetworkID:{0}", networkIDs);
-        }
-        else
-        {
-            //allowing multiple networkIDs, select?q=NetworkID:(1 2 3)
-            string[] parts = networkParser(networkIDs);
-            qNetworkIDs = @"NetworkID:(";
-            foreach (string part in parts)
-            {
-                qNetworkIDs += part + ' ';
-            }
-            qNetworkIDs += ')';
-        }
-
-        //Create query parameter for conceptKeyword
-        if (conceptKeyword.Equals(""))
-        {
-            qConcept = @"ConceptKeyword:*";
-        }
-        else if (conceptKeyword.Equals("all", StringComparison.InvariantCultureIgnoreCase))
-        {
-            qConcept = @"ConceptKeyword:*";
-        }
-        else
-        {
-            //Get leaf concepts for input conceptKeyword
-            string[] subconceptList = getLeafKeywords(conceptKeyword);
-
-            foreach (var subKeyword in subconceptList)
-            {
-                keywordSet.Add(subKeyword);
-            }
-
-            foreach (var keyword in keywordSet)
-            {
-                keywordString += String.Format("ConceptKeyword:%22{0}%22+OR+", HttpUtility.UrlEncode(keyword));
-            }
-            qConcept = keywordString.Substring(0, keywordString.Length - 4);
-        }
-
-        //query parameter for lat, lon, beginDateTime, endDateTime
-        qLat = String.Format("Latitude:[{0:0.0000} {1:0.0000}]", ymin, ymax);
-        qLon = String.Format("Longitude:[{0:0.0000} {1:0.0000}]", xmin, xmax);
-
-        beginDate2 = DateTime.ParseExact(beginDate, "MM/dd/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
-        endDate2 = DateTime.ParseExact(endDate, "MM/dd/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
-        var qBeginDT = String.Format(@"BeginDateTime:[* TO {0}T00:00:00Z]", endDate2);
-        var qEndDT = String.Format(@"EndDateTime:[{0}T00:00:00Z TO *]", beginDate2);
-
-        //query parameters to solr
-        parameters = String.Format(@"select?q=*:*&fq={0}&fq={1}&fq={2}&fq={3}&fq={4}&fq={5}&rows={6}",
-                qNetworkIDs, qConcept, qLat, qLon, qBeginDT, qEndDT, nrows);
-
-        return parameters;
-    }
 
     ///YX Jan.2017, called by requestUrlwithCV()
     private string getQueryString(string field, string query)
@@ -1507,139 +1709,6 @@ public class hiscentral : System.Web.Services.WebService
     }
 
 
-    ///YX Jan.2017, add filter query by fields 
-    ///       SampleMedium, DataType, ValueType, GeneralCategory  
-    private string requestUrlwithCV(double xmin, double xmax, double ymin, double ymax,
-                        string sampleMedium, string dataType, string valueType, string generalCategory,
-                        string conceptKeyword, string networkIDs,
-                        string beginDate, string endDate)
-    {
-        string url = requestUrl(xmin, xmax, ymin, ymax, conceptKeyword, networkIDs, beginDate, endDate);
-
-        string qSampleMedium = getQueryString("SampleMedium", sampleMedium);
-        string qDataType = getQueryString("DataType", dataType);
-        string qValueType = getQueryString("ValueType", valueType);
-        string qGeneralCategory = getQueryString("GeneralCategory", generalCategory);
-        url = url + String.Format(@"&fq={0}&fq={1}&fq={2}&fq={3}", qSampleMedium, qDataType, qValueType, qGeneralCategory);
-
-        return url;
-    }
-
-    ///YX Dec.2015, to adjust Concept search
-    ///
-    /// YX Sep.2016, to take into accout the out-dated EndDateTime in the database for NASA networks
-    ///
-    /// YX Jan.2017, 
-    /// to allow multiple conceptKeyword input: empty, "all"(case insensitive), "*", or '|' separated string
-    /// <param name="conceptKeyword">Precipitation | Temperature | Carbon, total</param>   
-    /// 
-    /// to allow multiple networkID input: empty, "all"(case insensitive), "*", 
-    ///                   or ',', ';', ' ' separated string
-    /// <param name="networkIDs">1, 3, 52</</param>
-    /// 
-    private string requestUrl(double xmin, double xmax, double ymin, double ymax,
-                              string conceptKeyword, string networkIDs,
-                          string beginDate, string endDate)
-    {
-        string parameters;
-        string beginDate2, endDate2;
-        string qNetworkIDs;
-        string qConcept;
-        string qLat, qLon;
-        string keywordString = String.Empty;
-        HashSet<string> keywordSet = new HashSet<string>();
-
-        //int nrows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
-        string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
-        if (!endpoint.EndsWith("/")) endpoint = endpoint + "/";
-
-        //Create query parameter for networkID
-        //Allowing for multiple networks
-        if (networkIDs.Equals("") || conceptKeyword.Equals("*"))
-        {
-            qNetworkIDs = @"NetworkID:*";
-        }
-        else if (networkIDs.Length == 1)
-        {
-            qNetworkIDs = String.Format("NetworkID:{0}", networkIDs);
-        }
-        else
-        {
-            //allowing multiple networkIDs, select?q=NetworkID:(1 2 3)
-            string[] parts = networkParser(networkIDs);
-            qNetworkIDs = @"NetworkID:(";
-            foreach (string part in parts)
-            {
-                qNetworkIDs += part + ' ';
-            }
-            qNetworkIDs += ')';
-        }
-
-        //Create query parameter for conceptKeyword
-        if (conceptKeyword.Equals("") || conceptKeyword.Equals("*"))
-        {
-            qConcept = @"ConceptKeyword:*";
-        }
-        else if (conceptKeyword.Equals("all", StringComparison.InvariantCultureIgnoreCase))
-        {
-            qConcept = @"ConceptKeyword:*";
-        }
-        else
-        {
-            string[] keywords = conceptKeyword.Split('|');
-            foreach (var keyword in keywords)
-            {
-                //Get leaf concepts for input conceptKeyword
-                string[] subconceptList = getLeafKeywords(keyword.Trim());
-
-                
-                foreach (var subKeyword in subconceptList)
-                {
-                    keywordSet.Add(subKeyword);
-                }
-            }
-
-            foreach (var keyword in keywordSet)
-            {
-                keywordString += String.Format("ConceptKeyword:%22{0}%22+OR+", HttpUtility.UrlEncode(keyword));
-            }
-            qConcept = keywordString.Substring(0, keywordString.Length - 4);
-        }
-
-        //query parameter for lat, lon, beginDateTime, endDateTime
-        qLat = String.Format("Latitude:[{0:0.0000} {1:0.0000}]", ymin, ymax);
-        qLon = String.Format("Longitude:[{0:0.0000} {1:0.0000}]", xmin, xmax);
-
-        beginDate2 = DateTime.ParseExact(beginDate, "MM/dd/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
-        endDate2 = DateTime.ParseExact(endDate, "MM/dd/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
-        var qBeginDT = String.Format(@"BeginDateTime:[* TO {0}T00:00:00Z]", endDate2);
-        var qEndDT = String.Format(@"EndDateTime:[{0}T00:00:00Z TO *]", beginDate2);
-        var qBeginDTNASA = "BeginDateTime:[* TO NOW]";
-
-        //query parameters to solr
-        String reqType = "edismax";
-
-        //For nasa networks, EndDateTime is modified to NOW
-        if (networkIDs.Contains("262") || networkIDs.Contains("267") || networkIDs.Contains("274"))
-        {
-            parameters = String.Format(@"&fq={0}&fq={1}&fq={2}", qNetworkIDs, qBeginDTNASA, qEndDT);
-        }
-        else if (networkIDs.Equals("") || networkIDs.Contains("*"))
-        {
-            parameters = String.Format
-                (@"&fq=(NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}%22)+OR+(*:* -NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{1}%22)&fq={2}&defType={3}",
-                    qBeginDTNASA, qBeginDT, qEndDT, reqType);
-        }
-        else
-        {
-            parameters = String.Format(@"&fq={0}&fq={1}&fq={2}", qNetworkIDs, qBeginDT, qEndDT);
-        }
-
-        parameters = endpoint + "select?q=*:*" + parameters + String.Format(@"&fq={0}&fq={1}&fq={2}", qConcept, qLat, qLon);
-
-        return parameters;
-    }
-
     private HashSet<string> filterKeywords()
     {
         HashSet<string> keywordSet = new HashSet<string>();
@@ -1653,34 +1722,6 @@ public class hiscentral : System.Web.Services.WebService
         return keywordSet;
     }
 
-    ///Get leaf conceptKeywords in Ontology tree for input notion 
-    ///Added by Yaping, April 2016
-    private string[] getLeafKeywords(string conceptKeyword)
-    {
-        XNamespace ns = System.Configuration.ConfigurationManager.AppSettings["ONTnamespace"];
-
-        conceptKeyword = conceptKeyword.Trim();
-        string endpointOntology = System.Configuration.ConfigurationManager.AppSettings["ONTendpoint"] + conceptKeyword + "?format=xml";
-
-        XDocument xdoc = XDocument.Load(endpointOntology);
-        XElement root = xdoc.Root;
-        var keywordVar = (from o in root.Descendants(ns + "keyword")
-                          select new string[] 
-                           {
-                               o.Value
-                           }).ToArray();
-
-        string[] leafKeywords = new string[keywordVar.Length];
-        for (int i = 0; i < keywordVar.Length; i++)
-        {
-            leafKeywords[i] = keywordVar[i][0].ToString();
-        }
-
-        //Get all synonums for conceptKeywords
-        leafKeywords = getSearchableConcept(leafKeywords).ToArray();
-
-        return leafKeywords;
-    }
 
     //added by Yaping, Sep.2015
     //input: 1, 2-5, 8; 10..12
@@ -2044,75 +2085,20 @@ public class hiscentral : System.Web.Services.WebService
 
     }
 
-    //     /*
-    //      * COUCH: Obsoleted by code revision 2014/05/30
-    //      * Get all concept paths associated with a concept
-    //      * This routine is BROKEN. It always returns an empty array
-    //      * Thus there is strong evidence that it is unused. 
-    //      */
-    // 
-    //     public String[] GetConceptPaths() {
-    // 
-    //         int[] concepts = new int[0];
-    //         int id;
-    //         
-    // 	// COUCH:  if the ConceptName in ConceptPaths does not agree with the 
-    // 	// ConceptName in Concepts, the name in Concepts "wins".
-    // 	 
-    // //      String sql = "SELECT  ConceptPaths.ConceptID, ConceptPaths.Path, ConceptPaths.ConceptKeyword " +
-    // //                   " FROM  ConceptPaths WITH (NOLOCK) INNER JOIN " +
-    // //                   " v_searchableConcepts ON ConceptPaths.ConceptID = v_searchableConcepts.ConceptID" +
-    // //                   " WHERE     (v_searchableConcepts.ConceptName = @conceptName)";
-    // 
-    // 	String sql = "sp_getConceptPaths"; 
-    //         DataSet ds = new DataSet();
-    //         String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
-    //         SqlConnection con = new SqlConnection(connect);
-    // 
-    //         using (con) {
-    //             SqlDataAdapter da = new SqlDataAdapter(sql, con);
-    // 	    da.SelectCommand.CommandType=CommandType.StoredProcedure; 
-    //             
-    //             da.Fill(ds, "conceptPath");
-    // 
-    //             //con.Close();
-    //             int rowcount = ds.Tables["conceptPath"].Rows.Count;
-    //             if (rowcount > 0) {
-    //                 String path = ds.Tables["conceptPath"].Rows[0][1].ToString();
-    //                 id = (int)ds.Tables["conceptPath"].Rows[0][0];
-    //                 concepts = new int[1];
-    //                 concepts[0] = id;
-    //                 sql = "Select conceptid, path from conceptPaths WITH (NOLOCK) where path like '" + path + "%'";
-    //                 da = new SqlDataAdapter(sql, con);
-    //                 da.Fill(ds, "conceptids");
-    //                 int i = 0;
-    //                 rowcount = ds.Tables["conceptids"].Rows.Count;
-    //                 if (rowcount > 0) {
-    //                     concepts = new int[rowcount];
-    //                     foreach (DataRow dataRow in ds.Tables["conceptids"].Rows) {
-    //                         concepts[i] = (int)dataRow[0];
-    //                         i++;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         con.Close();
-    //         return new String[0]; // ERROR: returns an empty path at all times 
-    //     }
 
     /* 
      * Return a list of Searchable Keywords for use in autocompletion in HydroDesktop
      * Use a cached version of the ontology with a timeout of one hour. 
      */
     [WebMethod]
-    public String[] GetSearchableConcepts()
+    public string[] GetSearchableConcepts()
     {
         ServiceStats.AddCount("GetSearchableConcepts");
         return getOntologyKeywords();
     }
 
     [WebMethod]
-    public OntologyNode getOntologyTree(String conceptKeyword)
+    public OntologyNode getOntologyTree(string conceptKeyword)
     {
         //get the full tree
         return getOntologywithOption(conceptKeyword, true);
@@ -2121,7 +2107,7 @@ public class hiscentral : System.Web.Services.WebService
     //updated by Yaping, May 2016: eliminate access to SQL database
     //YX Feb.2016, get the tree for available conceptKeywords in current database
     [WebMethod]
-    public OntologyNode getOntologywithOption(String conceptKeyword, bool fullTree)
+    public OntologyNode getOntologywithOption(string conceptKeyword, bool fullTree)
     {
         ServiceStats.AddCount("getOntologyTree");
 
@@ -2232,160 +2218,6 @@ public class hiscentral : System.Web.Services.WebService
         return parentNode;
     }
 
-
-    // COUCH: Obsoleted by code revision 2014/05/29
-    //    private string getCommaString(String[] ss) {
-    //        System.Text.StringBuilder sb = new System.Text.StringBuilder();
-    //        for (int i = 0; i < ss.Length; i++) {
-    //            if (i > 0) sb.Append(',');
-    //            sb.Append("'").Append(ss[i]).Append("'");
-    //        }
-    //        return sb.ToString();
-    //    }
-    //    private string getCommaInt(int[] ss) {
-    //        System.Text.StringBuilder sb = new System.Text.StringBuilder();
-    //        for (int i = 0; i < ss.Length; i++) {
-    //            if (i > 0) sb.Append(',');
-    //            sb.Append(ss[i]);
-    //        }
-    //        return sb.ToString();
-    //    }
-
-    //     /*
-    //      * COUCH: It is likely that this routine is not used anywhere anymore
-    //      * COUCH: The uses in this file have been replaced with other code. 
-    //      * getChildIDsFlat
-    //      * 	Input: a concept name
-    //      * 	Output: an array of the concept IDs related to that concept name by hierarchy
-    //      *
-    //      * COUCH: 5/29/2014 This routine returns a list of child IDS and is the routine that 
-    //      * exhibited the Barium bug. 
-    //      *
-    //      * To address the bug, it has been modified to consistently return the ID of the root concept as well 
-    //      * as the IDs of children. The reason that it did not return the root was due to an assumption that 
-    //      * variables are underneath concepts in the ontology, which is false (and has been for some time). 
-    //      * 
-    //      */
-    // 
-    //     public int[] getChildIDsFlat(String conceptName) {
-    //         int[] concepts = new int[0];
-    //         int id;
-    //  
-    // 	   String sql = "SELECT ConceptID from FN_getChildIDs(@conceptName)"; 
-    //         SqlCommand cmd = new SqlCommand(sql);
-    //         cmd.Parameters.AddWithValue("@conceptName", conceptName);
-    //         cmd.CommandTimeout = 300;
-    //         DataSet ds = new DataSet();
-    //         String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
-    //         SqlConnection con = new SqlConnection(connect);
-    // 
-    //         using (con) {
-    //             SqlDataAdapter da = new SqlDataAdapter(sql, con);
-    //             da.SelectCommand.Parameters.AddWithValue("conceptName", conceptName);
-    //             da.Fill(ds, "conceptPath");
-    //             int rowcount = ds.Tables["conceptPath"].Rows.Count;
-    //             if (rowcount > 0) {
-    // 		concepts = new int[rowcount]; 
-    // 		for (int i=0; i<rowcount; i++) 
-    // 		    concepts[i] = Rows[i][0]; 
-    // 	    }
-    //         }
-    //         con.Close();
-    //         return concepts;
-    //     }
-    // 
-    //     /*
-    //      * COUCH: It is likely that this routine is not used anywhere anymore
-    //      * COUCH: The uses in this file have been replaced with other code. 
-    //      */
-    //
-    //     public String[] getChildConceptsFlat(String conceptName) {
-    //         String[] concepts = new String[1];
-    //         concepts[0] = conceptName;
-    // 
-    // 	   String sql = "SELECT ConceptID from FN_getChildConcepts(@conceptName)"; 
-    //         SqlCommand cmd = new SqlCommand(sql);
-    //         cmd.Parameters.AddWithValue("@conceptName", conceptName);
-    //         cmd.CommandTimeout = 300;
-    //         DataSet ds = new DataSet();
-    //         String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
-    //         SqlConnection con = new SqlConnection(connect);
-    // 
-    //         using (con) {
-    //             SqlDataAdapter da = new SqlDataAdapter(sql, con);
-    //             da.SelectCommand.Parameters.AddWithValue("conceptName", conceptName);
-    //             da.Fill(ds, "conceptPath");
-    //             int rowcount = ds.Tables["conceptPath"].Rows.Count;
-    //             if (rowcount > 0) {
-    // 		concepts = new String[rowcount]; 
-    // 		for (int i=0; i<rowcount; i++) 
-    // 		    concepts[i] = Rows[i][0]; 
-    // 	    }
-    //         }
-    //         con.Close();
-    //         return concepts;
-    //     }
-
-    //private void getChildNodes(OntologyNode parentNode)
-    //{
-    //    getChildNodesHelper(parentNode);
-    //    return;
-
-    //}
-    //private OntologyNode[] getChildNodesHelper(OntologyNode parentNode)
-    //{
-    //    //OntologyNode node = new OntologyNode();
-    //    String sql = "SELECT conceptid,  conceptName from v_conceptHierarchy where parentid = " + parentNode.conceptid + ";";
-
-    //    DataSet ds = new DataSet();
-    //    String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
-    //    SqlConnection con = new SqlConnection(connect);
-
-    //    using (con)
-    //    {
-    //        SqlDataAdapter da2 = new SqlDataAdapter(sql, con);
-    //        da2.Fill(ds, "concepts");
-    //    }
-    //    con.Close();
-
-
-    //    //should be only one
-    //    String conceptKeyword;
-    //    int conceptid;
-    //    int i = 0;
-    //    OntologyNode[] child; 
-
-    //    int rowcount = ds.Tables["concepts"].Rows.Count;
-
-    //    if (rowcount == 0) {
-    //        return null;
-    //    } else {
-    //        child = new OntologyNode[rowcount];
-    //        foreach (DataRow dataRow in ds.Tables["concepts"].Rows)
-    //        {
-
-    //            conceptid = (int)dataRow["conceptid"];
-    //            //conceptcode = dataRow["conceptCode"].ToString();
-    //            conceptKeyword = dataRow["conceptName"].ToString();
-    //            child[i] = new OntologyNode();
-    //            child[i].keyword = conceptKeyword;
-    //            child[i].conceptid = conceptid;
-    //            //rentNode.ChildNodes.Add(childNode);
-
-    //            OntologyNode[] childNodes = getChildNodesHelper(child[i]);
-    //            if(childNodes != null)  child[i].childNodes = childNodes;
-
-    //            //parentNode.childNodes[i] = child[i];
-    //            //nextIDs.Add(conceptid);
-    //            //conceptcode = dataRow["conceptCode"].ToString();
-    //            i++;
-    //        }
-    //        parentNode.childNodes = child;
-    //    }
-
-    //    return child;
-    //    //return parentNode;
-    //}
 
     public struct OntologyNode
     {
