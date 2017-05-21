@@ -76,9 +76,9 @@
         <asp:HyperLink ID="HyperLink5" runat="server" BorderStyle="None" Font-Bold="True"
             Font-Underline="False" NavigateUrl="../pub_services.aspx" Style="font-size: 13px !important; z-index: 105; left: 652px;
             position: absolute; top: 110px" Width="136px" Font-Size="Smaller" ForeColor="White">All Data Services</asp:HyperLink>   
-             <asp:HyperLink ID="HyperLink4" runat="server" BorderStyle="None" Font-Bold="True"
+             <%--<asp:HyperLink ID="HyperLink4" runat="server" BorderStyle="None" Font-Bold="True"
             Font-Underline="False" NavigateUrl="http://localhost:55925/QueryHydroServer/" Style="font-size: 13px !important; z-index: 109; left: 775px; position: absolute; top: 110px"
-            Width="115px" Font-Size="Smaller" ForeColor="White">Health Monitor</asp:HyperLink> 
+            Width="115px" Font-Size="Smaller" ForeColor="White">Health Monitor</asp:HyperLink> --%>
               <asp:HyperLink ID="HyperLink9" runat="server" BorderStyle="None" Font-Bold="True" Target="_blank"
             Font-Underline="False" NavigateUrl="~/admin/HealthMonitor.aspx" Style="font-size: 13px !important; z-index: 109; left: 895px; position: absolute; top: 110px"
             Width="150px" Font-Size="Smaller" ForeColor="White">Daily Health Monitor</asp:HyperLink>                   
