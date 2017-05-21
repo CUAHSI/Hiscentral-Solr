@@ -1106,7 +1106,7 @@ public class hiscentral : System.Web.Services.WebService
         if (facet == true)
         {
             string[] facetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory",
-                                    "NetworkID",  "ConceptKeyword", "Organization"};
+                                    "NetworkID",  "ConceptKeyword", "SourceOrg"};
             bool isFacetDefinition = false;
             //FacetField[] 
             countOrData.facet_fields = GetFacetField(facetfields, url, isFacetDefinition);
@@ -1124,27 +1124,6 @@ public class hiscentral : System.Web.Services.WebService
             countOrData.series = updateSeriesFull_NasaEndDT(series, endDate);
         }
 
-
-        //temporally for Liza
-        //write:   ServCode,latitude,longitude,conceptKeyword, VarCode,VarName,Sitename,ValueCount,Organization
-
-        //string outputFile = Server.MapPath("~") + "tempforLiza/output.txt";
-        //FileStream fs = new FileStream(outputFile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
-        //StreamWriter writer = new StreamWriter(fs);
-        //if (countOrData.series != null)
-        //{
-        //    writer.WriteLine("ServCode;latitude;longitude;conceptKeyword;VarCode;VarName;datatype;valuetype,sample medium;Sitename;ValueCount;Organization");
-        //    foreach (var s in countOrData.series)
-        //    {
-        //        writer.WriteLine(String.Format("{0}; {1}; {2}; {3}; {4}; {5}; {6}; {7}; {8}; {9}; {10}; {11}", 
-        //                        s.ServCode, s.latitude, s.longitude, s.conceptKeyword, s.VarCode, s.VarName,
-        //                        s.datatype, s.valuetype, s.samplemedium,
-        //                            s.Sitename, s.ValueCount, s.Organization));
-        //    }
-        //    writer.Flush();
-        //    writer.Close();
-        //}
-
         return countOrData;
     }
 
@@ -1156,18 +1135,8 @@ public class hiscentral : System.Web.Services.WebService
 
         for (int i = 0; i < series.Length; i++)
         {
-            series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
-
-            //DateTime endDT_stored;
-            //DateTime.TryParse(series[i].endDate, out endDT_stored);
-
-            ////query time ends after stored time
-            //if (DateTime.Compare(endDT_query, endDT_stored) > 0)
-            //    //assuming NASA data is updated 2 days ago until NOW
-            //    if ((DateTime.Today - endDT_query).TotalDays > 1)
-            //        series[i].endDate = endDT_query.ToString("yyyy-MM-ddThh:mm:ssZ");
-            //    else
-            //        series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
+            if (series[i].ServCode.Contains("GLDAS") || series[i].ServCode.Contains("NLDAS"))
+                series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
         }
 
         return series;
@@ -1181,7 +1150,9 @@ public class hiscentral : System.Web.Services.WebService
 
         for (int i = 0; i < series.Length; i++)
         {
-            series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
+            if (series[i].ServCode.Contains("GLDAS") || series[i].ServCode.Contains("NLDAS"))
+                series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
+
 
             //DateTime endDT_stored;
             //DateTime.TryParse(series[i].endDate, out endDT_stored);
@@ -1328,7 +1299,8 @@ public class hiscentral : System.Web.Services.WebService
         var qBeginDT_Extend = "BeginDateTime:[* TO NOW]";
 
         //excluding those with: stored beginDateTime > queried endDateTime 
-        var qBeginDT_Exclude = String.Format(@"-BeginDateTime:[{0}T00:00:00Z TO *]", endDate);
+        // but should include the day of endDate
+        var qBeginDT_Exclude = String.Format(@"-BeginDateTime:[{0}T12:00:00Z TO *]", endDate);
 
         //for those with: 
         //
@@ -1343,15 +1315,13 @@ public class hiscentral : System.Web.Services.WebService
         //May 9, 2017  excluding those BeginDateTime > endDate2
         if (networkIDs.Contains("262") || networkIDs.Contains("267") || networkIDs.Contains("274"))
         {
-            parameters = String.Format(@"&fq={0}&fq={1}&fq={2}&fq={3}", qNetworkIDs, qBeginDT_Extend, qEndDT, qBeginDT_Exclude);
+            //parameters = String.Format(@"&fq={0}&fq={1}&fq={2}&fq={3}", qNetworkIDs, qBeginDT_Extend, qEndDT, qBeginDT_Exclude);
+            parameters = String.Format(@"&fq={0}&fq={1}&fq={2}", qNetworkIDs, qBeginDT_Extend, qBeginDT_Exclude);
         }
         else if (networkIDs.Equals("") || networkIDs.Contains("*"))
         {
-            //parameters = String.Format
-            //    (@"&fq=(NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}%22)+OR+(*:* -NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{1}%22)&fq={2}&defType={3}",
-            //        qBeginDTNASA, qBeginDT, qEndDT, reqType);
-            parameters = String.Format(@"&fq=(NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}+AND+{1}+AND+{2}%22)",
-                                        qBeginDT_Extend, qEndDT, qBeginDT_Exclude)
+            parameters = String.Format(@"&fq=(NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}+AND+{1}%22)",
+                                        qBeginDT_Extend, qBeginDT_Exclude)
                         + String.Format(@"+OR+(*:* -NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}+AND+{1}%22)",
                                         qBeginDT, qEndDT)
                         + String.Format(@"&defType={0}", reqType);
@@ -1544,7 +1514,10 @@ public class hiscentral : System.Web.Services.WebService
              where long.Parse(p.Value) != 0
              select new item()
              {
-                 term = t,
+                 //term = t,
+                 //Add synonym search, the comma and space in the multi-term word are replaced with '+' and '_', respectively, in the indexing process
+                 //, which need to be transformed back in the faceting 
+                 term = facetfield.Equals("ConceptKeyword") ? t.Replace('#',',').Replace('_',' '): t,
                  definition = isFacetDefinition == false || !cvsearchable.Contains(facetfield) ?
                             null : (dictCvDefinition.ContainsKey(t) ? dictCvDefinition[t] : "undefined"),
                  count = long.Parse(p.Value),
