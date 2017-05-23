@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ControlledVocabularyList>
+  <vocabularyId name="DataType" itemCount="15">
+    <items>
+      <item>
+        <term>Average</term>
+        <definition>The values represent the average over a time interval, such as daily mean discharge or daily mean temperature.</definition>
+      </item>
+      <item>
+        <term>Best Easy Systematic Estimator</term>
+        <definition>Best Easy Systematic Estimator BES = (Q1 +2Q2 +Q3)/4.  Q1, Q2, and Q3 are first, second, and third quartiles. See Woodcock, F. and Engel, C., 2005: Operational Consensus Forecasts.Weather and Forecasting, 20, 101-111. (http://www.bom.gov.au/nmoc/bulletins/60/article_by_Woodcock_in_Weather_and_Forecasting.pdf) and Wonnacott, T. H., and R. J. Wonnacott, 1972: Introductory Statistics. Wiley, 510 pp.</definition>
+      </item>
+      <item>
+        <term>Categorical</term>
+        <definition>The values are categorical rather than continuous valued quantities. Mapping from Value values to categories is through the CategoryDefinitions table.</definition>
+      </item>
+      <item>
+        <term>Constant Over Interval</term>
+        <definition>The values are quantities that can be interpreted as constant for all time, or over the time interval to a subsequent measurement of the same variable at the same site.</definition>
+      </item>
+      <item>
+        <term>Continuous</term>
+        <definition>A quantity specified at a particular instant in time measured with sufficient frequency (small spacing) to be interpreted as a continuous record of the phenomenon.</definition>
+      </item>
+      <item>
+        <term>Cumulative</term>
+        <definition>The values represent the cumulative value of a variable measured or calculated up to a given instant of time, such as cumulative volume of flow or cumulative precipitation.</definition>
+      </item>
+      <item>
+        <term>Incremental</term>
+        <definition>The values represent the incremental value of a variable over a time interval, such as the incremental volume of flow or incremental precipitation.</definition>
+      </item>
+      <item>
+        <term>Maximum</term>
+        <definition>The values are the maximum values occurring at some time during a time interval, such as annual maximum discharge or a daily maximum air temperature.</definition>
+      </item>
+      <item>
+        <term>Median</term>
+        <definition>The values represent the median over a time interval, such as daily median discharge or daily median temperature.</definition>
+      </item>
+      <item>
+        <term>Minimum</term>
+        <definition>The values are the minimum values occurring at some time during a time interval, such as 7-day low flow for a year or the daily minimum temperature.</definition>
+      </item>
+      <item>
+        <term>Mode</term>
+        <definition>The values are the most frequent values occurring at some time during a time interval, such as annual most frequent wind direction.</definition>
+      </item>
+      <item>
+        <term>Sporadic</term>
+        <definition>The phenomenon is sampled at a particular instant in time but with a frequency that is too coarse for interpreting the record as continuous.  This would be the case when the spacing is significantly larger than the support and the time scale of fluctuation of the phenomenon, such as for example infrequent water quality samples.</definition>
+      </item>
+      <item>
+        <term>StandardDeviation</term>
+        <definition>The values represent the standard deviation of a set of observations made over a time interval. Standard deviation computed using the unbiased formula SQRT(SUM((Xi-mean)^2)/(n-1)) are preferred. The specific formula used to compute variance can be noted in the methods description.</definition>
+      </item>
+      <item>
+        <term>Unknown</term>
+        <definition>The data type is unknown</definition>
+      </item>
+      <item>
+        <term>Variance</term>
+        <definition>The values represent the variance of a set of observations made over a time interval.  Variance computed using the unbiased formula SUM((Xi-mean)^2)/(n-1) are preferred.  The specific formula used to compute variance can be noted in the methods description.</definition>
+      </item>
+    </items>
+  </vocabularyId>
+  <vocabularyId name="ValueType" itemCount="7">
+    <items>
+      <item>
+        <term>Calibration Value</term>
+        <definition>A value used as part of the calibration of an instrument at a particular time.</definition>
+      </item>
+      <item>
+        <term>Derived Value</term>
+        <definition>Value that is directly derived from an observation or set of observations</definition>
+      </item>
+      <item>
+        <term>Estimated Value</term>
+        <definition>Values that are roughly calculated, judged, or approximated. Values may result from professional judgement or from ancillary data.</definition>
+      </item>
+      <item>
+        <term>Field Observation</term>
+        <definition>Observation of a variable using a field instrument</definition>
+      </item>
+      <item>
+        <term>Model Simulation Result</term>
+        <definition>Values generated by a simulation model</definition>
+      </item>
+      <item>
+        <term>Sample</term>
+        <definition>Observation that is the result of analyzing a sample in a laboratory</definition>
+      </item>
+      <item>
+        <term>Unknown</term>
+        <definition>The value type is unknown</definition>
+      </item>
+    </items>
+  </vocabularyId>
+  <vocabularyId name="SampleMedium" itemCount="20">
+    <items>
+      <item>
+        <term>Air</term>
+        <definition>Sample taken from the atmosphere&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;open&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;go&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupons &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;click&lt;/a&gt; bystolic coupons for free&lt;/div&gt;&lt;div style="display:none"&gt;cialis dosage for a 65 &lt;a href="http://www.publicconsultinggroup.com/news/base.aspx?p=cialisdosage" rel="nofollow"&gt;read&lt;/a&gt; cialis dosage recommendations&lt;/div&gt;&lt;div style="display:none"&gt;cialis suisse sans &lt;a href="http://cialis20mgsuisse.com/suisse/sans"&gt;cialis suisse sans&lt;/a&gt; cialis suisse sans&lt;/div&gt;&lt;div style="display:none"&gt;where to buy viagra &lt;a href="http://viagraforsaleuk1.com"&gt;viagra for sale uk&lt;/a&gt; viagra online cheap&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Flowback water</term>
+        <definition>A mixture of formation water and hydraulic fracturing injectates deriving from oil and gas wells prior to placing wells into production&lt;div style="display:none"&gt;bystolic coupons &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt; &lt;/a&gt; bystolic coupons for free&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupons &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;click&lt;/a&gt; bystolic coupons for free&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupon save up to $20 &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt; &lt;/a&gt; bystolic free trial coupon&lt;/div&gt;&lt;div style="display:none"&gt;cialis dosage for a 65 &lt;a href="http://www.publicconsultinggroup.com/news/base.aspx?p=cialisdosage" rel="nofollow"&gt;cialis dosing information&lt;/a&gt; cialis dosage recommendations&lt;/div&gt;&lt;div style="display:none"&gt;where to buy viagra &lt;a href="http://viagraforsaleuk1.com"&gt;viagra for sale uk&lt;/a&gt; viagra online cheap&lt;/div&gt;&lt;div style="display:none"&gt;discount on cialis &lt;a href="http://lipseysguns.com/"&gt;go&lt;/a&gt; free coupon for cialis&lt;/div&gt;&lt;div style="display:none"&gt;cialis online coupon &lt;a href="http://www.prostudiousa.com/blog/page/lilly-cialis-coupon.aspx"&gt;cialis manufacturer coupon&lt;/a&gt; cialis discount coupon&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Groundwater</term>
+        <definition>Sample taken from water located below the surface of the ground, such as from a well or spring&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt;what is the generic name for bystolic&lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt;what is the generic name for bystolic&lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;sumatriptan 100 mg &lt;a href="http://sumatriptannow.com/100-mg"&gt;sumatriptan 100 mg&lt;/a&gt; sumatriptan 100 mg&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupon save up to $20 &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;bystolic coupon card&lt;/a&gt; bystolic free trial coupon&lt;/div&gt;&lt;div style="display:none"&gt;cialis prescription coupon &lt;a href="http://www.marcusuniforms.com/blog/base.aspx?p=cialis"&gt;go&lt;/a&gt; cialis discounts coupons&lt;/div&gt;&lt;div style="display:none"&gt;treatment of diabetes mellitus &lt;a href="http://www.ifdefined.com/blog/base.aspx?p=cialisdiabetes"&gt; &lt;/a&gt; diabetes symptoms and treatment&lt;/div&gt;&lt;div style="display:none"&gt;treatment of diabetes mellitus &lt;a href="http://www.ifdefined.com/blog/base.aspx?p=cialisdiabetes"&gt; &lt;/a&gt; diabetes symptoms and treatment&lt;/div&gt;&lt;div style="display:none"&gt;viagra rezeptfrei gunstig &lt;a href="http://viagrapillenkruidvat.com"&gt;viagra rezeptfrei kaufen&lt;/a&gt; erectiepillen zonder voorschrift bij apotheek&lt;/div&gt;&lt;div style="display:none"&gt;viagra rezeptfrei gunstig &lt;a href="http://viagrapillenkruidvat.com"&gt;viagra rezeptfrei kaufen&lt;/a&gt; erectiepillen zonder voorschrift bij apotheek&lt;/div&gt;&lt;div style="display:none"&gt;discount on cialis &lt;a href="http://lipseysguns.com/"&gt;go&lt;/a&gt; free coupon for cialis&lt;/div&gt;&lt;div style="display:none"&gt;cialis savings and coupons &lt;a href="http://www.crmsociety.com"&gt;crmsociety.com&lt;/a&gt; coupons prescriptions&lt;/div&gt;&lt;div style="display:none"&gt;cialis savings and coupons &lt;a href="http://www.crmsociety.com"&gt;crmsociety.com&lt;/a&gt; coupons prescriptions&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Injection water</term>
+        <definition>Water injected into a well or borehole prior to collection of flowback or production water.&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;bystolic coupons for free&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt;go&lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;sumatriptan 100 mg &lt;a href="http://sumatriptannow.com/100-mg"&gt;sumatriptan 100 mg&lt;/a&gt; sumatriptan 100 mg&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupon save up to $20 &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;bystolic coupon card&lt;/a&gt; bystolic free trial coupon&lt;/div&gt;&lt;div style="display:none"&gt;viagra rezeptfrei gunstig &lt;a href="http://viagrapillenkruidvat.com"&gt;viagra rezeptfrei kaufen&lt;/a&gt; erectiepillen zonder voorschrift bij apotheek&lt;/div&gt;&lt;div style="display:none"&gt;where to buy viagra &lt;a href="http://viagraforsaleuk1.com"&gt;viagra for sale uk&lt;/a&gt; viagra online cheap&lt;/div&gt;&lt;div style="display:none"&gt;cialis coupon code &lt;a href="http://sporturfintl.com/page/cialis-manufacturer-coupon.aspx"&gt;click&lt;/a&gt; coupons for drugs&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Municipal waste water</term>
+        <definition>Sample taken from raw municipal waste water stream.&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt;go&lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt;what is the generic name for bystolic&lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupon save up to $20 &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;bystolic coupons&lt;/a&gt; bystolic free trial coupon&lt;/div&gt;&lt;div style="display:none"&gt;cialis prescription coupon &lt;a href="http://www.marcusuniforms.com/blog/base.aspx?p=cialis"&gt;go&lt;/a&gt; cialis discounts coupons&lt;/div&gt;&lt;div style="display:none"&gt;acheter viagra livraison 48h chrono &lt;a href="http://acheterviagraenfrance.com/livraison/48h-chrono"&gt;acheter viagra livraison 48h chrono&lt;/a&gt; acheter viagra livraison 48h chrono&lt;/div&gt;&lt;div style="display:none"&gt;cialis suisse sans &lt;a href="http://cialis20mgsuisse.com/suisse/sans"&gt;cialis suisse sans&lt;/a&gt; cialis suisse sans&lt;/div&gt;&lt;div style="display:none"&gt;discount on cialis &lt;a href="http://lipseysguns.com/"&gt;link&lt;/a&gt; free coupon for cialis&lt;/div&gt;&lt;div style="display:none"&gt;cialis savings and coupons &lt;a href="http://www.crmsociety.com"&gt;discount coupon for cialis&lt;/a&gt; coupons prescriptions&lt;/div&gt;&lt;div style="display:none"&gt;cialis coupon code &lt;a href="http://sporturfintl.com/page/cialis-manufacturer-coupon.aspx"&gt;coupon for prescription&lt;/a&gt; coupons for drugs&lt;/div&gt;&lt;div style="display:none"&gt;discount coupon for cialis &lt;a href="http://blog.suntekusa.com/page/Free-Printable-Cialis-Coupons"&gt;read&lt;/a&gt; free cialis coupons&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Not Relevant</term>
+        <definition>Sample medium not relevant in the context of the measurement&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;open&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt; &lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;sumatriptan 100 mg &lt;a href="http://sumatriptannow.com/100-mg"&gt;sumatriptan 100 mg&lt;/a&gt; sumatriptan 100 mg&lt;/div&gt;&lt;div style="display:none"&gt;where to buy viagra &lt;a href="http://viagraforsaleuk1.com"&gt;viagra for sale uk&lt;/a&gt; viagra online cheap&lt;/div&gt;&lt;div style="display:none"&gt;cialis savings and coupons &lt;a href="http://www.crmsociety.com"&gt;crmsociety.com&lt;/a&gt; coupons prescriptions&lt;/div&gt;&lt;div style="display:none"&gt;cialis coupon code &lt;a href="http://sporturfintl.com/page/cialis-manufacturer-coupon.aspx"&gt;link&lt;/a&gt; coupons for drugs&lt;/div&gt;&lt;div style="display:none"&gt;cialis coupon code &lt;a href="http://sporturfintl.com/page/cialis-manufacturer-coupon.aspx"&gt;coupon for prescription&lt;/a&gt; coupons for drugs&lt;/div&gt;&lt;div style="display:none"&gt;discount coupon for cialis &lt;a href="http://blog.suntekusa.com/page/Free-Printable-Cialis-Coupons"&gt;read&lt;/a&gt; free cialis coupons&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Other</term>
+        <definition>Sample medium other than those contained in the CV&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;open&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;bystolic coupons for free&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt;go&lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;sumatriptan 100 mg &lt;a href="http://sumatriptannow.com/100-mg"&gt;sumatriptan 100 mg&lt;/a&gt; sumatriptan 100 mg&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupon save up to $20 &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;bystolic coupons&lt;/a&gt; bystolic free trial coupon&lt;/div&gt;&lt;div style="display:none"&gt;cialis dosage for a 65 &lt;a href="http://www.publicconsultinggroup.com/news/base.aspx?p=cialisdosage" rel="nofollow"&gt;read&lt;/a&gt; cialis dosage recommendations&lt;/div&gt;&lt;div style="display:none"&gt;treatment of diabetes mellitus &lt;a href="http://www.ifdefined.com/blog/base.aspx?p=cialisdiabetes"&gt; &lt;/a&gt; diabetes symptoms and treatment&lt;/div&gt;&lt;div style="display:none"&gt;treatment of diabetes mellitus &lt;a href="http://www.ifdefined.com/blog/base.aspx?p=cialisdiabetes"&gt; &lt;/a&gt; diabetes symptoms and treatment&lt;/div&gt;&lt;div style="display:none"&gt;acheter viagra livraison 48h chrono &lt;a href="http://acheterviagraenfrance.com/livraison/48h-chrono"&gt;http://acheterviagraenfrance.com/livraison/48h-chrono&lt;/a&gt; acheter viagra livraison 48h chrono&lt;/div&gt;&lt;div style="display:none"&gt;where to buy viagra &lt;a href="http://viagraforsaleuk1.com"&gt;viagra for sale uk&lt;/a&gt; viagra online cheap&lt;/div&gt;&lt;div style="display:none"&gt;cialis online coupon &lt;a href="http://www.prostudiousa.com/blog/page/lilly-cialis-coupon.aspx"&gt;cialis manufacturer coupon&lt;/a&gt; cialis discount coupon&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Precipitation</term>
+        <definition>Sample taken from solid or liquid precipitation&lt;div style="display:none"&gt;cialis prescription coupon &lt;a href="http://www.marcusuniforms.com/blog/base.aspx?p=cialis"&gt;go&lt;/a&gt; cialis discounts coupons&lt;/div&gt;&lt;div style="display:none"&gt;where to buy viagra &lt;a href="http://viagraforsaleuk1.com"&gt;viagra for sale uk&lt;/a&gt; viagra online cheap&lt;/div&gt;&lt;div style="display:none"&gt;coupons prescriptions &lt;a href="http://www.eblogin.com/eblogin/page/cialis-coupons-printable.aspx"&gt;open&lt;/a&gt; coupon for free cialis&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Production water</term>
+        <definition>Fluids produced from wells during oil or gas production which may include formation water, injected fluids, oil and gas.&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;open&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;sumatriptan 100 mg &lt;a href="http://sumatriptannow.com/100-mg"&gt;sumatriptan 100 mg&lt;/a&gt; sumatriptan 100 mg&lt;/div&gt;&lt;div style="display:none"&gt;sumatriptan 100 mg &lt;a href="http://sumatriptannow.com/100-mg"&gt;sumatriptan 100 mg&lt;/a&gt; sumatriptan 100 mg&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupon save up to $20 &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;bystolic coupon card&lt;/a&gt; bystolic free trial coupon&lt;/div&gt;&lt;div style="display:none"&gt;acheter viagra livraison 48h chrono &lt;a href="http://acheterviagraenfrance.com/livraison/48h-chrono"&gt;http://acheterviagraenfrance.com/livraison/48h-chrono&lt;/a&gt; acheter viagra livraison 48h chrono&lt;/div&gt;&lt;div style="display:none"&gt;viagra rezeptfrei gunstig &lt;a href="http://viagrapillenkruidvat.com"&gt;viagra pillen kruidvat&lt;/a&gt; erectiepillen zonder voorschrift bij apotheek&lt;/div&gt;&lt;div style="display:none"&gt;cialis savings and coupons &lt;a href="http://www.crmsociety.com"&gt;crmsociety.com&lt;/a&gt; coupons prescriptions&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Sediment</term>
+        <definition>Sample taken from the sediment beneath the water column&lt;div style="display:none"&gt;bystolic coupons &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt; &lt;/a&gt; bystolic coupons for free&lt;/div&gt;&lt;div style="display:none"&gt;cialis prescription coupon &lt;a href="http://www.marcusuniforms.com/blog/base.aspx?p=cialis"&gt;go&lt;/a&gt; cialis discounts coupons&lt;/div&gt;&lt;div style="display:none"&gt;treatment of diabetes mellitus &lt;a href="http://www.ifdefined.com/blog/base.aspx?p=cialisdiabetes"&gt;diabetes and male sexuality&lt;/a&gt; diabetes symptoms and treatment&lt;/div&gt;&lt;div style="display:none"&gt;cialis savings and coupons &lt;a href="http://www.crmsociety.com"&gt;discount coupon for cialis&lt;/a&gt; coupons prescriptions&lt;/div&gt;&lt;div style="display:none"&gt;cialis online coupon &lt;a href="http://www.prostudiousa.com/blog/page/lilly-cialis-coupon.aspx"&gt;free cialis coupon 2016&lt;/a&gt; cialis discount coupon&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Snow</term>
+        <definition>Observation in, of or sample taken from snow&lt;div style="display:none"&gt;sumatriptan 100 mg &lt;a href="http://sumatriptannow.com/100-mg"&gt;sumatriptan 100 mg&lt;/a&gt; sumatriptan 100 mg&lt;/div&gt;&lt;div style="display:none"&gt;cialis dosage for a 65 &lt;a href="http://www.publicconsultinggroup.com/news/base.aspx?p=cialisdosage" rel="nofollow"&gt;cialis dosing information&lt;/a&gt; cialis dosage recommendations&lt;/div&gt;&lt;div style="display:none"&gt;cialis dosage for a 65 &lt;a href="http://www.publicconsultinggroup.com/news/base.aspx?p=cialisdosage" rel="nofollow"&gt;cialis dose 30 mg&lt;/a&gt; cialis dosage recommendations&lt;/div&gt;&lt;div style="display:none"&gt;cialis dosage for a 65 &lt;a href="http://www.publicconsultinggroup.com/news/base.aspx?p=cialisdosage" rel="nofollow"&gt;cialis dose 30 mg&lt;/a&gt; cialis dosage recommendations&lt;/div&gt;&lt;div style="display:none"&gt;treatment of diabetes mellitus &lt;a href="http://www.ifdefined.com/blog/base.aspx?p=cialisdiabetes"&gt; &lt;/a&gt; diabetes symptoms and treatment&lt;/div&gt;&lt;div style="display:none"&gt;viagra rezeptfrei gunstig &lt;a href="http://viagrapillenkruidvat.com"&gt;viagra rezeptfrei kaufen&lt;/a&gt; erectiepillen zonder voorschrift bij apotheek&lt;/div&gt;&lt;div style="display:none"&gt;where to buy viagra &lt;a href="http://viagraforsaleuk1.com"&gt;viagra for sale uk&lt;/a&gt; viagra online cheap&lt;/div&gt;&lt;div style="display:none"&gt;discount on cialis &lt;a href="http://lipseysguns.com/"&gt;link&lt;/a&gt; free coupon for cialis&lt;/div&gt;&lt;div style="display:none"&gt;cialis savings and coupons &lt;a href="http://www.crmsociety.com"&gt;crmsociety.com&lt;/a&gt; coupons prescriptions&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Soil</term>
+        <definition>Sample taken from the soil&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;open&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupon save up to $20 &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;bystolic coupons&lt;/a&gt; bystolic free trial coupon&lt;/div&gt;&lt;div style="display:none"&gt;cialis prescription coupon &lt;a href="http://www.marcusuniforms.com/blog/base.aspx?p=cialis"&gt;prescription discount coupon&lt;/a&gt; cialis discounts coupons&lt;/div&gt;&lt;div style="display:none"&gt;cialis savings and coupons &lt;a href="http://www.crmsociety.com"&gt;crmsociety.com&lt;/a&gt; coupons prescriptions&lt;/div&gt;&lt;div style="display:none"&gt;coupons prescriptions &lt;a href="http://www.eblogin.com/eblogin/page/cialis-coupons-printable.aspx"&gt;cialis coupons from lilly&lt;/a&gt; coupon for free cialis&lt;/div&gt;&lt;div style="display:none"&gt;discount coupon for cialis &lt;a href="http://blog.suntekusa.com/page/Free-Printable-Cialis-Coupons"&gt;coupons for cialis printable&lt;/a&gt; free cialis coupons&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Soil air</term>
+        <definition>Air contained in the soil pores&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt;what is the generic name for bystolic&lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt;what is the generic name for bystolic&lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;acheter viagra livraison 48h chrono &lt;a href="http://acheterviagraenfrance.com/livraison/48h-chrono"&gt;http://acheterviagraenfrance.com/livraison/48h-chrono&lt;/a&gt; acheter viagra livraison 48h chrono&lt;/div&gt;&lt;div style="display:none"&gt;viagra rezeptfrei gunstig &lt;a href="http://viagrapillenkruidvat.com"&gt;viagra pillen kruidvat&lt;/a&gt; erectiepillen zonder voorschrift bij apotheek&lt;/div&gt;&lt;div style="display:none"&gt;cialis savings and coupons &lt;a href="http://www.crmsociety.com"&gt;discount coupon for cialis&lt;/a&gt; coupons prescriptions&lt;/div&gt;&lt;div style="display:none"&gt;discount coupon for cialis &lt;a href="http://blog.suntekusa.com/page/Free-Printable-Cialis-Coupons"&gt;read&lt;/a&gt; free cialis coupons&lt;/div&gt;&lt;div style="display:none"&gt;cialis online coupon &lt;a href="http://www.prostudiousa.com/blog/page/lilly-cialis-coupon.aspx"&gt;free cialis coupon 2016&lt;/a&gt; cialis discount coupon&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Soil water</term>
+        <definition>the water contained in the soil pores&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;open&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;cialis dosage for a 65 &lt;a href="http://www.publicconsultinggroup.com/news/base.aspx?p=cialisdosage" rel="nofollow"&gt;cialis dosing information&lt;/a&gt; cialis dosage recommendations&lt;/div&gt;&lt;div style="display:none"&gt;treatment of diabetes mellitus &lt;a href="http://www.ifdefined.com/blog/base.aspx?p=cialisdiabetes"&gt; &lt;/a&gt; diabetes symptoms and treatment&lt;/div&gt;&lt;div style="display:none"&gt;cialis suisse sans &lt;a href="http://cialis20mgsuisse.com/suisse/sans"&gt;cialis suisse sans&lt;/a&gt; cialis suisse sans&lt;/div&gt;&lt;div style="display:none"&gt;viagra rezeptfrei gunstig &lt;a href="http://viagrapillenkruidvat.com"&gt;viagra rezeptfrei kaufen&lt;/a&gt; erectiepillen zonder voorschrift bij apotheek&lt;/div&gt;&lt;div style="display:none"&gt;discount on cialis &lt;a href="http://lipseysguns.com/"&gt;link&lt;/a&gt; free coupon for cialis&lt;/div&gt;&lt;div style="display:none"&gt;discount on cialis &lt;a href="http://lipseysguns.com/"&gt;link&lt;/a&gt; free coupon for cialis&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Surface Water</term>
+        <definition>Observation or sample of surface water such as a stream, river, lake, pond, reservoir, ocean, etc.&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;bystolic coupons for free&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt; &lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt; &lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;sumatriptan 100 mg &lt;a href="http://sumatriptannow.com/100-mg"&gt;sumatriptan 100 mg&lt;/a&gt; sumatriptan 100 mg&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupon save up to $20 &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt; &lt;/a&gt; bystolic free trial coupon&lt;/div&gt;&lt;div style="display:none"&gt;cialis dosage for a 65 &lt;a href="http://www.publicconsultinggroup.com/news/base.aspx?p=cialisdosage" rel="nofollow"&gt;cialis dosing information&lt;/a&gt; cialis dosage recommendations&lt;/div&gt;&lt;div style="display:none"&gt;viagra rezeptfrei gunstig &lt;a href="http://viagrapillenkruidvat.com"&gt;viagra pillen kruidvat&lt;/a&gt; erectiepillen zonder voorschrift bij apotheek&lt;/div&gt;&lt;div style="display:none"&gt;cialis savings and coupons &lt;a href="http://www.crmsociety.com"&gt;crmsociety.com&lt;/a&gt; coupons prescriptions&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Suspended particulate matter</term>
+        <definition>Particulate matter entrained in the water column&lt;div style="display:none"&gt;bystolic coupon save up to $20 &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;bystolic coupon card&lt;/a&gt; bystolic free trial coupon&lt;/div&gt;&lt;div style="display:none"&gt;cialis prescription coupon &lt;a href="http://www.marcusuniforms.com/blog/base.aspx?p=cialis"&gt;go&lt;/a&gt; cialis discounts coupons&lt;/div&gt;&lt;div style="display:none"&gt;cialis prescription coupon &lt;a href="http://www.marcusuniforms.com/blog/base.aspx?p=cialis"&gt;discount drug coupon&lt;/a&gt; cialis discounts coupons&lt;/div&gt;&lt;div style="display:none"&gt;treatment of diabetes mellitus &lt;a href="http://www.ifdefined.com/blog/base.aspx?p=cialisdiabetes"&gt; &lt;/a&gt; diabetes symptoms and treatment&lt;/div&gt;&lt;div style="display:none"&gt;cialis suisse sans &lt;a href="http://cialis20mgsuisse.com/suisse/sans"&gt;http://cialis20mgsuisse.com/suisse/sans&lt;/a&gt; cialis suisse sans&lt;/div&gt;&lt;div style="display:none"&gt;cialis coupon code &lt;a href="http://sporturfintl.com/page/cialis-manufacturer-coupon.aspx"&gt;click&lt;/a&gt; coupons for drugs&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Tissue</term>
+        <definition>Sample taken from the tissue of a biological organism&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;bystolic coupons for free&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupons &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;click&lt;/a&gt; bystolic coupons for free&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupons &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt; &lt;/a&gt; bystolic coupons for free&lt;/div&gt;&lt;div style="display:none"&gt;cialis prescription coupon &lt;a href="http://www.marcusuniforms.com/blog/base.aspx?p=cialis"&gt;discount drug coupon&lt;/a&gt; cialis discounts coupons&lt;/div&gt;&lt;div style="display:none"&gt;cialis prescription coupon &lt;a href="http://www.marcusuniforms.com/blog/base.aspx?p=cialis"&gt;prescription discount coupon&lt;/a&gt; cialis discounts coupons&lt;/div&gt;&lt;div style="display:none"&gt;treatment of diabetes mellitus &lt;a href="http://www.ifdefined.com/blog/base.aspx?p=cialisdiabetes"&gt; &lt;/a&gt; diabetes symptoms and treatment&lt;/div&gt;&lt;div style="display:none"&gt;cialis suisse sans &lt;a href="http://cialis20mgsuisse.com/suisse/sans"&gt;cialis suisse sans&lt;/a&gt; cialis suisse sans&lt;/div&gt;&lt;div style="display:none"&gt;viagra rezeptfrei gunstig &lt;a href="http://viagrapillenkruidvat.com"&gt;viagra pillen kruidvat&lt;/a&gt; erectiepillen zonder voorschrift bij apotheek&lt;/div&gt;&lt;div style="display:none"&gt;cialis online coupon &lt;a href="http://www.prostudiousa.com/blog/page/lilly-cialis-coupon.aspx"&gt;free cialis coupon 2016&lt;/a&gt; cialis discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;cialis online coupon &lt;a href="http://www.prostudiousa.com/blog/page/lilly-cialis-coupon.aspx"&gt;site&lt;/a&gt; cialis discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;cialis online coupon &lt;a href="http://www.prostudiousa.com/blog/page/lilly-cialis-coupon.aspx"&gt;site&lt;/a&gt; cialis discount coupon&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Unknown</term>
+        <definition>The sample medium is unknown&lt;div style="display:none"&gt;treatment of diabetes mellitus &lt;a href="http://www.ifdefined.com/blog/base.aspx?p=cialisdiabetes"&gt; &lt;/a&gt; diabetes symptoms and treatment&lt;/div&gt;&lt;div style="display:none"&gt;acheter viagra livraison 48h chrono &lt;a href="http://acheterviagraenfrance.com/livraison/48h-chrono"&gt;http://acheterviagraenfrance.com/livraison/48h-chrono&lt;/a&gt; acheter viagra livraison 48h chrono&lt;/div&gt;&lt;div style="display:none"&gt;viagra rezeptfrei gunstig &lt;a href="http://viagrapillenkruidvat.com"&gt;viagra pillen kruidvat&lt;/a&gt; erectiepillen zonder voorschrift bij apotheek&lt;/div&gt;&lt;div style="display:none"&gt;coupons prescriptions &lt;a href="http://www.eblogin.com/eblogin/page/cialis-coupons-printable.aspx"&gt;cialis coupons from lilly&lt;/a&gt; coupon for free cialis&lt;/div&gt;&lt;div style="display:none"&gt;cialis online coupon &lt;a href="http://www.prostudiousa.com/blog/page/lilly-cialis-coupon.aspx"&gt;cialis manufacturer coupon&lt;/a&gt; cialis discount coupon&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Wastewater effluent</term>
+        <definition>sample is from wastewater treatment plant effluent that is going directly into a stream&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;bystolic coupons for free&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;what is the generic for bystolic &lt;a href="http://www.visabureau.com/australia-working-holiday-visa/blog/base.aspx?p=bystolic"&gt;what is the generic name for bystolic&lt;/a&gt; bystolic discount coupon&lt;/div&gt;&lt;div style="display:none"&gt;sumatriptan 100 mg &lt;a href="http://sumatriptannow.com/100-mg"&gt;sumatriptan 100 mg&lt;/a&gt; sumatriptan 100 mg&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupon save up to $20 &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;bystolic coupons&lt;/a&gt; bystolic free trial coupon&lt;/div&gt;&lt;div style="display:none"&gt;bystolic coupon save up to $20 &lt;a href="http://www.myvisajobs.com/Blog/base.aspx?p=bystolic"&gt;bystolic coupon card&lt;/a&gt; bystolic free trial coupon&lt;/div&gt;&lt;div style="display:none"&gt;cialis prescription coupon &lt;a href="http://www.marcusuniforms.com/blog/base.aspx?p=cialis"&gt;discount drug coupon&lt;/a&gt; cialis discounts coupons&lt;/div&gt;&lt;div style="display:none"&gt;cialis prescription coupon &lt;a href="http://www.marcusuniforms.com/blog/base.aspx?p=cialis"&gt;go&lt;/a&gt; cialis discounts coupons&lt;/div&gt;&lt;div style="display:none"&gt;cialis dosage for a 65 &lt;a href="http://www.publicconsultinggroup.com/news/base.aspx?p=cialisdosage" rel="nofollow"&gt;cialis dose 30 mg&lt;/a&gt; cialis dosage recommendations&lt;/div&gt;&lt;div style="display:none"&gt;cialis dosage for a 65 &lt;a href="http://www.publicconsultinggroup.com/news/base.aspx?p=cialisdosage" rel="nofollow"&gt;cialis dose 30 mg&lt;/a&gt; cialis dosage recommendations&lt;/div&gt;&lt;div style="display:none"&gt;viagra rezeptfrei gunstig &lt;a href="http://viagrapillenkruidvat.com"&gt;viagra rezeptfrei kaufen&lt;/a&gt; erectiepillen zonder voorschrift bij apotheek&lt;/div&gt;&lt;div style="display:none"&gt;cialis savings and coupons &lt;a href="http://www.crmsociety.com"&gt;crmsociety.com&lt;/a&gt; coupons prescriptions&lt;/div&gt;&lt;div style="display:none"&gt;cialis coupon code &lt;a href="http://sporturfintl.com/page/cialis-manufacturer-coupon.aspx"&gt;coupon for prescription&lt;/a&gt; coupons for drugs&lt;/div&gt;&lt;div style="display:none"&gt;discount coupon for cialis &lt;a href="http://blog.suntekusa.com/page/Free-Printable-Cialis-Coupons"&gt;blog.suntekusa.com&lt;/a&gt; free cialis coupons&lt;/div&gt;</definition>
+      </item>
+      <item>
+        <term>Wellhead Gas</term>
+        <definition>Gas taken from a wellhead under positive pressure&lt;div style="display:none"&gt;tudorza patient assistance &lt;a href="http://www.dupontregistry.com/homes/blog/base.aspx?p=bystolic"&gt;go&lt;/a&gt; generic bystolic&lt;/div&gt;&lt;div style="display:none"&gt;cialis dosage for a 65 &lt;a href="http://www.publicconsultinggroup.com/news/base.aspx?p=cialisdosage" rel="nofollow"&gt;cialis dose 30 mg&lt;/a&gt; cialis dosage recommendations&lt;/div&gt;&lt;div style="display:none"&gt;treatment of diabetes mellitus &lt;a href="http://www.ifdefined.com/blog/base.aspx?p=cialisdiabetes"&gt; &lt;/a&gt; diabetes symptoms and treatment&lt;/div&gt;&lt;div style="display:none"&gt;cialis suisse sans &lt;a href="http://cialis20mgsuisse.com/suisse/sans"&gt;cialis suisse sans&lt;/a&gt; cialis suisse sans&lt;/div&gt;</definition>
+      </item>
+    </items>
+  </vocabularyId>
+  <vocabularyId name="GeneralCategory" itemCount="7">
+    <items>
+      <item>
+        <term>Biota</term>
+        <definition>Data associated with biological organisms</definition>
+      </item>
+      <item>
+        <term>Climate</term>
+        <definition>Data associated with the climate, weather, or atmospheric processes</definition>
+      </item>
+      <item>
+        <term>Geology</term>
+        <definition>Data associated with geology or geological processes</definition>
+      </item>
+      <item>
+        <term>Hydrology</term>
+        <definition>Data associated with hydrologic variables or processes</definition>
+      </item>
+      <item>
+        <term>Instrumentation</term>
+        <definition>Data associated with instrumentation and instrument properties such as battery voltages, data logger temperatures, often useful for diagnosis.</definition>
+      </item>
+      <item>
+        <term>Unknown</term>
+        <definition>The general category is unknown</definition>
+      </item>
+      <item>
+        <term>Water Quality</term>
+        <definition>Data associated with water quality variables or processes</definition>
+      </item>
+    </items>
+  </vocabularyId>
+</ControlledVocabularyList>
