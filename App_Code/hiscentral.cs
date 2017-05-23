@@ -28,6 +28,9 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Text;
 
+using OdmCv;
+
+
 /// <summary>
 /// Summary description for hiscentral
 /// </summary>
@@ -1248,7 +1251,7 @@ public class hiscentral : System.Web.Services.WebService
         }
         else
         {
-            string[] keywords = conceptKeyword.Split('|');
+            string[] keywords = conceptKeyword.ToLower().Split('|');
             foreach (var keyword in keywords)
             {
                 //add synonym 
@@ -1263,7 +1266,7 @@ public class hiscentral : System.Web.Services.WebService
                 {
                     foreach (var subKeyword in subconceptList)
                     {
-                        keywordSet.Add(subKeyword);
+                        keywordSet.Add(subKeyword.ToLower());
                     }
                 }
             }
@@ -1534,6 +1537,66 @@ public class hiscentral : System.Web.Services.WebService
     }
 
 
+    //Yaping, May 2017
+    //get from web service: http://his.cuahsi.org/odmcv_1_1/odmcv_1_1.asmx
+    private Dictionary<string, string> GetCVfromWebservice(string cvField) {
+        cvField = cvField.Trim();
+        Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
+        string baseUrl = System.Configuration.ConfigurationManager.AppSettings["UrlCvWebservices"];
+        string url = baseUrl + "?op=Get" + cvField.Trim() + "CV";
+
+        ODMCVServiceSoapClient odmcv = new ODMCVServiceSoapClient();
+        string response = null;
+        XDocument xDocument;
+        switch (cvField) {
+            case "DataType":
+                response = odmcv.GetDataTypeCV();
+                break;
+            case "ValueType":
+                response = odmcv.GetValueTypeCV();
+                break;
+            case "SampleMedium":
+                response = odmcv.GetSampleMediumCV();
+                break;
+            case "GeneralCategory":
+                response = odmcv.GetGeneralCategoryCV();
+                break;
+            default:
+                throw new ArgumentException("CV field should be one of [DataType, ValueType, SampleMedium, GeneralCategory]");
+        }
+
+        TextReader xmlReader = new StringReader(response);
+        xDocument = XDocument.Load(xmlReader);
+
+        dictCvDefinition = (from o in xDocument.Descendants("Record")
+                            select new
+                            {
+                                term = o.Element("Term").Value.ToString().ToLower(),
+                                defintion = o.Element("Definition").Value.ToString()
+                            }).ToDictionary(o => o.term, o => o.defintion);
+
+        return dictCvDefinition;
+    }
+
+    private Dictionary<string, string> ReadXmlCvDefinition(string filepath, string cvId)
+    {
+        Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
+        XDocument xDocument = XDocument.Load(filepath);
+
+        var cvNode = (from o in xDocument.Descendants("vocabularyId")
+                    .Where(x => (string)x.Attribute("name").Value == cvId)
+                      select o);
+
+        dictCvDefinition = (from o in cvNode.Descendants("item")
+                            select new
+                            {
+                                term = o.Element("term").Value.ToString().ToLower(),
+                                defintion = o.Element("definition").Value.ToString()
+                            }).ToDictionary(o => o.term, o => o.defintion);
+
+        return dictCvDefinition;
+    }
+
     //called by WriteXmlCvDefinition
     private Dictionary<string, string> GetCVfromSql(string cvField)
     {
@@ -1578,7 +1641,8 @@ public class hiscentral : System.Web.Services.WebService
         for (int i = 0; i < cvlist.Length; i++) {
 
             //Get CV defintion from sql 
-            dict = GetCVfromSql(cvlist[i]);
+            //dict = GetCVfromSql(cvlist[i]);
+            dict = GetCVfromWebservice(cvlist[i]);
 
             XmlElement element2 = doc.CreateElement(string.Empty, "vocabularyId", string.Empty); 
             element2.SetAttribute("name", cvlist[i]);
@@ -1610,24 +1674,6 @@ public class hiscentral : System.Web.Services.WebService
         return;
     }
 
-    private Dictionary<string, string> ReadXmlCvDefinition(string filepath, string cvId)
-    {
-        Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
-        XDocument xDocument = XDocument.Load(filepath);
-
-        var cvNode = (from o in xDocument.Descendants("vocabularyId")
-                    .Where(x => (string)x.Attribute("name").Value == cvId)
-                    select o);
-
-        dictCvDefinition = (from o in cvNode.Descendants("item")
-                     select new
-                     {
-                        term = o.Element("term").Value.ToString().ToLower(),
-                        defintion = o.Element("definition").Value.ToString()
-                     }).ToDictionary(o => o.term, o => o.defintion);
-                    
-        return dictCvDefinition;
-    }
 
     /// <summary>
     /// YX Jan.2017 
