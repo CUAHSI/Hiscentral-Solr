@@ -132,7 +132,7 @@ public partial class addnetwork : System.Web.UI.Page {
     /// <summary>
     /// Method to send Email
     /// </summary>
-    private void sendEmail(string networkname)
+    private void sendEmail_old(string networkname)
     {
         MailMessage m = new MailMessage();
         SmtpClient sc = new SmtpClient();
@@ -153,6 +153,30 @@ public partial class addnetwork : System.Web.UI.Page {
         sc.Credentials = new System.Net.NetworkCredential("hydroseek@gmail.com", "his4cuahsi");
         sc.EnableSsl = true;
         sc.Send(m);
+    }
+    //MS added to fix problem fix outdated google account. 5/17/2017
+    private void sendEmail (string networkName)
+    {
+        var smtpClient = new SmtpClient();
+        var credentials = (System.Net.NetworkCredential)smtpClient.Credentials;
+        smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+        smtpClient.EnableSsl = true;
+        MailMessage mail = new MailMessage();
+        var emailTo = ConfigurationManager.AppSettings["EmailToAddress"];
+
+        mail.From = new MailAddress(credentials.UserName, credentials.UserName);
+        mail.To.Add(new MailAddress(emailTo));
+
+        mail.Subject = "Data Service was added to CUAHSI Catalog";
+        var sb = new StringBuilder();
+        sb.Append("<h3>Hello,</h3><br />");
+        sb.Append("<p>New data service named " + networkName + " is now registered with HIS Central. </p>");
+        sb.Append("<p>You will be notified once the metadata harvest is completed for this data service.</p>");
+        sb.Append("<p>Please contact help@cuahsi.org if you encounter any problems.</p>");
+        sb.Append("<p>Thank you</p>");
+        mail.Body = Convert.ToString(sb);       
+
+        smtpClient.Send(mail);
     }
 
 }
