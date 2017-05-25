@@ -1255,10 +1255,10 @@ public class hiscentral : System.Web.Services.WebService
             foreach (var keyword in keywords)
             {
                 //search in sql database first for any synonym 
-                string searchableConcept = mapSearchableConcept(keyword);
+                string keywordOntology = mapSearchableConcept(keyword);
 
-                if (searchableConcept == null) keywordSet.Add(keyword);
-                else keywordSet.Add(searchableConcept);                
+                if (keywordOntology == null) keywordSet.Add(keyword);
+                else keywordSet.Add(keywordOntology.Trim().ToLower());                
 
                 //Get leaf concepts for input conceptKeyword
                 //modify to get leaf keywords from partial Ontology tree only, Yaping, May 2017
