@@ -99,20 +99,20 @@
             
 
             <asp:HyperLink ID="HyperLink1" runat="server" Font-Bold="True" ForeColor="#0000C0"
-              Width="130"    Height="19px" NavigateUrl="~/admin/UsageReportAllNetworks.aspx" Style="z-index: 105; left: 495px; position: relative; top: 110px"
+              Width="130"    Height="19px" Target="_blank" NavigateUrl="http://usagemetrics.cuahsi.org" Style="z-index: 105; left: 495px; position: relative; top: 110px;"
                 >Usage Report  (All Networks)</asp:HyperLink> 
             
              <asp:HyperLink ID="HyperLink2" runat="server" Font-Bold="True" ForeColor="#0000C0"
                Width="130"   Height="19px" NavigateUrl="../DeletedNetworks.aspx" Style="z-index: 105; left: 500px; position: relative; top: 110px">
                  Deleted Networks</asp:HyperLink>
             
-            <asp:HyperLink ID="HyperLink4" runat="server" Font-Bold="True" ForeColor="#0000C0"
+          <%--  <asp:HyperLink ID="HyperLink4" runat="server" Font-Bold="True" ForeColor="#0000C0"
               Width="130"    Height="19px" NavigateUrl="~/admin/HarvestAll.aspx" Style="z-index: 105; left: 480px; position: relative; top: 110px"
                                >Harvest-All Log</asp:HyperLink>  
             
             <asp:HyperLink ID="HyperLink5" runat="server" Font-Bold="True" ForeColor="#0000C0"
               Width="130"    Height="19px" NavigateUrl="~/admin/EmailTemplate.aspx" Style="z-index: 105; left: 480px; position: relative; top: 110px"
-                               >Email-Template</asp:HyperLink>                   
+                               >Email-Template</asp:HyperLink>       --%>            
 
         </div>
         <div id="popup"></div>

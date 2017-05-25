@@ -99,7 +99,7 @@ public partial class mynetworks : System.Web.UI.Page {
             var thirdCell = e.Row.Cells[2];
             var networkName = e.Row.Cells[4].Text;
             thirdCell.Controls.Clear();
-            thirdCell.Controls.Add(new HyperLink { NavigateUrl = "~/report.aspx?n=" + Server.UrlEncode(networkName), Text = "Usage Report" });
+            thirdCell.Controls.Add(new HyperLink { NavigateUrl = "http://usagemetrics.cuahsi.org", Text = "Usage Report", Target="_Blank" });
 
             var secondCell = e.Row.Cells[1];
             string val = GridView1.DataKeys[e.Row.RowIndex]["NetworkID"].ToString();
