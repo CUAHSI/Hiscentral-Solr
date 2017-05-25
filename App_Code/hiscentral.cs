@@ -1254,8 +1254,11 @@ public class hiscentral : System.Web.Services.WebService
             string[] keywords = conceptKeyword.ToLower().Split('|');
             foreach (var keyword in keywords)
             {
-                //add synonym 
-                keywordSet.Add(keyword);
+                //search in sql database first for any synonym 
+                string searchableConcept = mapSearchableConcept(keyword);
+
+                if (searchableConcept == null) keywordSet.Add(keyword);
+                else keywordSet.Add(searchableConcept);                
 
                 //Get leaf concepts for input conceptKeyword
                 //modify to get leaf keywords from partial Ontology tree only, Yaping, May 2017
@@ -1376,7 +1379,7 @@ public class hiscentral : System.Web.Services.WebService
         string[] leafKeywords = traverseTree(ontNode);
 
         //Get all synonums for conceptKeywords
-        leafKeywords = getSearchableConcept(leafKeywords).ToArray();
+        //leafKeywords = getSearchableConcept(leafKeywords).ToArray();
 
         return leafKeywords;
     }
@@ -1444,7 +1447,7 @@ public class hiscentral : System.Web.Services.WebService
             }
 
             //Get all synonums for conceptKeywords
-            leafKeywords = getSearchableConcept(leafKeywords).ToArray();
+            //leafKeywords = getSearchableConcept(leafKeywords).ToArray();
         }
         catch (Exception e)
         {
@@ -1711,6 +1714,44 @@ public class hiscentral : System.Web.Services.WebService
         FacetField[] cv = GetFacetField(cvStr, urlBaseQuery, true);
 
         return cv[0];
+    }
+
+    /// <summary>
+    /// YX, May 2017
+    /// map input keyword to a concept on the ontology tree, one to one mapping
+    /// for example, "Streamflow" -> "Discharge, stream"
+    /// </summary>
+    public string mapSearchableConcept(string searchableConcept)
+    {
+        //In the table, SearchableConcept and ConceptName could be identical, thus HashSet is used here
+        string synonym = null;
+        String sql = "SELECT ConceptID,synonym,ConceptName,Path FROM v_SynonymLookup where LOWER(synonym) = @conceptName";
+        DataSet ds = new DataSet();
+        String connect = ConfigurationManager.ConnectionStrings["CentralHISConnectionString"].ConnectionString;
+        SqlConnection con = new SqlConnection(connect);
+        using (con)
+        {
+            SqlDataAdapter da = new SqlDataAdapter(sql, con);
+
+            da.SelectCommand.Parameters.Add("@conceptName", searchableConcept.ToLower());
+            da.Fill(ds, "rows");
+
+            if (ds.Tables["rows"].Rows.Count == 0) return null;
+
+                if (ds.Tables["rows"].Rows.Count == 1)
+            {
+                //only one row is expected to return
+                DataRow dataRow = ds.Tables["rows"].Rows[0];
+                synonym = dataRow[2].ToString();
+            } else
+            {
+                throw new Exception("more than one ConceptName is found for input searchableConcept! Please check the sql database");
+            }
+
+            ds.Clear();
+            da.SelectCommand.Parameters.Clear();
+        }
+        return synonym;
     }
 
 
