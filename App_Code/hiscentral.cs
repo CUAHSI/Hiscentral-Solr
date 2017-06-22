@@ -29,7 +29,7 @@ using System.Text.RegularExpressions;
 using System.Text;
 
 using OdmCv;
-
+using CsvHelper.Configuration;
 
 /// <summary>
 /// Summary description for hiscentral
@@ -779,6 +779,138 @@ public class hiscentral : System.Web.Services.WebService
         public string MethodDesc;
     }
 
+    public class SeriesRecordFull2
+    {
+        public string ServCode { get; set; }
+        public string ServURL { get; set; }
+        public string location { get; set; }
+        public string VarCode { get; set; }
+        public string VarName { get; set; }
+        public string beginDate { get; set; }
+        public string endDate { get; set; }
+        public string authtoken { get; set; }
+        public string ValueCount { get; set; }
+        public string Sitename { get; set; }
+        public string latitude { get; set; }
+        public string longitude { get; set; }
+        public string datatype { get; set; }
+        public string valuetype { get; set; }
+        public string samplemedium { get; set; }
+        public string timeunits { get; set; }
+        public string conceptKeyword { get; set; }
+        public string genCategory { get; set; }
+        public string TimeSupport { get; set; }
+        public string SeriesCode { get; set; }
+        public string QCLID { get; set; }
+        public string QCLDesc { get; set; }
+        public string Organization { get; set; }
+        public string TimeUnitAbbrev { get; set; }
+        public string TimeUnits { get; set; }
+        public string IsRegular { get; set; }
+        public string Speciation { get; set; }
+        public string SourceOrg { get; set; }
+        public string VariableUnitsAbbrev { get; set; }
+        public string SourceId { get; set; }
+        public string SourceDesc { get; set; }
+        public string MethodId { get; set; }
+        public string MethodDesc { get; set; }
+    }
+
+    sealed class CSVFileDefinitionMap : CsvClassMap<SeriesRecordFull2>
+    {
+        public CSVFileDefinitionMap()
+        {
+            Map(m => m.ServURL).Name("ServiceWSDL");
+            Map(m => m.MethodDesc).Name("MethodDesc");
+            Map(m => m.QCLID).Name("QCLID");
+            Map(m => m.ServCode).Name("NetworkName");
+            //Map(m => m.endDate).Name("EndDateTimeUTC");
+            Map(m => m.Organization).Name("Organization");
+            Map(m => m.genCategory).Name("GeneralCategory");
+            Map(m => m.conceptKeyword).Name("ConceptKeyword");
+            Map(m => m.Sitename).Name("SiteName");
+            Map(m => m.VarName).Name("VariableName");
+            Map(m => m.latitude).Name("Latitude");
+            Map(m => m.TimeUnitAbbrev).Name("TimeUnitAbbrev");
+            //Map(m => m.s).Name("NetworkID");
+            Map(m => m.ValueCount).Name("Valuecount");
+            //Map(m => m.ServURL).Name("Timestamp");
+            //Map(m => m.n).Name("NoDataValue");
+            //Map(m => m.beginDate).Name("BeginDateTimeUTC");
+            Map(m => m.timeunits).Name("TimeUnits");
+            Map(m => m.endDate).Name("EndDateTime");
+            Map(m => m.IsRegular).Name("IsRegular");
+            Map(m => m.QCLDesc).Name("QCLDesc");
+            Map(m => m.datatype).Name("DataType");
+            Map(m => m.beginDate).Name("BeginDateTime");
+            //Map(m => m.).Name("id");
+            Map(m => m.Speciation).Name("Speciation");
+            Map(m => m.SourceOrg).Name("SourceOrg");
+            Map(m => m.VarCode).Name("VariableCode");
+            Map(m => m.location).Name("SiteCode");
+            Map(m => m.valuetype).Name("ValueType");
+            Map(m => m.VariableUnitsAbbrev).Name("VariableUnitAbbrev");
+            Map(m => m.SourceId).Name("SourceID");
+            Map(m => m.SourceDesc).Name("SourceDesc");
+            //Map(m => m.var).Name("VariableUnitsName");
+            Map(m => m.longitude).Name("Longitude");
+            Map(m => m.TimeSupport).Name("TimeSupport");
+            Map(m => m.samplemedium).Name("SampleMedium");
+            Map(m => m.MethodId).Name("MethodID");
+            //Map(m => m.ServURL).Name("_version_");
+            //Map(m => m.).Name("SourceCite");
+            //Map(m => m.q).Name("QCLCode");
+            //Map(m => m.ServURL).Name("VariableName_text");
+
+        }
+    }
+
+    public class SeriesMetadataFromSolr
+    {
+        public string ServiceWSDL { get; set; }
+        public string MethodDesc { get; set; }
+        public string QCLID { get; set; }
+        public string NetworkName { get; set; }
+        public string EndDateTimeUTC { get; set; }
+        public string Organization { get; set; }
+        public string GeneralCategory { get; set; }
+        public string ConceptKeyword { get; set; }
+        public string SiteName { get; set; }
+        public string VariableName { get; set; }
+        public string Latitude { get; set; }
+        public string TimeUnitAbbrev { get; set; }
+        public string NetworkID { get; set; }
+        public string Valuecount { get; set; }
+        public string Timestamp { get; set; }
+        public string NoDataValue { get; set; }
+        public string BeginDateTimeUTC { get; set; }
+        public string TimeUnits { get; set; }
+        public string EndDateTime { get; set; }
+        public string IsRegular { get; set; }
+        public string QCLDesc { get; set; }
+        public string DataType { get; set; }
+        public string BeginDateTime { get; set; }
+        public string id { get; set; }
+        public string Speciation { get; set; }
+        public string SourceOrg { get; set; }
+        public string VariableCode { get; set; }
+        public string SiteCode { get; set; }
+        public string ValueType { get; set; }
+        public string VariableUnitAbbrev { get; set; }
+        public string SourceID { get; set; }
+        public string SourceDesc { get; set; }
+        public string VariableUnitsName { get; set; }
+        public string Longitude { get; set; }
+        public string TimeSupport { get; set; }
+        public string SampleMedium { get; set; }
+        public string MethodID { get; set; }
+        public string _version_ { get; set; }
+        public string SourceCite { get; set; }
+        public string QCLCode { get; set; }
+        public string VariableName_text { get; set; }
+
+    }
+
     public struct FacetField
     {
         public string name;
@@ -800,6 +932,15 @@ public class hiscentral : System.Web.Services.WebService
         public FacetField[] facet_fields;
         public SeriesRecordFull[] series;
     }
+
+    public struct GetSeriesCountOrData
+    {
+        public long nseries;
+        public string message;
+        public FacetField[] facet_fields;
+        public SeriesRecordFull2[] series;
+    }
+    
 
     [WebMethod]
     public SeriesRecord[] GetSeriesCatalogForBox(Box box, String conceptCode,
@@ -986,6 +1127,45 @@ public class hiscentral : System.Web.Services.WebService
         return series;
     }
 
+    private SeriesRecordFull2[] getSeriesMetadataFromSolr(string url)
+    {
+        string response = null;
+        SeriesRecordFull2[] series = null;
+       
+
+        using (WebClient client = new WebClient())
+        {
+            client.Encoding = Encoding.UTF8;
+
+            var returnType = "&wt=csv";
+            response = client.DownloadString(url+returnType);
+
+            //System.IO.File.WriteAllText("c:/cuahsi/response.dat", response);
+
+            TextReader reader = new StringReader(response);
+
+            var csvReader = new CsvHelper.CsvReader(reader);
+            csvReader.Configuration.RegisterClassMap<CSVFileDefinitionMap>();
+            try
+            {
+                series = csvReader.GetRecords<SeriesRecordFull2>().ToArray();
+            }
+
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                //clean up ressources
+                reader.Close();
+                if (reader != null) reader.Close();
+            }
+        }
+
+        return series;
+    }
+
     private long GetCount(string url) {
         XDocument xDocument;
         string response = null;
@@ -1118,18 +1298,98 @@ public class hiscentral : System.Web.Services.WebService
         if (noData == false && nseries <= Max_rows)
         {
             url = urlbase + String.Format("&rows={0}", Max_rows);
-            SeriesRecordFull[] series = getSeriesFull(url);
+            //SeriesRecordFull[] series = getSeriesFull(url);
 
+            try
+            {
+                countOrData.series = getSeriesFull(url);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
             //--------------------------------------------------
             //modify endDateTime for NASA networks
             //assuming NASA data is updated 2 days ago until NOW
             //--------------------------------------------------
-            countOrData.series = updateSeriesFull_NasaEndDT(series, endDate);
+            // countOrData.series = updateSeriesFull_NasaEndDT(series, endDate);
         }
 
         return countOrData;
     }
 
+
+
+    [WebMethod]
+    public GetSeriesCountOrData GetSeriesMetadataCountOrData(bool noData, bool facet, double xmin, double xmax, double ymin, double ymax,
+                           string sampleMedium, string dataType, string valueType, string generalCategory,
+                           string conceptKeyword, string networkIDs,
+                           string beginDate, string endDate)
+    {
+
+        var seriesCountOrData = new GetSeriesCountOrData();
+
+        //-------------------------
+        //Validate input parameters
+        //-------------------------
+        if (!validLatLonDateTime(xmin, xmax, ymin, ymax, beginDate, endDate)) return seriesCountOrData;
+
+        long nseries;
+        int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
+
+        //object xmin2 = (object)xmin;
+        //if(xmin2 == null) xmin = double.Pa;
+
+        string urlbase = requestUrlwithCV(xmin, xmax, ymin, ymax,
+                     sampleMedium, dataType, valueType, generalCategory,
+                     conceptKeyword, networkIDs,
+                     beginDate, endDate);
+
+        string url = urlbase;
+        if (noData == true) url = urlbase + "&rows=0";
+
+        //Get total nseries
+        nseries = GetCount(url);
+        seriesCountOrData.nseries = nseries;
+
+        //returned series is limited by Max_rows
+        if (nseries > Max_rows)
+        {
+            seriesCountOrData.message = "the number of series returned exceeds the maximum of " + Max_rows;
+            if (facet == false) return seriesCountOrData;
+        }
+
+        if (facet == true)
+        {
+            string[] facetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory",
+                                    "NetworkID",  "ConceptKeyword", "SourceOrg"};
+            bool isFacetDefinition = false;
+            //FacetField[] 
+            seriesCountOrData.facet_fields = GetFacetField(facetfields, url, isFacetDefinition);
+        }
+
+        if (noData == false && nseries <= Max_rows)
+        {
+            url = urlbase + String.Format("&rows={0}", Max_rows);
+            //SeriesRecordFull[] series = getSeriesFull(url);
+
+            try
+            {
+                seriesCountOrData.series = getSeriesMetadataFromSolr(url);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            //--------------------------------------------------
+            //modify endDateTime for NASA networks
+            //assuming NASA data is updated 2 days ago until NOW
+            //--------------------------------------------------
+            // countOrData.series = updateSeriesFull_NasaEndDT(series, endDate);
+        }
+
+        return seriesCountOrData;
+    }
 
     private SeriesRecord[] updateSeries_NasaEndDT(SeriesRecord[] series, string endDate)
     {
