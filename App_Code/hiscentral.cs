@@ -1346,6 +1346,12 @@ public class hiscentral : System.Web.Services.WebService
                      conceptKeyword, networkIDs,
                      beginDate, endDate);
 
+        if (urlbase == null)
+        {
+            seriesCountOrData.message = "No data found! Please reset your search parameters!";
+            return seriesCountOrData;
+        }
+
         string url = urlbase;
         if (isData == false) url = urlbase + "&rows=0";
 
@@ -1382,11 +1388,11 @@ public class hiscentral : System.Web.Services.WebService
             {
                 throw;
             }
-            //--------------------------------------------------
-            //modify endDateTime for NASA networks
-            //assuming NASA data is updated 2 days ago until NOW
-            //--------------------------------------------------
-            // countOrData.series = updateSeriesFull_NasaEndDT(series, endDate);
+
+            //------------------------------------------------------------
+            //modify endDateTime for the returned series for NASA networks
+            //------------------------------------------------------------
+            seriesCountOrData.series = updateSeriesFull2_NasaEndDT(seriesCountOrData.series);
         }
 
         return seriesCountOrData;
@@ -1460,11 +1466,33 @@ public class hiscentral : System.Web.Services.WebService
         return series;
     }
 
+    private SeriesRecordFull2[] updateSeriesFull2_NasaEndDT(SeriesRecordFull2[] series)
+    {
+
+        for (int i = 0; i < series.Length; i++)
+        {
+            if (series[i].ServCode.Contains("TRMM"))
+            {
+                series[i].endDate = NasaEndDT("TRMM").ToString("yyyy-MM-ddThh:mm:ssZ");
+            }
+            else if (series[i].ServCode.Contains("NLDAS"))
+            {
+                series[i].endDate = NasaEndDT("NLDAS").ToString("yyyy-MM-ddThh:mm:ssZ");
+            }
+            else if (series[i].ServCode.Contains("GLDAS"))
+            {
+                series[i].endDate = NasaEndDT("GLDAS").ToString("yyyy-MM-ddThh:mm:ssZ");
+            }
+        }
+
+        return series;
+    }
+    
     ///Jan.2017 YX, add query filter by: 
-    ///   SampleMedium
-    ///   DataType
-    ///   ValueType
-    ///   GeneralCategory  
+         ///   SampleMedium
+         ///   DataType
+         ///   ValueType
+         ///   GeneralCategory  
     private string requestUrlwithCV(double xmin, double xmax, double ymin, double ymax,
                         string sampleMedium, string dataType, string valueType, string generalCategory,
                         string conceptKeyword, string networkIDs,
