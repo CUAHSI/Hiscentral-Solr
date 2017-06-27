@@ -1211,8 +1211,8 @@ public class hiscentral : System.Web.Services.WebService
     /// <summary>
     /// Jan. 2017, YX 
     /// required parameters:
-    /// <param name="isData">true|false</param>
-    /// <param name="isFacet">true|false</param>
+    /// <param name="getData">true|false</param>
+    /// <param name="getFacetOnCV">true|false</param>
     /// <param name="xmin">-180.</param>
     /// <param name="xmax">180.</param>
     /// <param name="ymin">-90</param>
@@ -1254,7 +1254,7 @@ public class hiscentral : System.Web.Services.WebService
     /// </summary>
     ///  
     [WebMethod]
-    public CountOrData GetCountOrData(bool isData, bool isFacet, double xmin, double xmax, double ymin, double ymax,
+    public CountOrData GetCountOrData(bool getData, bool getFacetOnCV, double xmin, double xmax, double ymin, double ymax,
                             string sampleMedium, string dataType, string valueType, string generalCategory,
                             string conceptKeyword, string networkIDs,
                             string beginDate, string endDate)
@@ -1282,7 +1282,7 @@ public class hiscentral : System.Web.Services.WebService
         }
 
         string url = urlbase;
-        if (isData == false) url = urlbase + "&rows=0";
+        if (getData == false) url = urlbase + "&rows=0";
 
         //Get total nseries
         nseries = GetCount(url);
@@ -1297,19 +1297,19 @@ public class hiscentral : System.Web.Services.WebService
         if (nseries > Max_rows)
         {
             countOrData.message = "the number of series returned exceeds the maximum of " + Max_rows;
-            if (isFacet == false) return countOrData;
+            if (getFacetOnCV == false) return countOrData;
         }
 
-        if (isFacet == true)
+        if (getFacetOnCV == true)
         {
             string[] facetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory",
                                     "NetworkID",  "ConceptKeyword", "SourceOrg"};
-            bool isFacetDefinition = false;
+            bool getFacetDefinition = false;
             //FacetField[] 
-            countOrData.facet_fields = GetFacetField(facetfields, url, isFacetDefinition);
+            countOrData.facet_fields = GetFacetField(facetfields, url, getFacetDefinition);
         }
 
-        if (isData == true && nseries <= Max_rows)
+        if (getData == true && nseries <= Max_rows)
         {
             url = urlbase + String.Format("&rows={0}", Max_rows);
             SeriesRecordFull[] series = getSeriesFull(url);
@@ -1325,7 +1325,7 @@ public class hiscentral : System.Web.Services.WebService
 
 
     [WebMethod]
-    public GetSeriesCountOrData GetSeriesMetadataCountOrData(bool isData, bool isFacet, double xmin, double xmax, double ymin, double ymax,
+    public GetSeriesCountOrData GetSeriesMetadataCountOrData(bool getData, bool getFacetOnCV, double xmin, double xmax, double ymin, double ymax,
                            string sampleMedium, string dataType, string valueType, string generalCategory,
                            string conceptKeyword, string networkIDs,
                            string beginDate, string endDate)
@@ -1353,7 +1353,7 @@ public class hiscentral : System.Web.Services.WebService
         }
 
         string url = urlbase;
-        if (isData == false) url = urlbase + "&rows=0";
+        if (getData == false) url = urlbase + "&rows=0";
 
         //Get total nseries
         nseries = GetCount(url);
@@ -1363,19 +1363,19 @@ public class hiscentral : System.Web.Services.WebService
         if (nseries > Max_rows)
         {
             seriesCountOrData.message = "the number of series returned exceeds the maximum of " + Max_rows;
-            if (isFacet == false) return seriesCountOrData;
+            if (getFacetOnCV == false) return seriesCountOrData;
         }
 
-        if (isFacet == true)
+        if (getFacetOnCV == true)
         {
             string[] facetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory",
                                     "NetworkID",  "ConceptKeyword", "SourceOrg"};
-            bool isFacetDefinition = false;
+            bool getFacetDefinition = false;
             //FacetField[] 
-            seriesCountOrData.facet_fields = GetFacetField(facetfields, url, isFacetDefinition);
+            seriesCountOrData.facet_fields = GetFacetField(facetfields, url, getFacetDefinition);
         }
 
-        if (isData == true && nseries <= Max_rows)
+        if (getData == true && nseries <= Max_rows)
         {
             url = urlbase + String.Format("&rows={0}", Max_rows);
             //SeriesRecordFull[] series = getSeriesFull(url);
@@ -1794,15 +1794,15 @@ public class hiscentral : System.Web.Services.WebService
 
 
 
-    private FacetField[] GetFacetField(string[] facetfields, string urlBaseQuery, bool isFacetDefinition)
+    private FacetField[] GetFacetField(string[] facetfields, string urlBaseQuery, bool getFacetDefinition)
     {
         string[] cvsearchable = { "DataType", "ValueType", "SampleMedium", "GeneralCategory" };
 
         //no CV definition returned
         Dictionary<string, string> dictCvDefinition = new Dictionary<string, string>();
-        if (isFacetDefinition == true)
+        if (getFacetDefinition == true)
         {
-            //currently facetfields should have one element only when isFacetDefition=true
+            //currently facetfields should have one element only when getFacetDefition=true
             string facetfield = facetfields[0];
 
             //archived under  Xml/cvdefinition.xml
@@ -1858,7 +1858,7 @@ public class hiscentral : System.Web.Services.WebService
                  //Add synonym search, the comma and space in the multi-term word are replaced with '+' and '_', respectively, in the indexing process
                  //, which need to be transformed back in the faceting 
                  term = facetfield.Equals("ConceptKeyword") ? t.Replace('#', ',').Replace('_', ' ') : t,
-                 definition = isFacetDefinition == false || !cvsearchable.Contains(facetfield) ?
+                 definition = getFacetDefinition == false || !cvsearchable.Contains(facetfield) ?
                             null : (dictCvDefinition.ContainsKey(t) ? dictCvDefinition[t] : "undefined"),
                  count = long.Parse(p.Value),
              }).ToArray();
