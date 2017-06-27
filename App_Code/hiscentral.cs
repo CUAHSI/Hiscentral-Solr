@@ -832,6 +832,8 @@ public class hiscentral : System.Web.Services.WebService
                                 Uri.UnescapeDataString(beginDate), Uri.UnescapeDataString(endDate))
                     +String.Format(@"&rows={0}", Max_rows);
 
+        if (url == null) return series;
+
         XDocument xDocument;
         string response = null;
         using (WebClient client = new WebClient())
@@ -846,7 +848,6 @@ public class hiscentral : System.Web.Services.WebService
             //       SiteName, DataType, SampleMedium, TimeUnits, GeneralCategory
             series =
             (from o in xDocument.Descendants("doc")
-             //let eleStr = o.Elements("str")
              select new SeriesRecord()
              {
                  location = o.Elements("str").Single(x => x.Attribute("name").Value == "SiteCode").Value.ToString(), //???
@@ -871,11 +872,10 @@ public class hiscentral : System.Web.Services.WebService
              }).ToArray();
         }
 
-        //--------------------------------------------------
-        //modify endDateTime for NASA networks
-        //assuming NASA data is updated 2 days ago until NOW
-        //--------------------------------------------------
-        series = updateSeries_NasaEndDT(series, endDate);
+        //------------------------------------------------------------
+        //modify endDateTime for the returned series for NASA networks
+        //------------------------------------------------------------
+        series = updateSeries_NasaEndDT(series);
 
         return series;
     }
@@ -910,13 +910,14 @@ public class hiscentral : System.Web.Services.WebService
                                 beginDate, endDate) 
                    + String.Format(@"&rows={0}", Max_rows);
 
+        if (url == null) return series;
+
         series = getSeriesFull(url);
 
-        //--------------------------------------------------
-        //modify endDateTime for NASA networks
-        //assuming NASA data is updated 2 days ago until NOW
-        //--------------------------------------------------
-        series = updateSeriesFull_NasaEndDT(series, endDate);
+        //------------------------------------------------------------
+        //modify endDateTime for the returned series for NASA networks
+        //------------------------------------------------------------
+        series = updateSeriesFull_NasaEndDT(series);
 
         return series;
     }
@@ -942,7 +943,6 @@ public class hiscentral : System.Web.Services.WebService
             //       SiteName, DataType, SampleMedium, TimeUnits, GeneralCategory
             series =
             (from o in xDocument.Descendants("doc")
-                 //let eleStr = o.Elements("str")
              select new SeriesRecordFull()
              {
                  location = o.Elements("str").Single(x => x.Attribute("name").Value == "SiteCode").Value.ToString(), //???
@@ -1027,8 +1027,8 @@ public class hiscentral : System.Web.Services.WebService
     /// <summary>
     /// Jan. 2017, YX 
     /// required parameters:
-    /// <param name="noData">true|false</param>
-    /// <param name="getCV">true|false</param>
+    /// <param name="isData">true|false</param>
+    /// <param name="isFacet">true|false</param>
     /// <param name="xmin">-180.</param>
     /// <param name="xmax">180.</param>
     /// <param name="ymin">-90</param>
@@ -1065,12 +1065,12 @@ public class hiscentral : System.Web.Services.WebService
     /// <param name="beginDate">5/21/2011</param>
     /// 
     /// default beginDate/endDate
-    /// <param name="beginDate"></param>  default: 1900-01-01
+    /// <param name="beginDate"></param>  default: 1800-01-01
     /// <param name="endDate"></param>    default: 2100-01-01 
     /// </summary>
     ///  
     [WebMethod]
-    public CountOrData GetCountOrData(bool noData, bool facet, double xmin, double xmax, double ymin, double ymax,
+    public CountOrData GetCountOrData(bool isData, bool isFacet, double xmin, double xmax, double ymin, double ymax,
                             string sampleMedium, string dataType, string valueType, string generalCategory,
                             string conceptKeyword, string networkIDs,
                             string beginDate, string endDate) {
@@ -1085,28 +1085,35 @@ public class hiscentral : System.Web.Services.WebService
         long nseries;
         int Max_rows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SOLRnrows"]);
 
-        //object xmin2 = (object)xmin;
-        //if(xmin2 == null) xmin = double.Pa;
-
         string urlbase = requestUrlwithCV(xmin, xmax, ymin, ymax,
                      sampleMedium, dataType, valueType, generalCategory,
                      conceptKeyword, networkIDs,
                      beginDate, endDate);
 
+        if (urlbase == null) {
+            countOrData.message = "No data found! Please reset your search parameters!";
+            return countOrData;
+        }
+
         string url = urlbase;
-        if(noData == true) url = urlbase + "&rows=0";
+        if(isData == false) url = urlbase + "&rows=0";
 
         //Get total nseries
         nseries = GetCount(url);
         countOrData.nseries = nseries;
-
-        //returned series is limited by Max_rows
-        if(nseries > Max_rows) {
-            countOrData.message = "the number of series returned exceeds the maximum of " + Max_rows;
-            if(facet == false) return countOrData;
+        if (nseries == 0)
+        {
+            countOrData.message = "No data found! Please reset your search parameters!";
+            return countOrData;
         }
 
-        if (facet == true)
+        //returned series is limited by Max_rows
+        if (nseries > Max_rows) {
+            countOrData.message = "the number of series returned exceeds the maximum of " + Max_rows;
+            if(isFacet == false) return countOrData;
+        }
+
+        if (isFacet == true)
         {
             string[] facetfields = { "DataType", "ValueType", "SampleMedium", "GeneralCategory",
                                     "NetworkID",  "ConceptKeyword", "SourceOrg"};
@@ -1115,63 +1122,89 @@ public class hiscentral : System.Web.Services.WebService
             countOrData.facet_fields = GetFacetField(facetfields, url, isFacetDefinition);
         }
 
-        if (noData == false && nseries <= Max_rows)
+        if (isData == true && nseries <= Max_rows)
         {
             url = urlbase + String.Format("&rows={0}", Max_rows);
             SeriesRecordFull[] series = getSeriesFull(url);
 
-            //--------------------------------------------------
-            //modify endDateTime for NASA networks
-            //assuming NASA data is updated 2 days ago until NOW
-            //--------------------------------------------------
-            countOrData.series = updateSeriesFull_NasaEndDT(series, endDate);
+            //------------------------------------------------------------
+            //modify endDateTime for the returned series for NASA networks
+            //------------------------------------------------------------
+            countOrData.series = updateSeriesFull_NasaEndDT(series);
         }
 
         return countOrData;
     }
 
 
-    private SeriesRecord[] updateSeries_NasaEndDT(SeriesRecord[] series, string endDate)
+    private SeriesRecord[] updateSeries_NasaEndDT(SeriesRecord[] series)
     {
-        DateTime endDT_query;
-        DateTime.TryParse(endDate, out endDT_query);
-
         for (int i = 0; i < series.Length; i++)
         {
-            if (series[i].ServCode.Contains("GLDAS") || series[i].ServCode.Contains("NLDAS"))
-                series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
+            if (series[i].ServCode.Contains("TRMM"))
+            {
+                series[i].endDate = NasaEndDT("TRMM").ToString("yyyy-MM-ddThh:mm:ssZ");
+            }
+            else if (series[i].ServCode.Contains("NLDAS"))
+            {
+                series[i].endDate = NasaEndDT("NLDAS").ToString("yyyy-MM-ddThh:mm:ssZ");
+            }
+            else if (series[i].ServCode.Contains("GLDAS"))
+            {
+                series[i].endDate = NasaEndDT("GLDAS").ToString("yyyy-MM-ddThh:mm:ssZ");
+            }
         }
 
         return series;
     }
 
-
-    private SeriesRecordFull[] updateSeriesFull_NasaEndDT(SeriesRecordFull[] series, string endDate)
+    private DateTime NasaEndDT(string networkname)
     {
-        DateTime endDT_query;
-        DateTime.TryParse(endDate, out endDT_query);
+        DateTime endDT = DateTime.Now;
+
+        int deltdays_TRMM = int.Parse(System.Configuration.ConfigurationManager.AppSettings["EndDateTime_deltdays_TRMM"]);
+        int deltdays_NLDAS = int.Parse(System.Configuration.ConfigurationManager.AppSettings["EndDateTime_deltdays_NLDAS"]);
+        string endDateTime_GLDAS = System.Configuration.ConfigurationManager.AppSettings["EndDateTime_GLDAS"];
+
+        switch (networkname)
+        {
+            case "GLDAS":
+                    DateTime.TryParse(endDateTime_GLDAS, out endDT);
+                    break;
+            case "NLDAS":
+                    endDT = DateTime.Now.AddDays(deltdays_NLDAS);
+                    break;
+            case "TRMM":
+                    endDT = DateTime.Now.AddDays(deltdays_TRMM);
+                    break;
+        }
+
+        return endDT;        
+    }
+
+    private SeriesRecordFull[] updateSeriesFull_NasaEndDT(SeriesRecordFull[] series)
+    {
 
         for (int i = 0; i < series.Length; i++)
         {
-            if (series[i].ServCode.Contains("GLDAS") || series[i].ServCode.Contains("NLDAS"))
-                series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
-
-
-            //DateTime endDT_stored;
-            //DateTime.TryParse(series[i].endDate, out endDT_stored);
-            ////query time ends after stored time
-            //if (DateTime.Compare(endDT_query, endDT_stored) > 0)
-            //    //assuming NASA data is updated 2 days ago until NOW
-            //    if ((DateTime.Today - endDT_query).TotalDays > 1)
-            //        series[i].endDate = endDT_query.ToString("yyyy-MM-ddThh:mm:ssZ");
-            //    else
-            //        series[i].endDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-ddThh:mm:ssZ");
+            if (series[i].ServCode.Contains("TRMM"))
+            {
+                series[i].endDate = NasaEndDT("TRMM").ToString("yyyy-MM-ddThh:mm:ssZ");
+            }
+            else if (series[i].ServCode.Contains("NLDAS"))
+            {
+                series[i].endDate = NasaEndDT("NLDAS").ToString("yyyy-MM-ddThh:mm:ssZ");
+            }
+            else if (series[i].ServCode.Contains("GLDAS"))
+            {
+                series[i].endDate = NasaEndDT("GLDAS").ToString("yyyy-MM-ddThh:mm:ssZ");
+            }
         }
 
         return series;
     }
 
-    ///YX Jan.2017, add filter query by: 
+    ///Jan.2017 YX, add query filter by: 
     ///   SampleMedium
     ///   DataType
     ///   ValueType
@@ -1183,6 +1216,7 @@ public class hiscentral : System.Web.Services.WebService
     {
         //get url without CV filter query
         string url = requestUrl(xmin, xmax, ymin, ymax, conceptKeyword, networkIDs, beginDate, endDate);
+        if (url == null) return null;
 
         string qSampleMedium = getQueryString("SampleMedium", sampleMedium);
         string qDataType = getQueryString("DataType", dataType);
@@ -1193,19 +1227,12 @@ public class hiscentral : System.Web.Services.WebService
         return url;
     }
 
-    ///YX Dec.2015, to adjust Concept search
-    ///
-    /// YX Sep.2016, to take into accout the out-dated EndDateTime in the database for NASA networks
-    ///
-    /// YX Jan.2017,
-    ///        , , 
+    ///Dec.2015 YX, to adjust Concept search
+    ///Sep.2016 YX, to take into accout the out-dated EndDateTime in the database for NASA networks
     private string requestUrl(double xmin, double xmax, double ymin, double ymax,
                               string conceptKeyword, string networkIDs,
                           string beginDate, string endDate)
     {
-        string parameters;
-        //string beginDate2 = null;
-        //string endDate2 = null;
         string qNetworkIDs;
         string qConcept;
         string qLat, qLon;
@@ -1261,8 +1288,8 @@ public class hiscentral : System.Web.Services.WebService
                 else keywordSet.Add(keywordOntology.Trim().ToLower());                
 
                 //Get leaf concepts for input conceptKeyword
-                //modify to get leaf keywords from partial Ontology tree only, Yaping, May 2017
-                //if not found in partial ontology tree, return null
+                //May 2017, modified to get leaf keywords from partial Ontology tree only
+                //                          if not found in partial ontology tree, return null
                 string[] subconceptList = getLeafKeywordsPartial(keyword.Trim());
 
                 if (subconceptList != null)
@@ -1287,57 +1314,79 @@ public class hiscentral : System.Web.Services.WebService
         qLat = String.Format("Latitude:[{0:0.0000} {1:0.0000}]", ymin, ymax);
         qLon = String.Format("Longitude:[{0:0.0000} {1:0.0000}]", xmin, xmax);
 
-        //----------------------------------------------------
-        //Create query parameter for beginDateTime/endDateTime
-        //----------------------------------------------------
-        beginDate = validateDT(beginDate, "1900-01-01");
-        endDate = validateDT(endDate, "2100-01-01");
-
-        //----------------------------------------------------
-        //Modify query parameter for beginDateTime/endDateTime
-        //NASA networks: 262, 267, 274, these networks are harvested on a half-year basis 
-        //   and the endDateTime is not updated  
-        //----------------------------------------------------
-        var qBeginDT = String.Format(@"BeginDateTime:[* TO {0}T00:00:00Z]", endDate);
-        var qEndDT = String.Format(@"EndDateTime:[{0}T00:00:00Z TO *]", beginDate);
-
-        //extending NASA endDateTime to NOW
-        var qBeginDT_Extend = "BeginDateTime:[* TO NOW]";
-
-        //excluding those with: stored beginDateTime > queried endDateTime 
-        // but should include the day of endDate
-        var qBeginDT_Exclude = String.Format(@"-BeginDateTime:[{0}T12:00:00Z TO *]", endDate);
-
-        //for those with: 
-        //
-
-
         //-------------------------
         //query parameters to solr
         //-------------------------
         String reqType = "edismax";
 
-        //For nasa networks, EndDateTime is modified to NOW
-        //May 9, 2017  excluding those BeginDateTime > endDate2
-        if (networkIDs.Contains("262") || networkIDs.Contains("267") || networkIDs.Contains("274"))
-        {
-            //parameters = String.Format(@"&fq={0}&fq={1}&fq={2}&fq={3}", qNetworkIDs, qBeginDT_Extend, qEndDT, qBeginDT_Exclude);
-            parameters = String.Format(@"&fq={0}&fq={1}&fq={2}", qNetworkIDs, qBeginDT_Extend, qBeginDT_Exclude);
-        }
+        //----------------------------------------------------
+        //Create query parameter for beginDateTime/endDateTime
+        //----------------------------------------------------
+        beginDate = validateDT(beginDate, "1800-01-01");
+        endDate = validateDT(endDate, "2100-01-01");
+
+        //----------------------------------------------------
+        //Since NASA networks (262, 267, 274, 479) are not harvested frequenly, hence the EndDateTime is not updated in Solr Database, 
+        //  query parameters for BeginDateTime&EndDateTime have to be modified in order to mimic the case where EndDateTime IS updated frequently 
+        //----------------------------------------------------
+        var qBeginDT = String.Format(@"BeginDateTime:[* TO {0}T00:00:00Z]", endDate);
+        var qEndDT = String.Format(@"EndDateTime:[{0}T00:00:00Z TO *]", beginDate);
+        var qEndDT_Exclude = String.Format(@"-EndDateTime:[* TO {0}T00:00:00Z]", beginDate);
+
+        //exclude those with: stored beginDateTime > queried endDateTime 
+        // However, include the day of endDate. T12:00:00 instead of T00:00:00
+        var qBeginDT_Exclude = String.Format(@"-BeginDateTime:[{0}T12:00:00Z TO *]", endDate);
+
+        string qDateTime_GLDAS = String.Format(@"(NetworkID:(262) {0} {1})", qEndDT_Exclude, qBeginDT_Exclude);
+
+        string qDateTime_NLDAS = String.Format(@"({0} {1})", qNetworkIDs, qBeginDT_Exclude);
+        if (qNetworkIDs.Equals("NetworkID:*")) qDateTime_NLDAS = String.Format(@"(NetworkID:(267+OR+274) {0})", qBeginDT_Exclude);
+
+        string qDateTime_TRMM = String.Format(@"(NetworkID:(479) {0})", qBeginDT_Exclude); 
+        
+        //For nasa networks, EndDateTime is modified, and exclude those BeginDateTime > endDate(defined in web.config)
+        DateTime beginDate_query;
+        DateTime.TryParse(beginDate, out beginDate_query);
+        if (DateTime.Compare(beginDate_query, NasaEndDT("NLDAS")) > 0) qDateTime_NLDAS = String.Empty;
+        if (DateTime.Compare(beginDate_query, NasaEndDT("TRMM")) > 0) qDateTime_TRMM = String.Empty;
+
+        string parameters = String.Empty;
+        string qDateTime_NASA = String.Empty;
+
+        //GLDAS
+        if (networkIDs.Contains("262"))
+            parameters = parameters + qDateTime_GLDAS;
+        //NLDAS      
+        else if (networkIDs.Contains("267") || networkIDs.Contains("274"))
+            parameters = parameters + qDateTime_NLDAS;
+        //TRMM
+        else if (networkIDs.Contains("479"))
+            parameters = parameters + qDateTime_TRMM;
         else if (networkIDs.Equals("") || networkIDs.Contains("*"))
         {
-            parameters = String.Format(@"&fq=(NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}+AND+{1}%22)",
-                                        qBeginDT_Extend, qBeginDT_Exclude)
-                        + String.Format(@"+OR+(*:* -NetworkID:(262+OR+267+OR+274)+AND+ _query_:%22{0}+AND+{1}%22)",
-                                        qBeginDT, qEndDT)
-                        + String.Format(@"&defType={0}", reqType);
+            if (!String.IsNullOrEmpty(qDateTime_GLDAS)) qDateTime_NASA = qDateTime_NASA + qDateTime_GLDAS + "+OR+";
+            if (!String.IsNullOrEmpty(qDateTime_NLDAS)) qDateTime_NASA = qDateTime_NASA + qDateTime_NLDAS + "+OR+";
+            if (!String.IsNullOrEmpty(qDateTime_TRMM))  qDateTime_NASA = qDateTime_NASA + qDateTime_TRMM + "+OR+";
+
+            if (String.IsNullOrEmpty(qDateTime_NASA))
+                parameters = String.Format(@"(*:* -NetworkID:(262+OR+267+OR+274+OR+479)+AND+ _query_:%22{0}+AND+{1}%22)", qBeginDT, qEndDT);
+            else
+            {
+                qDateTime_NASA = qDateTime_NASA.Substring(0, qDateTime_NASA.Length - 4);
+                parameters = qDateTime_NASA + String.Format(@"+OR+(*:* -NetworkID:(262+OR+267+OR+274+OR+479)+AND+ _query_:%22{0}+AND+{1}%22)", qBeginDT, qEndDT);
+            }
         }
         else
-        {
-            parameters = String.Format(@"&fq={0}&fq={1}&fq={2}", qNetworkIDs, qBeginDT, qEndDT);
-        }
+            parameters = String.Format(@"{0}&fq={1}&fq={2}", qNetworkIDs, qBeginDT, qEndDT);
 
-        parameters = endpoint + "select?q=*:*" + parameters + String.Format(@"&fq={0}&fq={1}&fq={2}", qConcept, qLat, qLon);
+        //beginDate_query > NasaEndDT("NLDAS") OR beginDate_query > NasaEndDT("TRMM")
+        if (String.IsNullOrEmpty(parameters)) return null;
+
+        //final query url to solr
+        parameters = endpoint + "select?q=*:*" 
+                    + "&fq=" + parameters 
+                    + "&fq=" + String.Format(@"{0}&fq={1}&fq={2}&defType={3}", qConcept, qLat, qLon, reqType);
+
         return parameters;
     }
 
@@ -1345,7 +1394,8 @@ public class hiscentral : System.Web.Services.WebService
     private string validateDT(string dt, string defaultDT)
     {
         DateTime testDateTime;
-        string msgDTformat = "Example format: \n"
+        string msgDTformat = "Input datetime format is compatible with ISO_8601 standard \n"
+                            + "Example format: \n"
                             + "5/21/2011 \n"
                             + "05/21/2011 \n"
                             + "3/9/2000 8:20:30 \n"
