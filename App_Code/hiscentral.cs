@@ -1595,8 +1595,8 @@ public class hiscentral : System.Web.Services.WebService
         //----------------------------------------------------
         //Create query parameter for Latitude/Longitude
         //----------------------------------------------------
-        qLat = String.Format("Latitude:[{0:0.0000} {1:0.0000}]", ymin, ymax);
-        qLon = String.Format("Longitude:[{0:0.0000} {1:0.0000}]", xmin, xmax);
+        qLat = String.Format("Latitude:[{0:0.0000} TO {1:0.0000}]", ymin, ymax);
+        qLon = String.Format("Longitude:[{0:0.0000} TO {1:0.0000}]", xmin, xmax);
 
         //-------------------------
         //query parameters to solr
