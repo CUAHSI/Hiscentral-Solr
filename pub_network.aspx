@@ -8,90 +8,10 @@
 <head runat="server">
     <title>CUAHSI HIS Central</title>
   <link href="styles/his.css" rel="stylesheet" type="text/css" />
-      <script type="text/javascript" src="http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.2"></script>
-      <script type="text/javascript">
-      
-      var map = null;
-      var xmin, xmax, ymin, ymax;      
-      function getMap()
-      {
-         map = new VEMap('myMap');
-         if (xmax && xmin && ymax && ymin){
-           var x = (xmax+xmin)/2;
-           var y = (ymax+ymin)/2;
-           
-           var ll = new VELatLong(y,x);
-           //alert(x +","+y);
-           map.SetDashboardSize(VEDashboardSize.Small);
-           zoom  = getZoom(xmin,xmax,ymin,ymax);
-           //alert (zoom); 
-           map.LoadMap(ll, zoom ,'h' ,false);
-    
-         
-           //alert(); 
-           addShape(xmin,xmax,ymin,ymax);//",10);
-         }else{
-           map.LoadMap();
-         }
-         
-      }
-      
-      function getZoom(x1,x2,y1,y2){
-        if (x1!=x2 && y1!=y2){
-          w = (x2 - x1) > (y2 - y1) ? x2 - x1 : y2 - y1; 
-          //alert (w);
-          if (w > 60){
-            return 2;          
-          }else if (w > 28){
-            return 3;
-          }else if (w > 14){
-            return 4;
-          }else if (w > 7){
-            return 5;
-          }else if (w > 3.5){
-            return 4;
-          }else if (w >1.8){
-            return 7;
-          }else if (w > 0.9){
-            return 8;
-          }else if (w > 0.5){            
-            return 9;        
-          }else if (w > 0.2){
-            return 10;                                                  
-          }else if (w > 0.11){
-            return 11;
-          }else if (w > 0.05){
-            return 12;
-          }else{
-            return 10;                          
-          }
-          
-        }else{
-          return 10;
-        }
-      }
-      
-      function addShape(x1,x2,y1,y2){
-        if (x1!=x2 && y1!=y2){
-            //alert(x1 +","+y1+"  "+x2+","+y2);
-            try{
-                var p1 = new VELatLong(y1,x1);
-                var p2 = new VELatLong(y1,x2);
-                var p3 = new VELatLong(y2,x2);
-                var p4 = new VELatLong(y2,x1);
-                zbshape = new VEShape(VEShapeType.Polygon,new Array(p1,p2,p3,p4)); 
-                zbshape.SetLineWidth(1);
-                zbshape.SetLineColor(new VEColor(255,100,100,1.0));
-                zbshape.SetFillColor(new VEColor(255,255,255,0.8)); 
-                zbshape.HideIcon();          
-                map.AddShape(zbshape);
-            }catch(er){
-                status = "exception: addzbshape: " + er.message;
-                alert(status);
-            }
-        }
-    }  
-      </script>
+     
+    <script type="text/javascript" src="js/pub_networks.js"></script>
+
+  
       
 
   <link href="styles/his.css" rel="stylesheet" type="text/css" />
@@ -216,4 +136,6 @@
     
     <%--<asp:LinkButton ID="LinkButton11" Text="Test URL" target="_blank" href="Sources.aspx" runat="server" Style="z-index: 142; left: 270px; position: absolute; top: 535px; border-right: black thin solid; border-top: black thin solid; font-weight: bold; border-left: black thin solid; color: blue; border-bottom: black thin solid; background-color: white; text-align: center; text-decoration: none;" Height="19px" Width="100px" Font-Size="12px"></asp:LinkButton>--%>
 </body>
+     <script type='text/javascript' src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBv1tggGSW3-12h6vkbo8BL711KaUnG1w0&callback=initMap&v=3.28&libraries=places,geometry"></script>
+  
 </html>

@@ -805,7 +805,7 @@ public class hiscentral : System.Web.Services.WebService
         public string QCLDesc { get; set; }
         public string Organization { get; set; }
         public string TimeUnitAbbrev { get; set; }
-        public string TimeUnits { get; set; }
+        //public string TimeUnits { get; set; }
         public string IsRegular { get; set; }
         public string Speciation { get; set; }
         public string SourceOrg { get; set; }
