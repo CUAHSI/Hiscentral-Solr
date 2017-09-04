@@ -103,8 +103,8 @@
              //set maxx minx
              //if (xmax > 160) xmax = 160;
             // if (xmin < -160) xmin = -160;
-             if (ymin < -80) ymin = -80;
-             if (ymax > 80) ymax = 80;
+            // if (ymin < -80) ymin = -80;
+            // if (ymax > 80) ymax = 80;
              //Fit map to initial bounds...
              var bounds = new google.maps.LatLngBounds(
                  new google.maps.LatLng(ymin,xmin),	// SW corner of map
