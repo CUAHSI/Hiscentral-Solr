@@ -1502,13 +1502,59 @@ public class hiscentral : System.Web.Services.WebService
         string url = requestUrl(xmin, xmax, ymin, ymax, conceptKeyword, networkIDs, beginDate, endDate);
         if (url == null) return null;
 
-        string qSampleMedium = getQueryString("SampleMedium", sampleMedium);
-        string qDataType = getQueryString("DataType", dataType);
-        string qValueType = getQueryString("ValueType", valueType);
-        string qGeneralCategory = getQueryString("GeneralCategory", generalCategory);
-        url = url + String.Format(@"&fq={0}&fq={1}&fq={2}&fq={3}", qSampleMedium, qDataType, qValueType, qGeneralCategory);
+        //------------------------------------------------------
+        //Create query parameter for CV terms: serach logic AND
+        //------------------------------------------------------
+        //string qSampleMedium = getQueryString("SampleMedium", sampleMedium);
+        //string qDataType = getQueryString("DataType", dataType);
+        //string qValueType = getQueryString("ValueType", valueType);
+        //string qGeneralCategory = getQueryString("GeneralCategory", generalCategory);
+        //url = url + String.Format(@"&fq={0}&fq={1}&fq={2}&fq={3}", qSampleMedium, qDataType, qValueType, qGeneralCategory);
+
+        //----------------------------------------------------
+        //Create query parameter for CV terms: serach logic OR
+        //----------------------------------------------------
+        string[] cvFields = new string[] { "SampleMedium", "DataType", "ValueType", "GeneralCategory" };
+        string[] cvInput = new string[] { sampleMedium, dataType, valueType, generalCategory };
+
+        string qCVstring = String.Empty;
+        for(int i=0; i < cvFields.Length; i++) {
+            if(!cvInput[i].Equals("") && !cvInput[i].Equals(""))
+            {
+                string query = getQueryStringMulti(cvFields[i], cvInput[i]);
+                qCVstring = qCVstring + String.Format(@"{0}+OR+", query);
+            }
+
+        }
+        if (qCVstring.Equals(String.Empty)) return url;
+
+        qCVstring = qCVstring.Substring(0, qCVstring.Length - 4);
+        url = url + "&fq=" + qCVstring;
 
         return url;
+    }
+
+    private string getQueryStringMulti(string cvFieldName, string cvString)
+    {
+        string qString = String.Empty;
+        string[] terms = null;
+
+        cvFieldName = cvFieldName.Trim();
+
+        //no space
+        char[] delimiters = new char[] { ',', ';', '|' };
+        terms = cvString.ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var term in terms)
+        {
+            qString = qString +
+                String.Format(@"({0}:%22{1}%22)+OR+", cvFieldName, HttpUtility.UrlEncode(term.Trim())); 
+        }
+
+        qString = qString.Substring(0, qString.Length - 4);
+
+
+        return qString;
     }
 
     ///Dec.2015 YX, to adjust Concept search
