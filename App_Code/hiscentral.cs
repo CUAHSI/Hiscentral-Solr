@@ -117,7 +117,10 @@ public class hiscentral : System.Web.Services.WebService
     }
 
 
-    [WebMethod]
+    //[WebMethod]
+    [System.Web.Services.WebMethod(
+       Description = "<br><p style='margin-left:25px;'>Get a list of site information within a specified lat/lon box, and other specified query parameters. </p>" +
+                      "<p style='margin-left:25px;'> Typically used to subset sites dataset and plot the returned sites on a map </ p > ")]
     public Site[] GetSites(double xmin, double xmax, double ymin, double ymax,
                             string conceptKeyword, string networkIDs,
                             string beginDate, string endDate)
@@ -220,7 +223,10 @@ public class hiscentral : System.Web.Services.WebService
     * COUCH: GetSitesInBox and GetSitesInBox2 differ only in input format. 
     */
 
-    [WebMethod]
+    [System.Web.Services.WebMethod(
+   Description = "<br><p style='margin-left:25px;'>Get a list of site information within a specified lat/lon box, and other specified query parameters. </p>" +
+                 "<p style='margin-left:25px;'>Typically used to subset sites dataset and plot the returned sites on a map </ p > "
+                    )]
     public Site[] GetSitesInBox2(
     double xmin, double xmax, double ymin, double ymax,
     string conceptKeyword, string networkIDs)
@@ -272,7 +278,10 @@ public class hiscentral : System.Web.Services.WebService
 
 
 
-    [WebMethod]
+    [WebMethod(
+     Description = "<br><p style='margin-left:25px;'> DEPRECATED. Get a list of site information within a specified lat/lon box, and other specified query parameters. </p>" +
+                   "<p style='margin-left:25px;'>Typically used to subset sites dataset and plot the returned sites on a map </ p > "
+                      )]
     public Site[] GetSitesInBox(Box box, string conceptKeyword, int[] networkIDs)
     {
 
@@ -359,7 +368,9 @@ public class hiscentral : System.Web.Services.WebService
     #endregion
 
     #region variable queries:
-    [WebMethod]
+    [WebMethod(
+   Description = "<br>" +
+                   "")]
     public MappedVariable[] GetMappedVariables2(String conceptids, String Networkids)
     {
         String[] ceptsArray = conceptids.Split(',');
@@ -470,7 +481,7 @@ public class hiscentral : System.Web.Services.WebService
     /// <param name="beginDate"></param>
     /// <param name="endDate"></param>
     /// <returns></returns>
-    [WebMethod]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' ></p >")]
     public MappedVariable[] GetVariables(double xmin, double xmax, double ymin, double ymax,
                             string conceptKeyword, string networkIDs,
                             string beginDate, string endDate)
@@ -566,13 +577,16 @@ public class hiscentral : System.Web.Services.WebService
         public double minx, miny, maxx, maxy;
         public string serviceStatus;
     }
+  
 
-    [WebMethod]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' ><strong>DEPRECATED</strong> Get registered data services within a specified lat/lon box.</p>" +
+                            "<p style = 'margin-left:25px;'>Typically used to subset the data services and use the result as an input for filtering</p>")]
     public ServiceInfo[] GetServicesInBox(Box box)
     {
         return GetServicesInBox2(box.xmin, box.ymin, box.xmax, box.ymax);
     }
-    [WebMethod]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' >Get registered data services within a specified set of coordinates.</p>" +
+                              "<p style = 'margin-left:25px;'>Typically used to subset the data services and use the result as an input for filtering</p>")]
     public ServiceInfo[] GetServicesInBox2(double xmin, double ymin, double xmax, double ymax)
     {
         ServiceStats.AddCount("GetServicesInBox2");
@@ -624,7 +638,8 @@ public class hiscentral : System.Web.Services.WebService
         return r;
 
     }
-    [WebMethod]
+   
+  [WebMethod(Description = "<br> <p style = 'margin-left:25px;' > Get all registered data services from<a href= 'http://hiscentral.cuahsi.org/pub_services.aspx' > http://hiscentral.cuahsi.org/pub_services.aspx</a>. GetWaterOneFlowServiceInfo can be regarded as a special case of GetServicesInBox2, as the former requests the returns for the global area.</p>")]
     public ServiceInfo[] GetWaterOneFlowServiceInfo()
     {
         ServiceStats.AddCount("GetWaterOneFlowServiceInfo");
@@ -943,7 +958,9 @@ public class hiscentral : System.Web.Services.WebService
     }
 
 
-    [WebMethod]
+    [WebMethod(Description = "<br><p style = 'margin-left:25px;'><strong>DEPRECATED</strong>Returns metadata for timeseries that match the provided parameters.The returned object contains a subset of the available metadata sufficient for basic searches.</p> </br>" +
+        "<p style = 'margin-left:25px;'>It does not contain data for e.g Quality control level or source</p>")]
+     
     public SeriesRecord[] GetSeriesCatalogForBox(Box box, String conceptCode,
             int[] networkIDs, string beginDate, string endDate)
     {
@@ -960,7 +977,8 @@ public class hiscentral : System.Web.Services.WebService
         return GetSeriesCatalogForBox2(box.xmin, box.xmax, box.ymin, box.ymax, conceptCode, networkString, beginDate, endDate);
     }
 
-    [WebMethod]
+    [WebMethod(Description = "<br><p style = 'margin-left:25px;'>Returns metadata for timeseries that match the provided parameters.The returned object contains a subset of the available metadata sufficient for basic searches.</p> </br>" +
+      "<p style = 'margin-left:25px;'>It does not contain data for e.g Quality control level or source</p>")]
     public SeriesRecord[] GetSeriesCatalogForBox2(double xmin, double xmax, double ymin, double ymax,
                               string conceptKeyword, String networkIDs,
                           string beginDate, string endDate)
@@ -1036,7 +1054,9 @@ public class hiscentral : System.Web.Services.WebService
     /// <param name="beginDate"></param>
     /// <param name="endDate"></param>
     /// <returns></returns>
-    [WebMethod]
+  
+     [WebMethod(Description = "<br> <p style = 'margin-left:25px;' >Returns metadata for timeseries that match the provided parameters. The returned object contains the full set of the available metadata sufficient for complex searches.</p>" +
+        "<p style = 'margin-left:25px;'>It does contain data for e.g Qualitycontrol Level or Source</p>")]
     public SeriesRecordFull[] GetSeriesCatalogForBox3(double xmin, double xmax, double ymin, double ymax, string sampleMedium, string dataType, string valueType,
                              string conceptKeyword, string networkIDs,
                          string beginDate, string endDate)
@@ -2098,6 +2118,8 @@ public class hiscentral : System.Web.Services.WebService
     /// YX Apr.2016
     /// Get all synonyms for input keywords
     /// </summary>
+    /// 
+
     public HashSet<string> getSearchableConcept(string[] keywords)
     {
         //In the table, SearchableConcept and ConceptName could be identical, thus HashSet is used here
@@ -2543,7 +2565,11 @@ public class hiscentral : System.Web.Services.WebService
      * Return a list of Searchable Keywords for use in autocompletion in HydroDesktop
      * Use a cached version of the ontology with a timeout of one hour. 
      */
-    [WebMethod]
+    [WebMethod(Description = "<br><p>Get a list of searchable concept keywords from the HIS ontology</p>" +
+                                 "<p> Typical use to retrieve list of concepts keywords that can be used as an input parameter for keyword searches or pre - populate fields in e.g. in HydroDesktop.</ p > "
+        )]
+
+
     public string[] GetSearchableConcepts()
     {
         ServiceStats.AddCount("GetSearchableConcepts");

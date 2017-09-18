@@ -34,9 +34,9 @@
             Font-Underline="False" NavigateUrl="pub_services.aspx" Style="font-size: 13px !important; z-index: 105; left: 663px; position: absolute; top: 110px"
             Width="115px" Font-Size="Smaller" ForeColor="White" TabIndex="-1">All Data Services</asp:HyperLink>
 
-        <asp:HyperLink ID="HyperLink8" runat="server" BorderStyle="None" Font-Bold="True"
+<%--        <asp:HyperLink ID="HyperLink8" runat="server" BorderStyle="None" Font-Bold="True"
             Font-Underline="False" Target="_blank" NavigateUrl="https://groups.google.com/forum/#!forum/cuahsi-wds-user-group-forum" Style="font-size: 13px !important; z-index: 105; left: 775px; position: absolute; top: 110px"
-            Width="115px" Font-Size="Smaller" ForeColor="White">Forum</asp:HyperLink>
+            Width="115px" Font-Size="Smaller" ForeColor="White">Forum</asp:HyperLink>--%>
 
         <asp:HyperLink ID="HyperLink4" runat="server" BorderStyle="None" Font-Bold="True"
             Font-Underline="False" NavigateUrl="SearchGrants.aspx" Style="font-size: 13px !important; z-index: 105; left: 830px; position: absolute; top: 110px"
