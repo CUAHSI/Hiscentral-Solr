@@ -53,18 +53,20 @@
         <uc1:HeaderControl ID="HeaderControl1" runat="server" />
      
 
- 
-                <asp:Label ID="lblServiceWSDLLabel" runat="server"  style="z-index: 100; left: 127px; position: absolute; top: 227px" Width="439px" Height="20px" Font-Italic="True" Font-Size="Small"></asp:Label>          
+    
+              
+                <asp:Label ID="lblServiceWSDLLabel" runat="server"  style="z-index: 100; left: 127px; position: absolute; top: 222px" Width="439px" Height="20px" Font-Italic="True" Font-Size="Small"></asp:Label>          
                 <asp:Label ID="lblNetworkNameLabel" runat="server"  style="z-index: 101; left: 124px; position: absolute; top: 202px" Width="446px" Height="20px" Font-Bold="True" Font-Size="Small"></asp:Label>                
                 <asp:Label ID="lblContactNameLabel" runat="server"  style="z-index: 102; left: 221px; position: absolute; top: 254px" Height="20px" Width="311px" Font-Size="Small"></asp:Label>
                 <asp:Label ID="lblContactEmailLabel" runat="server"  style="z-index: 103; left: 221px; position: absolute; top: 276px" Height="20px" Width="311px" Font-Size="Small"></asp:Label>
-                <asp:Label ID="lblContactPhoneLabel" runat="server" style="z-index: 104; left: 221px; position: absolute; top: 298px" Height="20px" Width="311px" Font-Size="Small"></asp:Label>                               
+                <asp:Label ID="lblContactPhoneLabel" runat="server" style="z-index: 104; left: 221px; position: absolute; top: 298px" Height="20px" Width="311px" Font-Size="Small"></asp:Label>  
+        <asp:Label ID="lblwebsite" Font-Bold="True"  runat="server" style="z-index: 105; left: 124px; position: absolute; top: 318px" Height="20px" Width="400px" Font-Size="Small">Website: </asp:Label> 
                    <asp:Label ID="lblSiteCount" runat="server" Font-Size="Small" Height="20px" Style="z-index: 105;
-                     left: 92px; position: absolute; top: 348px" Width="105px"></asp:Label>
+                     left: 92px; position: absolute; top: 370px" Width="105px"></asp:Label>
                    <asp:Label ID="lblVariableCount" runat="server" Font-Size="Small" Height="20px" Style="z-index: 106;
-                     left: 92px; position: absolute; top: 366px" Width="105px"></asp:Label>
+                     left: 92px; position: absolute; top: 390px" Width="105px"></asp:Label>
                    <asp:Label ID="lblValueCount" runat="server" Font-Size="Small" Height="20px" Style="z-index: 107;
-                     left: 92px; position: absolute; top: 386px" Width="105px"></asp:Label>
+                     left: 92px; position: absolute; top: 410px" Width="150px"></asp:Label>
          <asp:Label ID="lblChangesSiteCount" runat="server" Font-Size="Small" Height="20px" Style="z-index: 107;
                      left: 20px; position: absolute; top: 510px" Width="400px"></asp:Label>
           <asp:Label ID="lblChangesVariableCount" runat="server" Font-Size="Small" Height="20px" Style="z-index: 107;
@@ -74,38 +76,33 @@
         <asp:Image runat="server" ID="imgSuccess" Style="z-index: 109; left: 530px; position: absolute; top: 500px" Width="25px" height="25px"/>
         <asp:Label runat="server" ID="lblImgText" Font-Size="Small" Height="20px" Style="z-index: 109; left: 268px; position: absolute; top: 525px"></asp:Label>
                    <asp:Label ID="lblLastHarvested" runat="server" Font-Size="Small" Height="20px" Style="z-index: 107;
-                     left: 20px; position: absolute; top: 420px" Width="500px"></asp:Label>                     
+                     left: 20px; position: absolute; top: 430px" Width="500px"></asp:Label>                     
                 <asp:Label ID="lblOrganizationLabel" runat="server"  style="z-index: 108; left: 124px; position: absolute; top: 177px" Height="20px" Width="670px" Font-Bold="True" Font-Size="Large"></asp:Label>                            
-                <asp:Hyperlink ID="lblOrganizationLabel2" runat="server"  style="z-index: 108; left: 124px; position: absolute; top: 177px" Height="20px" Font-Bold="True" Font-Size="Large"></asp:Hyperlink>                            
-                
-                
-                
- 
-                      
+                       
                <asp:Image ID="imgLogo" runat="server" Height="100px" 
                       ImageUrl="getLogo.aspx" 
                       Style="z-index: 109; left: 13px; position: absolute; top: 177px" Width="100px" />
                <asp:Image ID="imgIcon" runat="server"  
                       ImageUrl="getIcon.aspx"
                       Style="z-index: 110;left: 10px; position: absolute; top: 142px" Height="24px" Width="24px" />             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
-                 <asp:Label ID="Label4" runat="server" Font-Bold="True" Style="z-index: 111; left: 141px;
+                 <asp:Label ID="Label4" runat="server" Font-Bold="True" Style="z-index: 111; left: 124px;
                      position: absolute; top: 254px" Text="Contact:" Font-Size="Small" Width="67px"></asp:Label>
                 &nbsp; &nbsp; &nbsp;&nbsp;
                    <asp:Label ID="Label1" runat="server" Font-Bold="True" Font-Size="Small" Style="z-index: 112;
-                     left: 20px; position: absolute; top: 350px" Text="Sites:" Width="67px"></asp:Label>
+                     left: 20px; position: absolute; top: 370px" Text="Sites:" Width="67px"></asp:Label>
                    <asp:Label ID="Label2" runat="server" Font-Bold="True" Font-Size="Small" Style="z-index: 113;
-                     left: 20px; position: absolute; top: 390px" Text="Values:" Width="67px"></asp:Label>
+                     left: 20px; position: absolute; top: 410px" Text="Values:" Width="67px"></asp:Label>
                    <asp:Label ID="Label3" runat="server" Font-Bold="True" Font-Size="Small" Style="z-index: 114;
-                     left: 20px; position: absolute; top: 370px" Text="Variables:" Width="67px"></asp:Label>
+                     left: 20px; position: absolute; top: 390px" Text="Variables:" Width="67px"></asp:Label>
                    <asp:Label ID="lblNorth" runat="server" Font-Size="X-Small" Style="z-index: 115;
-                     left: 471px; position: absolute; top: 363px"></asp:Label>
+                     left: 471px; position: absolute; top: 383px"></asp:Label>
                    <asp:Label ID="lblEast" runat="server" Font-Size="X-Small" Style="z-index: 116; left: 530px;
-                     position: absolute; top: 379px"></asp:Label>
+                     position: absolute; top: 399px"></asp:Label>
                    <asp:Label ID="lblWest" runat="server" Font-Size="X-Small" Style="z-index: 117; left: 418px;
-                     position: absolute; top: 379px"></asp:Label>
+                     position: absolute; top: 399px"></asp:Label>
                    <asp:Label ID="lblSouth" runat="server" Font-Size="X-Small" Style="z-index: 118; left: 472px;
-                     position: absolute; top: 397px"></asp:Label>
-                   <h3 Style="left: 16px; position: absolute; top: 302px; width:525px; z-index: 119;" >
+                     position: absolute; top: 417px"></asp:Label>
+                   <h3 Style="left: 16px; position: absolute; top: 322px; width:525px; z-index: 119;" >
                      Service Statistics:</h3>
 
 
@@ -118,7 +115,7 @@
       <asp:Label ID="lblNetworkTitle" runat="server" Font-Bold="True" Font-Size="20px" Height="20px"
         Style="z-index: 121; left: 42px; position: absolute; top: 142px" Width="740px"></asp:Label>
       <asp:Label ID="Label5" runat="server" Font-Bold="True" Font-Size="Small" Style="z-index: 126;
-        left: 306px; position: absolute; top: 351px" Text="Geographic Extent:" Width="127px"></asp:Label>
+        left: 306px; position: absolute; top: 371px" Text="Geographic Extent:" Width="127px"></asp:Label>
           
     </form>
     <script type="text/javascript">

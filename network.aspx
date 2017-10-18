@@ -24,10 +24,10 @@
 
     </script>
 
-    <script type="text/javascript" src="swfobject.js"></script>
-    <script type="text/javascript">
+    <%--<script type="text/javascript" src="swfobject.js"></script>--%>
+   <%-- <script type="text/javascript">
         swfobject.registerObject("myId", "9.0.0", "expressInstall.swf");
-    </script>
+    </script>--%>
 
 
     <script type="text/javascript">
@@ -75,7 +75,7 @@
                 <asp:Parameter Name="ContactEmail" />
                 <asp:Parameter Name="ContactPhone" />
                 <asp:Parameter Name="Organization" />
-                <asp:Parameter Name="website" />
+                <asp:Parameter Name="Website" />
                 <asp:Parameter Name="Citation" />
                 <asp:Parameter Name="IsPublic" />
                 <asp:Parameter Name="NetworkTitle" />
@@ -84,7 +84,7 @@
             </UpdateParameters>
 
         </asp:SqlDataSource>
-        <div style="z-index: 121; left: 20px; width: 860px; position: absolute; top: 200px;">
+        <div style="z-index: 121; left: 20px; width: 1010px; position: absolute; top: 200px;">
             <asp:FormView ID="FormView1" runat="server" DataSourceID="SqlDataSource1"
                 Style="z-index: 100; left: 1px; position: absolute; top: 0px; height: 458px;" Width="893px" OnPageIndexChanging="FormView1_PageIndexChanging">
                 <EditItemTemplate>
@@ -100,7 +100,7 @@
                         <asp:TextBox ID="ContactEmailTextBox" runat="server" Text='<%# Bind("ContactEmail") %>' Style="z-index: 105; left: 146px; position: absolute; top: 240px" Height="20px" Width="175px" TabIndex="5"></asp:TextBox>
                         <asp:TextBox ID="ContactPhoneTextBox" runat="server" Text='<%# Bind("ContactPhone") %>' Style="z-index: 106; left: 146px; position: absolute; top: 267px" Height="20px" Width="175px" TabIndex="6"></asp:TextBox>
                         <asp:TextBox ID="OrganizationTextBox" runat="server" Text='<%# Bind("Organization") %>' Style="z-index: 107; left: 151px; position: absolute; top: 106px" Height="20px" Width="461px" TabIndex="2"></asp:TextBox>
-                        <asp:TextBox ID="websiteLabel" runat="server" Text='<%# Bind("website") %>' Style="z-index: 108; left: 151px; position: absolute; top: 131px" Height="20px" Width="461px" TabIndex="3"></asp:TextBox>
+                        <asp:TextBox ID="websiteLabel" runat="server" Text='<%# Bind("Website") %>' Style="z-index: 108; left: 151px; position: absolute; top: 131px" Height="20px" Width="461px" TabIndex="3"></asp:TextBox>
                         <asp:TextBox ID="CitationTextBox" runat="server" Text='<%# Bind("Citation") %>' Style="z-index: 109; left: 439px; position: absolute; top: 223px" Height="85px" Width="363px" TabIndex="3" TextMode="MultiLine"></asp:TextBox>
                         <asp:CheckBox ID="PublicCheckbox" runat="server" Style="z-index: 110; left: 146px; position: absolute; top: 337px"
                             Text="Is service public?" Checked='<%# Bind("IsPublic") %>' Font-Size="12px"></asp:CheckBox>
@@ -188,7 +188,7 @@
                         <asp:Label ID="ContactEmailLabel" runat="server" Text='<%# Bind("ContactEmail") %>' Style="z-index: 105; left: 146px; position: absolute; top: 240px" Height="20px" Width="175px" Font-Size="12px"></asp:Label>
                         <asp:Label ID="ContactPhoneLabel" runat="server" Text='<%# Bind("ContactPhone") %>' Style="z-index: 106; left: 146px; position: absolute; top: 267px" Height="20px" Width="175px" Font-Size="12px"></asp:Label>
                         <asp:Label ID="OrganizationLabel" runat="server" Text='<%# Bind("Organization") %>' Style="z-index: 107; left: 151px; position: absolute; top: 106px" Height="20px" Width="461px" Font-Size="12px"></asp:Label>
-                        <asp:Label ID="websiteLabel" runat="server" Text='<%# Bind("website") %>' Style="z-index: 108; left: 151px; position: absolute; top: 131px" Height="20px" Width="461px" Font-Size="12px"></asp:Label>
+                        <asp:Label ID="WebsiteLabel" runat="server" Text='<%# Bind("Website") %>' Style="z-index: 108; left: 151px; position: absolute; top: 131px" Height="20px" Width="461px" Font-Size="12px"></asp:Label>
 
 
 

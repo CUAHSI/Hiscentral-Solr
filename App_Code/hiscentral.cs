@@ -223,7 +223,7 @@ public class hiscentral : System.Web.Services.WebService
     * COUCH: GetSitesInBox and GetSitesInBox2 differ only in input format. 
     */
 
-    [System.Web.Services.WebMethod(
+    [WebMethod(
    Description = "<br><p style='margin-left:25px;'>Get a list of site information within a specified lat/lon box, and other specified query parameters. </p>" +
                  "<p style='margin-left:25px;'>Typically used to subset sites dataset and plot the returned sites on a map </ p > "
                     )]
@@ -279,7 +279,7 @@ public class hiscentral : System.Web.Services.WebService
 
 
     [WebMethod(
-     Description = "<br><p style='margin-left:25px;'> DEPRECATED. Get a list of site information within a specified lat/lon box, and other specified query parameters. </p>" +
+     Description = "<br><p style='margin-left:25px;'> <strong>DEPRECATED</strong> Get a list of site information within a specified lat/lon box, and other specified query parameters. </p>" +
                    "<p style='margin-left:25px;'>Typically used to subset sites dataset and plot the returned sites on a map </ p > "
                       )]
     public Site[] GetSitesInBox(Box box, string conceptKeyword, int[] networkIDs)
@@ -369,8 +369,7 @@ public class hiscentral : System.Web.Services.WebService
 
     #region variable queries:
     [WebMethod(
-   Description = "<br>" +
-                   "")]
+   Description = "<br ><p  style='margin-left:25px;'><strong>DEPRECATED</strong> Input conceptid (as defined in ontology tree) for specified services, return the corresponding variable information including variablename, variablecode, valuetype, timeUnitID, datatype, etc.</p>")]
     public MappedVariable[] GetMappedVariables2(String conceptids, String Networkids)
     {
         String[] ceptsArray = conceptids.Split(',');
@@ -378,7 +377,8 @@ public class hiscentral : System.Web.Services.WebService
         return GetMappedVariables(ceptsArray, netsArray);
     }
 
-    [WebMethod]
+    [WebMethod(
+  Description = "<br ><p  style='margin-left:25px;'><strong>DEPRECATED</strong> Input conceptid (as defined in ontology tree) for specified services, return the corresponding variable information including variablename, variablecode, valuetype, timeUnitID, datatype, etc.</p>")]
     public MappedVariable[] GetMappedVariables(String[] conceptids, String[] Networkids)
     {
         string objecformat = "concept:{0},network({1}";
@@ -481,7 +481,7 @@ public class hiscentral : System.Web.Services.WebService
     /// <param name="beginDate"></param>
     /// <param name="endDate"></param>
     /// <returns></returns>
-    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' ></p >")]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' >Get a list of variable information within a specified lat/lon box, and other specified query parameters.</p >")]
     public MappedVariable[] GetVariables(double xmin, double xmax, double ymin, double ymax,
                             string conceptKeyword, string networkIDs,
                             string beginDate, string endDate)
@@ -958,7 +958,7 @@ public class hiscentral : System.Web.Services.WebService
     }
 
 
-    [WebMethod(Description = "<br><p style = 'margin-left:25px;'><strong>DEPRECATED</strong>Returns metadata for timeseries that match the provided parameters.The returned object contains a subset of the available metadata sufficient for basic searches.</p> </br>" +
+    [WebMethod(Description = "<br><p style = 'margin-left:25px;'><strong>DEPRECATED</strong> Returns metadata for timeseries that match the provided parameters.The returned object contains a subset of the available metadata sufficient for basic searches.</p> </br>" +
         "<p style = 'margin-left:25px;'>It does not contain data for e.g Quality control level or source</p>")]
      
     public SeriesRecord[] GetSeriesCatalogForBox(Box box, String conceptCode,
@@ -1273,7 +1273,14 @@ public class hiscentral : System.Web.Services.WebService
     /// <param name="endDate"></param>    default: 2100-01-01 
     /// </summary>
     ///  
-    [WebMethod]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' ><strong>DEPRECATED</strong> use GetSeriesMetadataCountOrData) Provides information about metadata stored in the catalog.Tycally used to search the catalog. </p><br>" +
+        "It can return " +
+        "<ul>" +
+         " <li> 1.The count of timeseries that match the provided parameters. </li>" +
+           "<li> 2.the statistics for the distribution of all facets for timeseries that match the provided parameters.e.g how many timeseries have the datatype 'average', or the keyword 'precipitation'.</li>" +
+           "<li> 3.the complete set of all metadata records for timeseries that match the provided parameters. </li >" +
+        "</ul >" +
+        "<p> The return can be defined by providing the appropriate parameters in the request.The return of this request can not exceed 25.000 timeseries. </p> ")]
     public CountOrData GetCountOrData(bool getData, bool getFacetOnCV, double xmin, double xmax, double ymin, double ymax,
                             string sampleMedium, string dataType, string valueType, string generalCategory,
                             string conceptKeyword, string networkIDs,
@@ -1344,7 +1351,17 @@ public class hiscentral : System.Web.Services.WebService
     }
 
 
-    [WebMethod]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' >Provides information about metadata stored in the catalog.Tycally used to search the catalog. <br>" +
+        "It can return " +
+        "<ul>" +
+         " <li> 1.The count of timeseries that match the provided parameters. </li>" +
+           "<li> 2.the statistics for the distribution of all facets for timeseries that match the provided parameters.e.g how many timeseries have the datatype 'average', or the keyword 'precipitation'.</li>" +
+           "<li> 3.the complete set of all metadata records for timeseries that match the provided parameters. </li >" +
+        "</ul >" +
+        "<p> The return can be defined by providing the appropriate parameters in the request.The return of this request can not exceed 25.000 timeseries. </p> ")]
+
+
+
     public GetSeriesCountOrData GetSeriesMetadataCountOrData(bool getData, bool getFacetOnCV, double xmin, double xmax, double ymin, double ymax,
                            string sampleMedium, string dataType, string valueType, string generalCategory,
                            string conceptKeyword, string networkIDs,
@@ -2106,7 +2123,10 @@ public class hiscentral : System.Web.Services.WebService
     ///         </vocabularyId>
     ///     </ControlledVocabularyList>
     /// </summary>
-    [WebMethod]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' >" +
+        "Get the terms and definitions of controlled vocabulary (CV), which are dynamically updated from <a href='http://his.cuahsi.org/mastercvreg/cv11.aspx'>http://his.cuahsi.org/mastercvreg/cv11.aspx</a>"+
+"Typically used when the user requires terms from these controlled vocabularies to provide additional filtering parameters.</ p >")]
+
     public FacetField GetControlledVocabulary(string cvField)
     {
         string endpoint = System.Configuration.ConfigurationManager.AppSettings["SOLRendpoint"];
@@ -2296,7 +2316,8 @@ public class hiscentral : System.Web.Services.WebService
         writer.Close();
     }
 
-    [WebMethod]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' > <strong>DEPRECATED</strong> Returns metadata for timeseries that match the provided parameters in predefined subsets. The returned object contains a subset of the available metadata sufficient for basic searches. it does not contain dat for e.g Qualitycontrol Level or Source</p>" +
+    "Typical use was to help with paginatin of results. Not supported anymore </ p >")]
     public SeriesRecord[] getSeriesCatalogInBoxPaged(
     double xmin, double xmax, double ymin, double ymax,
     string conceptKeyword, String networkIDs,
@@ -2428,7 +2449,7 @@ public class hiscentral : System.Web.Services.WebService
         public string ConceptPath;
     }
 
-    [WebMethod]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' ><strong>DEPRECATED</strong></p >")]
     public OntologyPath[] getSearchablePaths()
     {
         ServiceStats.AddCount("getSearchablePaths");
@@ -2622,7 +2643,14 @@ public class hiscentral : System.Web.Services.WebService
         return getOntologyKeywords();
     }
 
-    [WebMethod]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' >Get the subnodes (both leaf and non-leaf) for input concept <strong>keyword</strong> in the Ontology Tree." +    
+        "<ul>"+
+            "<li style='font-weight: 400;'>Keyword is one of the search criteria used in HydroClient (refer to notes in this section). </li>"+
+            "<li style='font-weight: 400;'>Keyword is also used when data provider uploads data and try to make the uploaded data comply with WaterOneFlow schema. Generally, the user is required to choose a leaf keyword in the ontology tree for each input variable name, so that the newly added variable name is searchable in HisCentral catalog.</li>"+
+            "<li style='font-weight: 400;'>GetOntologyTree() returns nodes in the full ontology tree.</li>" +
+        "</ul>"+
+       " <br></p>")]
+
     public OntologyNode getOntologyTree(string conceptKeyword)
     {
         //get the full tree
@@ -2631,7 +2659,14 @@ public class hiscentral : System.Web.Services.WebService
 
     //updated by Yaping, May 2016: eliminate access to SQL database
     //YX Feb.2016, get the tree for available conceptKeywords in current database
-    [WebMethod]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' >Get the subnodes (both leaf and non-leaf) for input concept <strong>keyword</strong> in the Ontology Tree." +
+            "<ul>" +
+                "<li style='font-weight: 400;'>Keyword is one of the search criteria used in HydroClient (refer to notes in this section). </li>" +
+                "<li style='font-weight: 400;'>Keyword is also used when data provider uploads data and try to make the uploaded data comply with WaterOneFlow schema. Generally, the user is required to choose a leaf keyword in the ontology tree for each input variable name, so that the newly added variable name is searchable in HisCentral catalog.</li>" +
+                 "<li style = 'font-weight: 400;' > The current HisCentral catalog has timeseries data that utilize a subset of the total keywords in the < strong > full </ strong > ontology tree.Hereafter, the ontology tree composed of the nodes with existing variables in HisCentral catalog(i.e., those ~500 keywords) is referred as <strong> partial </strong > ontology tree.</li>"+
+                "<li style = 'font-weight: 400;' > GetOntologyTree() returns nodes in the full ontology tree, while GetOntologyTreewithOption() adds the option of returning nodes in the partial ontology tree</li>"+
+            "</ul>" +
+           " <br></p>")]
     public OntologyNode getOntologywithOption(string conceptKeyword, bool fullTree)
     {
         ServiceStats.AddCount("getOntologyTree");
@@ -2754,7 +2789,7 @@ public class hiscentral : System.Web.Services.WebService
      * This prefix search routine provides a word match list for HD. 
      * It is not documented in the main API returns for the catalog. 
      */
-    [WebMethod]
+    [WebMethod(Description = "<br> <p style = 'margin-left:25px;' ><strong>DEPRECATED</strong> This prefix search routine provides a word match list for HD.</p >")]
     public string[] GetWordList(string prefixText, int count)
     {
         ServiceStats.AddCount("GetWordList");
