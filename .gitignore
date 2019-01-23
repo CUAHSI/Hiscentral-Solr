@@ -130,8 +130,8 @@ website.publishproj
 ## passwords
 #*.pubxml
 
-/.vs
-*.webinfo
+#ignore visual studio local setting
+*/.vs
 
 # NuGet Packages Directory
 packages/*
