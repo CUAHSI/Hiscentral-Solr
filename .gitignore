@@ -130,6 +130,9 @@ website.publishproj
 ## passwords
 #*.pubxml
 
+/.vs
+*.webinfo
+
 # NuGet Packages Directory
 packages/*
 ## TODO: If the tool you use requires repositories.config
