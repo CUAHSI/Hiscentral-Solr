@@ -1,0 +1,444 @@
+1,1,1-Trichloroethane
+1,2-Dichloroethane
+2-Butoxyethanol
+Acenaphthene
+Acenaphthylene
+Acetophenone
+Acidity
+Acidity, CO2 acidity
+Acidity, hot
+Acidity, mineral acidity
+Acidity, total acidity
+Air, water vapor density
+Albedo
+Alkalinity
+Alkalinity, bicarbonate
+Aluminum
+Ammonia
+Ammonium
+Ammonium ammonia ratio
+Anthracene
+Antimony
+Antimony, dissolved
+Antimony, total
+Area
+Area, unspecified
+Argon
+Arsenic
+Arsenic, dissolved
+Arsenic, total
+Atmospheric pressure
+Atrazine
+Barium
+Barium, dissolved
+Barium, total
+Barometric pressure
+Battery voltage
+Benz(a)anthracene
+Benzene
+Benzo(a)pyrene
+Benzo(b)fluoranthene
+Benzo(ghi)perylene
+Benzo(k)fluoranthene
+Beryllium
+Beryllium, dissolved
+Beryllium, total
+Beta radiation
+Biochemical oxygen demand
+Bis-(2-ethylhexyl) phthalate
+Bismuth
+Blue-green algae (cyanobacteria), phycocyanin
+BOD2, carbonaceous
+Boron
+Boron, dissolved
+Boron, total
+Bromide
+Bromide, dissolved
+Bromide, total
+Bromine
+Bromine, dissolved
+Bromoxynil
+Butane
+Butyl benzyl phthalate
+Butyric acid
+Cadmium
+Cadmium, dissolved
+Cadmium, total
+Calcium
+Calcium, dissolved
+Calcium, total
+Carbofuran
+Carbon dioxide
+Carbon dioxide flux
+Carbon tetrachloride
+Carbon, dissolved inorganic
+Carbon, dissolved organic
+Carbon, particulate organic
+Carbon, suspended organic
+Carbon, total
+Carbon, total dissolved
+Carbon, total organic
+Carbon-14
+Carbonate (CO3)
+Carpiodes
+Cesium-137
+Chemical oxygen demand
+Chlorfenvinphos
+Chloride
+Chloride, dissolved
+Chloride, total
+Chlorine
+Chloroform
+Chlorophyll
+Chlorophyll (a+b+c)
+Chlorophyll a
+Chlorophyll fluorescence
+Chlorothalonil
+Chlorpyrifos
+Chlortoluron
+Chromium
+Chromium (VI), dissolved
+Chromium(III)
+Chromium, dissolved
+Chromium, total
+Chrysene
+Clopyralid
+Cobalt
+Cobalt, dissolved
+Cobalt, total
+Cobalt-60
+Coliform, fecal
+Coliform, total
+Color
+Colored dissolved organic matter
+Copper
+Copper, dissolved
+Copper, total
+Counter
+Cyanazine
+Cyanide
+Cyanophyta
+delta-13C of C2H6
+delta-13C of C3H8
+delta-13C of C4H10
+delta-13C of CH4
+delta-13C of CO2
+delta-13C of DIC
+delta-D of CH4
+Density
+Deuterium
+Diazinon
+Dicamba
+Dichlobenil
+Dichlorvos
+Diethyl phthalate
+Dimethoate
+Di-n-butyl phthalate
+Discharge, in conduit
+Discharge, stream
+Discharge, unspecified
+Discharge, well flow rate
+Distance
+Diuron
+Electric Current
+Electric Energy
+Electric Power
+Enterococci
+Escherichia coli
+Ethane
+Ethane, dissolved
+Ethylbenzene
+Ethylene
+Ethylene glycol
+Ethylene, dissolved
+Evaporation, actual
+Evaporation, potential
+Evapotranspiration, actual
+Evapotranspiration, potential
+Fenuron
+Fluoranthene
+Fluoride
+Fluoride, dissolved
+Fluorine
+Flux
+Flux, discharge
+Flux, wind
+Gage height, lake
+Gage height, stream
+Gross alpha radionuclides
+Gross beta radionuclides
+Groundwater Depth
+Groundwater level
+Hardness, carbonate
+Hardness, total
+Helium
+Hexachlorobenzene
+Hexachlorobutadiene
+Hexane
+Hydrocarbons, petroleum
+Hydrogen
+Hydrogen ion
+Iodide, dissolved
+Ioxynil
+Iprodione
+Iron
+Iron, dissolved
+Iron, ferric
+Iron, ferrous
+Iron, total
+Isobutane
+Isodrin
+Isopentane
+Latent heat flux
+Lead
+Lead, dissolved
+Lead, total
+Length
+Level
+Level, lake
+Level, stream
+Linuron
+Lithium
+Lithium, dissolved
+Lithium, total
+Magnesium
+Magnesium, dissolved
+Magnesium, total
+Malathion
+Manganese
+Manganese, dissolved
+Manganese, total
+MCPA
+MCPB
+m-Dichlorobenzene
+Mecoprop
+Mercury
+Mercury, dissolved
+Mercury, total
+Metalaxyl
+Methane
+Methane, dissolved
+Methanol
+Methiocarb
+Methoprene
+Methylene blue active substances
+Methylene chloride
+Metribuzin
+Mevinphos
+Molbydenum, dissolved
+Molybdenum
+Molybdenum, total
+Monolinuron
+Naphthalene
+Napthalene
+Nickel
+Nickel, dissolved
+Nickel, total
+Nitrogen, dissolved inorganic
+Nitrogen, dissolved kjeldahl
+Nitrogen, dissolved nitrate (NO3)
+Nitrogen, dissolved organic
+Nitrogen, gas
+Nitrogen, NH3
+Nitrogen, NH4
+Nitrogen, nitrate (NO3) 
+Nitrogen, nitrite (NO2)
+Nitrogen, nitrite (NO2) + nitrate (NO3)
+Nitrogen, organic
+Nitrogen, particulate organic
+Nitrogen, total
+Nitrogen, total dissolved
+Nitrogen, total inorganic
+Nitrogen, total kjeldahl
+Nitrogen, total organic 
+Nitrogen-15
+Oil and grease
+Oil and grease -- CWA 304B
+Osmotic pressure
+Oxidation reduction potential
+Oxygen, dissolved
+Oxygen, dissolved percent of saturation
+Oxygen-18
+o-Xylene
+Partial pressure of dissolved gases
+PCBs
+p-Dichlorobenzene
+Pendimethalin
+Pentachlorobenzene
+Pentane
+Permittivity
+pH
+Phenanthrene
+Phenol
+Phenolics, total
+Pheophytin
+Phosphorus
+Phosphorus, dissolved
+Phosphorus, dissolved inorganic
+Phosphorus, dissolved organic 
+Phosphorus, inorganic
+Phosphorus, organic
+Phosphorus, orthophosphate
+Phosphorus, orthophosphate dissolved
+Phosphorus, orthophosphate total
+Phosphorus, ortophosphate
+Phosphorus, particulate
+Phosphorus, phosphate (PO4)
+Phosphorus, total 
+Phosphorus, total dissolved
+Phosphorus, total inorganic
+Potassium
+Potassium, dissolved
+Potassium, total
+Precipitation
+Pressure, absolute
+Pressure, gauge
+Pressure, water
+Prometryn
+Propane
+Propane, dissolved
+Propetamphos
+Propiconazole
+Pseudomonas
+Pyrene
+Radiation, downward
+Radiation, incident
+Radiation, incoming longwave
+Radiation, incoming PAR
+Radiation, incoming shortwave
+Radiation, incoming UV-A
+Radiation, net
+Radiation, net longwave
+Radiation, net PAR
+Radiation, net shortwave
+Radiation, outgoing longwave
+Radiation, outgoing PAR
+Radiation, outgoing shortwave
+Radiation, reflected
+Radiation, total incoming
+Radiation, total shortwave
+Radium-226
+Radium-228
+Radon-222
+Rainfall rate
+Relative humidity
+Reservoir storage
+Respiration
+Ruthenium-106
+Salinity
+Secchi depth
+Sediment, suspended
+Selenium
+Selenium, dissolved
+Selenium, total
+Sensible heat flux
+Silica
+Silica, dissolved
+Silicon, dissolved
+Silver
+Silver, dissolved
+Silver, total
+Simazine
+Snow depth
+Snow water equivalent
+Sodium
+Sodium adsorption ratio
+Sodium, dissolved
+Sodium, fraction of cations
+Sodium, total
+Soil heat flux
+Soil Moisture
+Solids, fixed dissolved
+Solids, fixed suspended
+Solids, total
+Solids, total dissolved
+Solids, total suspended
+Solids, volatile suspended
+Specific conductance
+Specific humidity
+Storm water flow
+Stream width
+Streptococci, fecal
+Strontium
+Strontium, dissolved
+Strontium, total
+Sulfate
+Sulfate, dissolved
+Sulfate, total
+Sulfide, dissolved
+Sulfide, total
+Sulfur
+Surface area, suspended sediment
+Suspended sediment
+Sustained wind speed
+SUVA 254
+Tebuconazole
+Temperature
+Temperature, 1 meter below water surface
+Temperature, air
+Temperature, dew point
+Temperature, intragravel water
+Temperature, soil
+Temperature, unspecified
+Temperature, water
+Terbuthylazine
+Tetrachloroethene
+Thallium
+Thallium, dissolved
+Thallium, total
+Thorium
+Thorium, dissolved
+Thorium-228
+Thorium-230
+Thorium-232
+Tide stage
+Tin
+Tin, dissolved
+Tin, total
+Titanium
+Titanium, dissolved
+Toluene
+Total ammonia
+Transpiration
+Triadimefon
+Trichlorobenzene
+Trichloroethene
+Trifluralin
+Tritium
+Turbidity
+Unspecified
+Uranium
+Uranium, dissolved
+Uranium-234
+Uranium-235
+Uranium-238
+Urea
+Vanadium
+Vanadium, dissolved
+Vanadium, total
+Vapor pressure
+Vapor pressure deficit
+Velocity
+Velocity, stream
+Velocity, unspecified
+Velocity, wind
+Visibility
+Voltage
+Volume
+Water content, air
+Water content, soil
+Water depth, cross-sectional averaged
+Water depth, lake
+Water depth, stream
+Water depth, unspecified
+Water potential
+Wind direction
+Wind gust
+Wind gust direction
+Wind gust speed
+Xylene
+Xylenes, total
+Zinc
+Zinc, dissolved
+Zinc, total
+Zirconium-95

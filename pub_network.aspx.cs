@@ -64,7 +64,9 @@ public partial class public_network : System.Web.UI.Page
         this.lblContactEmailLabel.Text = row["ContactEmail"] == DBNull.Value ? String.Empty : row["ContactEmail"].ToString();
         this.lblContactNameLabel.Text = row["ContactName"] == DBNull.Value ? String.Empty : row["ContactName"].ToString();
         this.lblContactPhoneLabel.Text = row["ContactPhone"] == DBNull.Value ? String.Empty : row["ContactPhone"].ToString();
-        string networkName = row["NetworkName"] == DBNull.Value ? String.Empty : row["NetworkName"].ToString();
+        string websiteurl = row["Website"] == DBNull.Value ? String.Empty : row["Website"].ToString();
+        this.lblwebsite.Text = this.lblwebsite.Text + "<a href = " + websiteurl + " target='_blank'>" + websiteurl +" </a>";
+        string networkName =  row["NetworkName"] == DBNull.Value ? String.Empty : row["NetworkName"].ToString();
         this.lblNetworkNameLabel.Text = networkName;
         this.imgIcon.ImageUrl = "getIcon.aspx?name=" + networkName;
         this.imgLogo.ImageUrl = "getLogo.aspx?name=" + networkName;
@@ -108,7 +110,7 @@ public partial class public_network : System.Web.UI.Page
         //this.ServiceAbsLabel.Text = row["ServiceAbs"].ToString(); 
         this.lblSiteCount.Text = row["SiteCount"] == DBNull.Value ? "0" : Convert.ToDouble(row["SiteCount"]).ToString("#,##0");
         this.lblVariableCount.Text = row["VariableCount"] == DBNull.Value ? "0" : Convert.ToDouble(row["VariableCount"]).ToString("#,##0");
-        this.lblValueCount.Text = row["ValueCount"] == DBNull.Value ? "0" : Convert.ToDouble(row["ValueCount"]).ToString("#,##0");
+        this.lblValueCount.Text = row["ValueCount"] == DBNull.Value ? "0" : Convert.ToDecimal(row["ValueCount"]).ToString("#,##0");
         //newSitesCounts = Convert.ToInt64(row["SiteCount"]);
         //newVariablesCounts = Convert.ToInt64(row["VariableCount"]);
         //newValuesCounts = Convert.ToInt64(row["ValueCount"]);

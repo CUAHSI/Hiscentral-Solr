@@ -1,0 +1,2541 @@
+<br>
+<head>
+    <style>
+p {
+    padding : 0;
+    margin : 0;
+}
+pre {
+    white-space: pre-wrap;
+    background: hsl(30,80%,90%);
+}
+table, th, td {
+    border: 1px solid black;
+    table-layout: fixed;
+}
+table{
+    width: 500px;
+}
+    </style>
+</head>
+
+<h1>The HIS Central Search API</h1>
+<p>The HIS Central Catalog has an open API that we use in developing our search applications and is available to anyone who wishes to write their own software. The <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx">supported methods are listed on the HIS Central website</a> and there is also <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?WSDL">a service description page</a>. The operations supported by the HIS Central API is listed below:</p>
+<br>
+<a href='#GetControlledVocabulary'>GetControlledVocabulary</a><br>
+
+<a href='#GetSearchableConcepts'>GetSearchableConcepts</a><br>
+
+<a href='#GetSeriesCatalogForBox2'>GetSeriesCatalogForBox2</a><br>
+<a href='#GetSeriesCatalogForBox3'>GetSeriesCatalogForBox3</a><br>
+<a href='#GetSeriesMetadataCountOrData'>GetSeriesMetadataCountOrData</a><br>
+<a href='#GetServicesInBox'>GetServicesInBox</a><br>
+<a href='#GetServicesInBox2'>GetServicesInBox2</a><br>
+<a href='#GetSites'>GetSites</a><br>
+<a href='#GetSitesInBox2'>GetSitesInBox2</a><br>
+<a href='#GetVariables'>GetVariables</a><br>
+<a href='#GetWaterOneFlowServiceInfo'>GetWaterOneFlowServiceInfo</a><br>
+<a href='#GetOntologyTree'>getOntologyTree</a><br>
+<a href='#GetOntologyTreewithOption'>getOntologyTreewithOption</a><br>
+<a href='#GetSearchablePaths'>getSearchablePaths</a><br>
+<br>
+<p>DEPRECATED Methods</p>
+<a href='#GetSeriesCatalogForBox'>GetSeriesCatalogForBox (deprecated)</a><br>
+<a href='#GetSitesInBox'>GetSitesInBox (deprecated)</a><br>
+<a href='#GetCountOrData'>GetCountOrData (deprecated)</a><br>
+<i><a href='#GetSeriesCatalogInBoxPaged'>getSeriesCatalogInBoxPaged (deprecated)</a></i><br>
+<i><a href='#GetMappedVariables'>GetMappedVariables (deprecated)</a></i><br>
+<i><a href='#GetMappedVariables2'>GetMappedVariables2 (deprecated)</i></a><br>
+<i><a href='#GetWordList'>GetWordList (deprecated)</a></i><br>
+
+
+<br>
+
+<br>
+
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetControlledVocabulary'></a>
+<h2>GetControlledVocabulary</h2>
+<p>Get the terms and definitions of controlled vocabulary (CV), which are dynamically updated from <a href="http://his.cuahsi.org/mastercvreg/cv11.aspx">http://his.cuahsi.org/mastercvreg/cv11.aspx</a></p>
+<p>Typically used when the user requires terms from these controlled vocabularies to provide additional filtering parameters.</p>
+<br>
+<b>Example Query:</b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetControlledVocabulary">http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetControlledVocabulary</a> <br>
+<b>Test</b>: <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetControlledVocabulary">GetControlledVocabulary</a>
+<br><br>
+
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=GetControlledVocabulary</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+
+<br>
+
+<table>
+    <tbody>
+	<col width="75px">
+	<col width="300px">
+	<col width="125px">
+	<tr>
+	    <td>
+		<p><strong>Params</strong></p>
+	    </td>
+	    <td></td>
+	    <td>
+		<p><strong>Values</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+		<br /><br /></td>
+	    <td>
+		<p>cvField</p>
+		<br />
+		<p><strong><em>Case sensitive</em></strong></p>
+	    </td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>DataType</p>
+		<p>ValueType</p>
+		<p>SampleMedium</p>
+		<p>GeneralCategory</p>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+
+
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetSearchableConcepts'></a>
+<h2>GetSearchableConcepts</h2>
+<p>Get a list of searchable concept keywords from the HIS ontology</p>
+<p>Typical use to retrieve list of concepts keywords that can be used as an input parameter for keyword searches or pre-populate fields in e.g. in HydroDesktop.</p>
+<br>
+<b>Example Query: </b>  <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx/GetSearchableConcepts">http://hiscentral.cuahsi.org/webservices/hiscentral.asmx/GetSearchableConcepts</a><br>
+<b>Test: </b><a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetSearchableConcepts">GetSearchableConcepts</a>  <br>
+<br>
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=GetSearchableConcepts</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+<table>
+    <tbody>
+	<col width="75px">
+	<col width="300px">
+	<col width="125px">
+	<tr>
+	    <td>
+		<p><strong>Params</strong></p>
+	    </td>
+	    <td></td>
+	    <td>
+		<p><strong>Values</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+		<br /><br /></td>
+	    <td>
+		<p><strong><em>None</em></strong></p>
+	    </td>
+	    <td></td>
+	</tr>
+    </tbody>
+</table>
+<p><br /><br /></p>
+
+
+
+
+
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetSeriesCatalogForBox2'></a>
+<h2><strong>GetSeriesCatalogForBox2</strong></h2>
+<p>Returns metadata for timeseries that match the provided parameters. The returned object contains a subset of the available metadata sufficient for basic searches. it does not contain dat for e.g Qualitycontrol Level or Source</p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetSeriesCatalogForBox2">GetSeriesCatalogForBox2</a> <br>
+<br>
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=GetSeriesCatalogForBox2</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+<table>
+    <tbody>
+	<col width="75px">
+	<col width="300px">
+	<col width="125px">
+	<tr>
+	    <td>
+		<p><strong>Params</strong></p>
+	    </td>
+	    <td></td>
+	    <td>
+		<p><strong>Values</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>xmin</p>
+		<br />
+		<p>:<em>minimum longitude of the search box,</em> <em>any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>-180.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>xmax</p>
+		<br />
+		<p>:<em>maximum longitude of the search box, any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>180.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>ymin</p>
+		<br />
+		<p>:<em>minimum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>-90.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>ymax</p>
+		<br />
+		<p>:<em>maximum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>90.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>conceptKeyword</p>
+		<br />
+		<p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all terms</em></p>
+		<br />
+		<p><em>:any </em>"<em>leaf</em>"<em> or </em>"<em>branch</em>"<em> in the ontology tree, or the synonyms;</em></p>
+		<br />
+		<p><em>:case insensitive</em></p>
+		<br />
+		<p><em>:can be multiple terms separated by </em>"|"</p>
+	    </td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p><em>*</em></p>
+		<p><em>all</em></p>
+		<p>flowrate</p>
+		<p>discharge, stream</p>
+		<p>Level</p>
+		<p>snow depth</p>
+		<p>methane | Carbon, total</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>networkIDs</p>
+		<br />
+		<p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all services</em></p>
+		<br />
+		<p><em>:a single or a list of integers separated by </em>"," or space</p>
+	    </td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p><em>*</em></p>
+		<p><em>all</em></p>
+		<p>1</p>
+		<p>1, 3, 52</p>
+		<p>1 3 52</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>beginDate</p>
+		<br />
+		<p><em>:default=[blank], set to </em>"1900-01-01"</p>
+		<br />
+		<p>:input format in IS_-8601 datetime standard</p>
+	    </td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p>2011-05-21T00:00:00Z</p>
+		<p>2011-05-21 09:30</p>
+		<p>2011-05-21</p>
+		<p>3/20/2000 8:20</p>
+		<p>3/20/2000 8:20:30</p>
+		<p>3/20/2000</p>
+		<p>03/20/2000</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>endDate</p>
+		<p><strong>:same as beginDate</strong></p>
+	    </td>
+	    <td></td>
+	</tr>
+    </tbody>
+</table>
+<br>
+
+<!-- ########################################################### -->
+<hr />
+
+<a name='GetSeriesCatalogForBox3'></a>
+<h2><strong>GetSeriesCatalogForBox3</strong></h2>
+<p>Returns metadata for timeseries that match the provided parameters. The returned object contains the full set of the available metadata sufficient for complex searches. it does contain data for e.g Qualitycontrol Level or Source</p>
+<p></p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetSeriesCatalogForBox3">GetSeriesCatalogForBox3</a> <br>
+<br>
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL </strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=GetSeriesCatalogForBox3</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+<table>
+    <tbody>
+	<col width="75px">
+	<col width="300px">
+	<col width="125px">
+	<tr>
+	    <td>
+		<p><strong>Params</strong></p>
+	    </td>
+	    <td></td>
+	    <td>
+		<p><strong>Values</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p><strong>xmin</strong></p>
+		<br />
+		<p>:<em>minimum longitude of the search box,</em> <em>any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p><strong>double</strong></p>
+		<br />
+		<p>example:</p>
+		<p>-180.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p><strong>xmax</strong></p>
+		<br />
+		<p>:<em>maximum longitude of the search box, any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p><strong>double</strong></p>
+		<br />
+		<p>example:</p>
+		<p>180.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p><strong>ymin</strong></p>
+		<br />
+		<p>:<em>minimum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p><strong>double</strong></p>
+		<br />
+		<p>example:</p>
+		<p>-90.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p><strong>ymax</strong></p>
+		<br />
+		<p>:<em>maximum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p><strong>double</strong></p>
+		<br />
+		<p>example:</p>
+		<p>90.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p><strong>sampleMedium</strong></p>
+		<br />
+		<p><em>:default=[blank], search for all SampleMedium terms</em></p>
+		<br />
+		<p><em>:search for specified SampleMedium term, which can be acquired from the output of GetControlledVocabulary(</em>"<em>SampleMedium</em>"<em>)</em></p>
+		<br /><br /></td>
+	    <td>
+		<p><strong>string</strong></p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p>soil </p>
+		<p>air</p>
+		<p>groundwater</p>
+		<p>surfacewater</p>
+		<p>precipitation</p>
+		<p>etc.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p><strong>dataType</strong></p>
+		<br />
+		<p><em>:default=[blank], search for all DataType terms</em></p>
+		<br />
+		<p><em>:search for specified DataType term, which can be acquired from the output of GetControlledVocabulary(</em>"<em>DataType</em>"<em>)</em></p>
+	    </td>
+	    <td>
+		<p><strong>string</strong></p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p>average</p>
+		<p>median</p>
+		<p>minimum</p>
+		<p>maximum</p>
+		<p>continuous</p>
+		<p>sporadic</p>
+		<p>incremental</p>
+		<p>unknown</p>
+		<p>etc.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p><strong>valueType</strong></p>
+		<br />
+		<p><em>:default=[blank], search for all ValueType terms</em></p>
+		<br />
+		<p><em>:search for specified ValueType term, which can be acquired from the output of GetControlledVocabulary(</em>"<em>ValueType</em>"<em>)</em></p>
+	    </td>
+	    <td>
+		<p><strong>string</strong></p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p>field observation</p>
+		<p>model simulation result</p>
+		<p>derived value</p>
+		<p>sample</p>
+		<p>unknown</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p><strong>conceptKeyword</strong></p>
+		<br />
+		<p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all Concept Keyword terms</em></p>
+		<br />
+		<p><em>:any </em>"<em>leaf</em>"<em> or </em>"<em>branch</em>"<em> of ontology tree</em></p>
+		<p><em>:synonyms of terms in ontology tree</em></p>
+		<p><em>:case insensitive</em></p>
+		<p><em>:can be multiple terms separated by </em>"|"</p>
+		<br /><br /></td>
+	    <td>
+		<p><strong>string</strong></p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p><em>*</em></p>
+		<p>flowrate</p>
+		<p>discharge, stream</p>
+		<p>Level</p>
+		<p>snow depth</p>
+		<p>ch4</p>
+		<p>methane | Carbon, total</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p><strong>networkIDs</strong></p>
+		<br />
+		<p>This parameter is internally used, not shown among the fields of returned time series.</p>
+		<br />
+		<p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all services</em></p>
+		<br />
+		<p><em>:a single or a list of integers separated by </em>"," or space</p>
+	    </td>
+	    <td>
+		<p><strong>string</strong></p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p><em>*</em></p>
+		<p><em>all</em></p>
+		<p>1</p>
+		<p>1, 3, 52</p>
+		<p>1 3 52</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p><strong>beginDate</strong></p>
+		<br />
+		<p><em>:default=[blank], set to </em>"1800-01-01"</p>
+		<br />
+		<p>:input format conforming to ISO_8601 datetime standard</p>
+	    </td>
+	    <td>
+		<p><strong>string</strong></p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p>2011-05-21T00:00:00Z</p>
+		<p>2011-05-21 09:30</p>
+		<p>2011-05-21</p>
+		<p>3/20/2000 8:20</p>
+		<p>3/20/2000 8:20:30</p>
+		<p>3/20/2000</p>
+		<p>03/20/2000</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p><strong>endDate</strong></p>
+		<br />
+		<p><strong>:same as beginDate</strong></p>
+		<p><em>:default=[blank], set to </em>"2100-01-01"</p>
+	    </td>
+	    <td>
+		<p><strong>string</strong></p>
+		<br />
+		<p>example:</p>
+		<p><em>&lt;see above&gt;</em></p>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+
+<br>
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetSeriesMetadataCountOrData'></a>
+<h2><strong>GetSeriesMetadataCountOrData</strong></h2>
+Provides information about metadata stored in the catalog. Tycally used to search the catalog.
+It can return
+    <ul>
+        <li>
+            1. The count of timeseries that match the provided parameters
+        </li>
+        <li> 2. the statistics for the distribution of all facets for timeseries that match the provided parameters. e.g how many timeseries have the datatype "average", or the keyword precipitation.</li>
+        <li>3. the complete set of all metadata records for timeseries that match the provided parameters. </li>          
+       
+    </ul>
+<p>The return can be defined by providing the appropriate parameters in the request. The return of this request can not exceed 25.000 timeseries. </p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetSeriesMetadataCountOrData">GetSeriesMetadataCountOrData</a> <br>
+<br>
+
+<table>
+    <tbody>
+        <col width="75px">
+        <col width="300px">
+        <col width="125px">
+        <tr>
+            <td>
+                <p><strong>Params</strong></p>
+            </td>
+            <td></td>
+            <td>
+                <p><strong>Values</strong></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+                <br /><br />
+            </td>
+            <td>
+                <p><strong>getData</strong></p>
+                <br />
+                <p>:if true, return data records satisfying the search criteria; </p>
+                <p>:if false, no return of data records. Set to get facets of search results, but not the data records </p>
+            </td>
+            <td>
+                <p><strong>bool</strong></p>
+                <br />
+                <p>example:</p>
+                <p>true</p>
+                <p>false</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+            </td>
+            <td>
+                <p><strong>getFacetOnCV</strong></p>
+                <br />
+                <p>:if true, get facets of search results;</p>
+                <p>:if false, no return on facets</p>
+            </td>
+            <td>
+                <p><strong>bool</strong></p>
+                <br />
+                <p>example:</p>
+                <p>true</p>
+                <p>false</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+            </td>
+            <td>
+                <p><strong>xmin</strong></p>
+                <br />
+                <p>:<em>minimum longitude of the search box,</em> <em>any numeric value in [-180., 180]</em></p>
+            </td>
+            <td>
+                <p><strong>double</strong></p>
+                <br />
+                <p>example:</p>
+                <p>-180.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+            </td>
+            <td>
+                <p><strong>xmax</strong></p>
+                <br />
+                <p>:<em>maximum longitude of the search box, any numeric value in [-180., 180]</em></p>
+            </td>
+            <td>
+                <p><strong>double</strong></p>
+                <br />
+                <p>example:</p>
+                <p>180.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+            </td>
+            <td>
+                <p><strong>ymin</strong></p>
+                <br />
+                <p>:<em>minimum latitude of the search box, any numeric value in [-90., 90]</em></p>
+            </td>
+            <td>
+                <p><strong>double</strong></p>
+                <br />
+                <p>example:</p>
+                <p>-90.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+            </td>
+            <td>
+                <p><strong>ymax</strong></p>
+                <br />
+                <p>:<em>maximum latitude of the search box, any numeric value in [-90., 90]</em></p>
+            </td>
+            <td>
+                <p><strong>double</strong></p>
+                <br />
+                <p>example:</p>
+                <p>90.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>sampleMedium</strong></p>
+                <br />
+                <p><em>:default=[blank], search for all SampleMedium terms</em></p>
+                <br />
+                <p><em>:search for specified SampleMedium term, which can be acquired from the output of GetControlledVocabulary(</em>"<em>SampleMedium</em>"<em>)</em></p>
+                <br /><br />
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p>soil </p>
+                <p>air</p>
+                <p>groundwater</p>
+                <p>surfacewater</p>
+                <p>precipitation</p>
+                <p>etc.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>dataType</strong></p>
+                <br />
+                <p><em>:default=[blank], search for all DataType terms</em></p>
+                <br />
+                <p><em>:search for specified DataType term, which can be acquired from the output of GetControlledVocabulary(</em>"<em>DataType</em>"<em>)</em></p>
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p>average</p>
+                <p>median</p>
+                <p>minimum</p>
+                <p>maximum</p>
+                <p>continuous</p>
+                <p>sporadic</p>
+                <p>incremental</p>
+                <p>unknown</p>
+                <p>etc.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>valueType</strong></p>
+                <br />
+                <p><em>:default=[blank], search for all ValueType terms</em></p>
+                <br />
+                <p><em>:search for specified ValueType term, which can be acquired from the output of GetControlledVocabulary(</em>"<em>ValueType</em>"<em>)</em></p>
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p>field observation</p>
+                <p>model simulation result</p>
+                <p>derived value</p>
+                <p>sample</p>
+                <p>unknown</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>generalCategory</strong></p>
+                <br />
+                <p><em>:default=[blank], search for all GeneralCategory terms</em></p>
+                <br />
+                <p><em>:search for specified GeneralCategory term, which can be from the output of GetControlledVocabulary(</em>"<em>GeneralCategory</em>"<em>)</em></p>
+                <br /><br />
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p>hydrology</p>
+                <p>water quality</p>
+                <p>climate</p>
+                <p>soil</p>
+                <p>biota</p>
+                <p>instrumentation</p>
+                <p>chemistry</p>
+                <p>limnology</p>
+                <p>geology</p>
+                <p>unknown</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>conceptKeyword</strong></p>
+                <br />
+                <p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all Concept Keyword terms</em></p>
+                <br />
+                <p><em>:any </em>"<em>leaf</em>"<em> or </em>"<em>branch</em>"<em> of ontology tree</em></p>
+                <p><em>:synonyms of terms in ontology tree</em></p>
+                <p><em>:case insensitive</em></p>
+                <p><em>:can be multiple terms separated by </em>"|"</p>
+                <br /><br /><br />
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p><em>*</em></p>
+                <p>flowrate</p>
+                <p>discharge, stream</p>
+                <p>Level</p>
+                <p>snow depth</p>
+                <p>ch4</p>
+                <p>methane | Carbon, total</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>networkIDs</strong></p>
+                <br />
+                <p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all services</em></p>
+                <br />
+                <p><em>:a single or a list of integers separated by </em>"," or space</p>
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p><em>*</em></p>
+                <p><em>all</em></p>
+                <p>1</p>
+                <p>1, 3, 52</p>
+                <p>1 3 52</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>beginDate</strong></p>
+                <br />
+                <p><em>:default=[blank], set to </em>"1800-01-01"</p>
+                <br />
+                <p>:input format conforming to ISO_8601 datetime standard</p>
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p>2011-05-21T00:00:00Z</p>
+                <p>2011-05-21 09:30</p>
+                <p>2011-05-21</p>
+                <p>3/20/2000 8:20</p>
+                <p>3/20/2000 8:20:30</p>
+                <p>3/20/2000</p>
+                <p>03/20/2000</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>endDate</strong></p>
+                <br />
+                <p><strong>:same as beginDate</strong></p>
+                <p><em>:default=[blank], set to </em>"2100-01-01"</p>
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>&lt;see above&gt;</em></p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+ 
+
+
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetServicesInBox'></a>
+<h2><strong>GetServicesInBox</strong></h2>
+
+<p>Get registered data services within a specified lat/lon box.</p>
+<p>Typically used to subset the data services and use the result as an input for filtering </p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetServicesInBox">GetServicesInBox</a> <br>
+<br>
+
+<!-- ########################################################### -->
+<hr />
+
+<a name='GetServicesInBox2'></a>
+<h2><strong>GetServicesInBox2</strong></h2>
+<p>Get registered data services within a specified lat/lon box.</p>
+<p>Typically used to subset the data services and use the result as an input for filtering </p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetServicesInBox2">GetServicesInBox2</a> <br>
+<br>
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=GetServicesInBox2</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+<table>
+    <tbody>
+	<col width="75px">
+	<col width="300px">
+	<col width="125px">
+	<tr>
+	    <td>
+		<p><strong>Params</strong></p>
+	    </td>
+	    <td></td>
+	    <td>
+		<p><strong>Values</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>xmin</p>
+		<br />
+		<p>:<em>minimum longitude of the search box,</em> <em>any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>-90.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>xmax</p>
+		<br />
+		<p>:<em>maximum longitude of the search box, any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>-70.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>ymin</p>
+		<br />
+		<p>:<em>minimum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>35.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>ymax</p>
+		<br />
+		<p>:<em>maximum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>40.</p>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetSites'></a>
+<h2><strong>GetSites</strong></h2>
+<p>Get a list of site information within a specified lat/lon box, and other specified query parameters. </p>
+<p>Typically used to subset sites dataset and plot the returned sites on a map</p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetSites">GetSites</a> <br>
+<br>
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=GetSites</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+<table>
+    <tbody>
+	<col width="75px">
+	<col width="300px">
+	<col width="125px">
+	<tr>
+	    <td>
+		<p><strong>Params</strong></p>
+	    </td>
+	    <td></td>
+	    <td>
+		<p><strong>Values</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>xmin</p>
+		<br />
+		<p>:<em>minimum longitude of the search box,</em> <em>any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>-180.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>xmax</p>
+		<br />
+		<p>:<em>maximum longitude of the search box, any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>180.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>ymin</p>
+		<br />
+		<p>:<em>minimum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>-90.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>ymax</p>
+		<br />
+		<p>:<em>maximum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>90.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>conceptKeyword</p>
+		<br />
+		<p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all terms</em></p>
+		<br />
+		<p><em>:any </em>"<em>leaf</em>"<em> or </em>"<em>branch</em>"<em> in the ontology tree, or the synonyms;</em></p>
+		<br />
+		<p><em>:case insensitive</em></p>
+		<br />
+		<p><em>:can be multiple terms separated by </em>"|"</p>
+		<br /><br /></td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p><em>*</em></p>
+		<p><em>all</em></p>
+		<p>flowrate</p>
+		<p>discharge, stream</p>
+		<p>Level</p>
+		<p>snow depth</p>
+		<p>ch4</p>
+		<p>methane | Carbon, total</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>networkIDs</p>
+		<br />
+		<p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all services</em></p>
+		<br />
+		<p><em>:a single or a list of integers separated by </em>"," or space</p>
+	    </td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p><em>*</em></p>
+		<p><em>all</em></p>
+		<p>1</p>
+		<p>1, 3, 52</p>
+		<p>1 3 52</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>beginDate</p>
+		<br />
+		<p><em>:default=[blank], set to </em>"1900-01-01"</p>
+		<br />
+		<p>:input format in IS_-8601 datetime standard</p>
+	    </td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p>2011-05-21T00:00:00Z</p>
+		<p>2011-05-21 09:30</p>
+		<p>2011-05-21</p>
+		<p>3/20/2000 8:20</p>
+		<p>3/20/2000 8:20:30</p>
+		<p>3/20/2000</p>
+		<p>03/20/2000</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>endDate</p>
+		<br />
+		<p><strong>:same as beginDate</strong></p>
+	    </td>
+	    <td></td>
+	</tr>
+    </tbody>
+</table>
+<br>
+
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetSitesInBox2'></a>
+<h2><strong>GetSitesInBox2</strong></h2>
+<p>Get a list of site information within a specified lat/lon box, and other specified query parameters. </p>
+<p>Typically used to subset sites dataset and plot the returned sites on a map</p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetSitesInBox2">GetSitesInBox2</a> <br>
+<br>
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=GetSitesInBox2</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+<table>
+    <col width="75px">
+    <col width="300px">
+    <col width="125px">
+    <tbody>
+	<tr>
+	    <td>
+		<p><strong>Params</strong></p>
+	    </td>
+	    <td></td>
+	    <td>
+		<p><strong>Values</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>xmin</p>
+		<br />
+		<p>:<em>minimum longitude of the search box,</em> <em>any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>-180.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>xmax</p>
+		<br />
+		<p>:<em>maximum longitude of the search box, any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>180.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>ymin</p>
+		<br />
+		<p>:<em>minimum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>-90.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>ymax</p>
+		<br />
+		<p>:<em>maximum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>90.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>conceptKeyword</p>
+		<br />
+		<p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all terms</em></p>
+		<br />
+		<p><em>:any </em>"<em>leaf</em>"<em> or </em>"<em>branch</em>"<em> in the ontology tree, or the synonyms;</em></p>
+		<br />
+		<p><em>:case insensitive</em></p>
+		<br />
+		<p><em>:can be multiple terms separated by </em>"|"</p>
+		<br /><br /></td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p><em>*</em></p>
+		<p><em>all</em></p>
+		<p>flowrate</p>
+		<p>discharge, stream</p>
+		<p>Level</p>
+		<p>snow depth</p>
+		<p>ch4</p>
+		<p>methane | Carbon, total</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>networkIDs</p>
+		<br />
+		<p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all services</em></p>
+		<br />
+		<p><em>:a single or a list of integers separated by </em>"," or space</p>
+	    </td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p><em>*</em></p>
+		<p><em>all</em></p>
+		<p>1</p>
+		<p>1, 3, 52</p>
+		<p>1 3 52</p>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetVariables'></a>
+<h2><strong>GetVariables</strong></h2>
+<p>Get a list of variable information within a specified lat/lon box, and other specified query parameters.</p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetVariables">GetVariables</a> <br>
+<br>
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL </strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=GetVariables</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+<table>
+    <tbody>
+	<col width="75px">
+	<col width="300px">
+	<col width="125px">
+	<tr>
+	    <td>
+		<p><strong>Params</strong></p>
+	    </td>
+	    <td></td>
+	    <td>
+		<p><strong>Values</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>xmin</p>
+		<br />
+		<p>:<em>minimum longitude of the search box,</em> <em>any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>-180.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>xmax</p>
+		<br />
+		<p>:<em>maximum longitude of the search box, any numeric value in [-180., 180]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>180.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>ymin</p>
+		<br />
+		<p>:<em>minimum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>-90.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p>ymax</p>
+		<br />
+		<p>:<em>maximum latitude of the search box, any numeric value in [-90., 90]</em></p>
+	    </td>
+	    <td>
+		<p>double</p>
+		<br />
+		<p>example:</p>
+		<p>90.</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>conceptKeyword</p>
+		<br />
+		<p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all terms</em></p>
+		<br />
+		<p><em>:any </em>"<em>leaf</em>"<em> or </em>"<em>branch</em>"<em> in the ontology tree, or the synonyms;</em></p>
+		<br />
+		<p><em>:case insensitive</em></p>
+		<br />
+		<p><em>:can be multiple terms separated by </em>"|"</p>
+		<br /><br /></td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p><em>*</em></p>
+		<p><em>all</em></p>
+		<p>flowrate</p>
+		<p>discharge, stream</p>
+		<p>Level</p>
+		<p>snow depth</p>
+		<p>ch4</p>
+		<p>methane | Carbon, total</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>networkIDs</p>
+		<br />
+		<p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all services</em></p>
+		<br />
+		<p><em>:a single or a list of integers separated by </em>"," or space</p>
+	    </td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p><em>*</em></p>
+		<p><em>all</em></p>
+		<p>1</p>
+		<p>1, 3, 52</p>
+		<p>1 3 52</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>beginDate</p>
+		<br />
+		<p><em>:default=[blank], set to </em>"1900-01-01"</p>
+		<br />
+		<p>:input format in IS_-8601 datetime standard</p>
+	    </td>
+	    <td>
+		<p>string</p>
+		<br />
+		<p>example:</p>
+		<p><em>[blank]</em></p>
+		<p>2011-05-21T00:00:00Z</p>
+		<p>2011-05-21 09:30</p>
+		<p>2011-05-21</p>
+		<p>3/20/2000 8:20</p>
+		<p>3/20/2000 8:20:30</p>
+		<p>3/20/2000</p>
+		<p>03/20/2000</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Optional</strong></p>
+	    </td>
+	    <td>
+		<p>endDate</p>
+		<br />
+		<p><strong>:same as beginDate</strong></p>
+	    </td>
+	    <td></td>
+	</tr>
+    </tbody>
+</table>
+<br>
+
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetWaterOneFlowServiceInfo'></a>
+<h2><strong>GetWaterOneFlowServiceInfo</strong></h2>
+<p>Get all registered data services from <a href="http://hiscentral.cuahsi.org/pub_services.aspx">http://hiscentral.cuahsi.org/pub_services.aspx</a>. GetWaterOneFlowServiceInfo can be regarded as a special case of GetServicesInBox2, as the former requests the returns for the global area.</p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetWaterOneFlowServiceInfo">GetWaterOneFlowServiceInfo</a> <br>
+<br>
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL </strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=GetWaterOneFlowServiceInfo</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+<table>
+    <tbody>
+	<col width="75px">
+	<col width="300px">
+	<col width="125px">
+	<tr>
+	    <td>
+		<p><strong>Params</strong></p>
+	    </td>
+	    <td></td>
+	    <td>
+		<p><strong>Values</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+		<br /><br /></td>
+	    <td>
+		<p><strong><em>None</em></strong></p>
+	    </td>
+	    <td></td>
+	</tr>
+    </tbody>
+</table>
+<br>
+
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetOntologyTree'></a>
+<h2><strong>GetOntologyTree</strong></h2>
+<p>Get the subnodes (both leaf and non-leaf) for input concept <strong>keyword</strong> in the Ontology Tree. </p>
+<ul>
+    <li style="font-weight: 400;">Keyword is one of the search criteria used in HydroClient (refer to notes in this section). </li>
+    <li style="font-weight: 400;">Keyword is also used when data provider uploads data and try to make the uploaded data comply with WaterOneFlow schema. Generally, the user is required to choose a leaf keyword in the ontology tree for each input variable name, so that the newly added variable name is searchable in HisCentral catalog.</li>
+    <li style="font-weight: 400;">The current HisCentral catalog holds about 500 keywords, i.e., ~10% of the total keywords in the<strong> full</strong> ontology tree. Hereafter, the ontology tree composed of the nodes with existing variables in HisCentral catalog (i.e., those ~500 keywords) is referred as <strong>partial </strong>ontology tree.</li>
+    <li style="font-weight: 400;">GetOntologyTree() returns nodes in the full ontology tree, while GetOntologyTreewithOption() adds the option of returning nodes in the partial ontology tree (next section) </li>
+</ul>
+<br>
+
+<b>Example Query: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=getOntologyTree">http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=getOntologyTree</a></p>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=getOntologyTree">GetOntologyTree</a> <br>
+<br>
+<br>
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL </strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=getOntologyTree</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+
+<table>
+    <tbody>
+	<col width="75px">
+	<col width="300px">
+	<col width="125px">
+	<tr>
+	    <td>
+		<p><strong>Params</strong></p>
+	    </td>
+	    <td></td>
+	    <td>
+		<p><strong>Values</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+	    </td>
+	    <td>
+		<p><strong>conceptKeyword</strong></p>
+		<br>
+		:leaf or non-leaf node in full ontology tree
+	    </td>
+	    <td>
+		<p><strong>string</strong></p>
+		<br>
+		<p>example:</p>
+		<p>Nitrogen, NH4</p>
+		<p>methane</p>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetOntologyTreewithOption'></a>
+<h2><strong>GetOntologyTreewithOption</strong></h2>
+<p>Similar to GetOntologyTree. GetOntologyTreewithOption(fullTree = true, conceptKeyword) is equivalent with GetOntologyTree(). </p>
+<br>
+<b>Example Query: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=getOntologywithOption">http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=getOntologywithOption</a> <br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=getOntologyTree">GetOntologyTreewithOption</a> <br>
+<br>
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL </strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=getOntologywithOption</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+<table>
+    <tbody>
+	<col width="75px">
+	<col width="300px">
+	<col width="125px">
+	<tr>
+	    <td>
+		<p><strong>Params</strong></p>
+	    </td>
+	    <td></td>
+	    <td>
+		<p><strong>Values</strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+		<br /><br /></td>
+	    <td>
+		<p><strong>conceptKeyword</strong></p>
+		<br />
+		<p>:if fullTree=true, leaf or non-leaf node in full ontology tree</p>
+		<br />
+		<p>:if fullTree=false, leaf or non-leaf node in partial ontology tree</p>
+	    </td>
+	    <td>
+		<p><strong>string</strong></p>
+		<br />
+		<p>pH</p>
+		<p>Discharge</p>
+		<p>Precipitation</p>
+		<p>Turbidity</p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>Required</strong></p>
+		<br /><br /></td>
+	    <td>
+		<p><strong>fullTree</strong></p>
+		<br />
+		<p>:if true, get keywords from full ontology tree;</p>
+		<p>:if false, otherwise</p>
+	    </td>
+	    <td>
+		<p><strong>bool</strong></p>
+		<br />
+		<p>true | false</p>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetSearchablePaths'></a>
+<h2><strong>getSearchablePaths</strong></h2>
+<p>Get the searching path of all concept keywords (including leaf and non-leaf) on the ontology tree.</p>
+<br>
+<b>Example Query: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx/getSearchablePaths">http://hiscentral.cuahsi.org/webservices/hiscentral.asmx/getSearchablePaths</a><br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=getSearchablePaths">getSearchablePaths</a> <br>
+<br>
+<table>
+    <tbody>
+	<col width="100px">
+	<col width="400px">
+	<tr>
+	    <td>
+		<p><strong>Method</strong></p>
+	    </td>
+	    <td>
+		<p><strong>URL </strong></p>
+	    </td>
+	</tr>
+	<tr>
+	    <td>
+		<p><strong>GET</strong></p>
+	    </td>
+	    <td>
+		<pre>/hiscentral.asmx?op=getSearchablePaths</pre>
+	    </td>
+	</tr>
+    </tbody>
+</table>
+<br>
+<!-- ########################################################### -->
+<hr />
+<a name="GetSeriesCatalogForBox"></a>
+<h2><strong>GetSeriesCatalogForBox (deprecated)</strong></h2>
+<p>Get the series catalog within a specified lat/lon box, and other specified query parameters. The results can be used to  obtain data values from the registered service.</p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetSeriesCatalogForBox">GetSeriesCatalogForBox</a> <br>
+
+<br>
+<table>
+    <tbody>
+        <col width="100px">
+        <col width="400px">
+        <tr>
+            <td>
+                <p><strong>Method</strong></p>
+            </td>
+            <td>
+                <p><strong>URL</strong></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>GET</strong></p>
+            </td>
+            <td>
+                <pre>/hiscentral.asmx?op=GetSeriesCatalogForBox</pre>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<table>
+    <tbody>
+        <col width="75px">
+        <col width="300px">
+        <col width="125px">
+        <tr>
+            <td>
+                <p><strong>Params</strong></p>
+            </td>
+            <td></td>
+            <td>
+                <p><strong>Values</strong></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+            </td>
+            <td>
+                <p>box</p>
+                <br />
+                <p>:<em>the boundary of search box. Defined as:</em></p>
+                <p><em> struct Box {</em></p>
+                <p><em> &nbsp;&nbsp;&nbsp;double xmin; //minimum longitude</em></p>
+                <p><em> &nbsp;&nbsp;&nbsp;double xmax; //maximum longitude</em></p>
+                <p><em> &nbsp;&nbsp;&nbsp;double ymin; //minimum latitude</em></p>
+                <p><em> &nbsp;&nbsp;&nbsp;double ymax; //maximum latitude</em></p>
+                <p><em>}</em></p>
+            </td>
+            <td>
+                <p>Box</p>
+                <br />
+                <p>example:</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p>conceptKeyword</p>
+                <br />
+                <p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all terms</em></p>
+                <br />
+                <p><em>:any </em>"<em>leaf</em>"<em> or </em>"<em>branch</em>"<em> in the ontology tree, or the synonyms;</em></p>
+                <br />
+                <p><em>:case insensitive</em></p>
+                <br />
+                <p><em>:can be multiple terms separated by </em>"|"</p>
+                <br /><br />
+            </td>
+            <td>
+                <p>string</p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p><em>*</em></p>
+                <p><em>all</em></p>
+                <p>flowrate</p>
+                <p>discharge, stream</p>
+                <p>Level</p>
+                <p>snow depth</p>
+                <p>ch4</p>
+                <p>methane | Carbon, total</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p>networkIDs</p>
+                <br />
+                <p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all services</em></p>
+                <br />
+                <p><em>:a single or a list of integers separated by </em>"," or space</p>
+            </td>
+            <td>
+                <p>string</p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p><em>*</em></p>
+                <p><em>all</em></p>
+                <p>1</p>
+                <p>1, 3, 52</p>
+                <p>1 3 52</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p>beginDate</p>
+                <br />
+                <p><em>:default=[blank], set to </em>"1900-01-01"</p>
+                <br />
+                <p>:input format in IS_-8601 datetime standard</p>
+            </td>
+            <td>
+                <p>string</p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p>2011-05-21T00:00:00Z</p>
+                <p>2011-05-21 09:30</p>
+                <p>2011-05-21</p>
+                <p>3/20/2000 8:20</p>
+                <p>3/20/2000 8:20:30</p>
+                <p>3/20/2000</p>
+                <p>03/20/2000</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p>endDate</p>
+                <br />
+                <p><strong>:same as beginDate</strong></p>
+            </td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<!-- ########################################################### -->
+<hr />
+<a name='GetCountOrData'></a>
+<h2><strong>GetCountOrData (deprecated use GetSeriesMetadataCountOrData)</strong></h2>
+
+Provides information about metadata stored in the catalog. Tycally used to search the catalog.
+It can return
+<ul>
+    <li>
+        1. The count of timeseries that match the provided parameters
+    </li>
+    <li> 2. the statistics for the distribution of all facets for timeseries that match the provided parameters. e.g how many timeseries have the datatype "average", or the keyword precipitation.</li>
+    <li>3. the complete set of all metadata records for timeseries that match the provided parameters. </li>
+
+</ul>
+<p>The return can be defined by providing the appropriate parameters in the request. The return of this request can not exceed 25.000 timeseries. </p>
+<br>
+
+<b>Example Query: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetCountOrData">http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetCountOrData</a><br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetCountOrData">GetCountOrData</a><br>
+<br><br>
+<table>
+    <tbody>
+        <col width="100px">
+        <col width="400px">
+        <tr>
+            <td>
+                <p><strong>Method</strong></p>
+            </td>
+            <td>
+                <p><strong>URL</strong></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>GET</strong></p>
+            </td>
+            <td>
+                <pre>/hiscentral.asmx?op=GetCountOrData</pre>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<table>
+    <tbody>
+        <col width="75px">
+        <col width="300px">
+        <col width="125px">
+        <tr>
+            <td>
+                <p><strong>Params</strong></p>
+            </td>
+            <td></td>
+            <td>
+                <p><strong>Values</strong></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+                <br /><br />
+            </td>
+            <td>
+                <p><strong>getData</strong></p>
+                <br />
+                <p>:if true, return data records satisfying the search criteria; </p>
+                <p>:if false, no return of data records. Set to get facets of search results, but not the data records </p>
+            </td>
+            <td>
+                <p><strong>bool</strong></p>
+                <br />
+                <p>example:</p>
+                <p>true</p>
+                <p>false</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+            </td>
+            <td>
+                <p><strong>getFacetOnCV</strong></p>
+                <br />
+                <p>:if true, get facets of search results;</p>
+                <p>:if false, no return on facets</p>
+            </td>
+            <td>
+                <p><strong>bool</strong></p>
+                <br />
+                <p>example:</p>
+                <p>true</p>
+                <p>false</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+            </td>
+            <td>
+                <p><strong>xmin</strong></p>
+                <br />
+                <p>:<em>minimum longitude of the search box,</em> <em>any numeric value in [-180., 180]</em></p>
+            </td>
+            <td>
+                <p><strong>double</strong></p>
+                <br />
+                <p>example:</p>
+                <p>-180.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+            </td>
+            <td>
+                <p><strong>xmax</strong></p>
+                <br />
+                <p>:<em>maximum longitude of the search box, any numeric value in [-180., 180]</em></p>
+            </td>
+            <td>
+                <p><strong>double</strong></p>
+                <br />
+                <p>example:</p>
+                <p>180.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+            </td>
+            <td>
+                <p><strong>ymin</strong></p>
+                <br />
+                <p>:<em>minimum latitude of the search box, any numeric value in [-90., 90]</em></p>
+            </td>
+            <td>
+                <p><strong>double</strong></p>
+                <br />
+                <p>example:</p>
+                <p>-90.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Required</strong></p>
+            </td>
+            <td>
+                <p><strong>ymax</strong></p>
+                <br />
+                <p>:<em>maximum latitude of the search box, any numeric value in [-90., 90]</em></p>
+            </td>
+            <td>
+                <p><strong>double</strong></p>
+                <br />
+                <p>example:</p>
+                <p>90.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>sampleMedium</strong></p>
+                <br />
+                <p><em>:default=[blank], search for all SampleMedium terms</em></p>
+                <br />
+                <p><em>:search for specified SampleMedium term, which can be acquired from the output of GetControlledVocabulary(</em>"<em>SampleMedium</em>"<em>)</em></p>
+                <br /><br />
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p>soil </p>
+                <p>air</p>
+                <p>groundwater</p>
+                <p>surfacewater</p>
+                <p>precipitation</p>
+                <p>etc.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>dataType</strong></p>
+                <br />
+                <p><em>:default=[blank], search for all DataType terms</em></p>
+                <br />
+                <p><em>:search for specified DataType term, which can be acquired from the output of GetControlledVocabulary(</em>"<em>DataType</em>"<em>)</em></p>
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p>average</p>
+                <p>median</p>
+                <p>minimum</p>
+                <p>maximum</p>
+                <p>continuous</p>
+                <p>sporadic</p>
+                <p>incremental</p>
+                <p>unknown</p>
+                <p>etc.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>valueType</strong></p>
+                <br />
+                <p><em>:default=[blank], search for all ValueType terms</em></p>
+                <br />
+                <p><em>:search for specified ValueType term, which can be acquired from the output of GetControlledVocabulary(</em>"<em>ValueType</em>"<em>)</em></p>
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p>field observation</p>
+                <p>model simulation result</p>
+                <p>derived value</p>
+                <p>sample</p>
+                <p>unknown</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>generalCategory</strong></p>
+                <br />
+                <p><em>:default=[blank], search for all GeneralCategory terms</em></p>
+                <br />
+                <p><em>:search for specified GeneralCategory term, which can be from the output of GetControlledVocabulary(</em>"<em>GeneralCategory</em>"<em>)</em></p>
+                <br /><br />
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p>hydrology</p>
+                <p>water quality</p>
+                <p>climate</p>
+                <p>soil</p>
+                <p>biota</p>
+                <p>instrumentation</p>
+                <p>chemistry</p>
+                <p>limnology</p>
+                <p>geology</p>
+                <p>unknown</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>conceptKeyword</strong></p>
+                <br />
+                <p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all Concept Keyword terms</em></p>
+                <br />
+                <p><em>:any </em>"<em>leaf</em>"<em> or </em>"<em>branch</em>"<em> of ontology tree</em></p>
+                <p><em>:synonyms of terms in ontology tree</em></p>
+                <p><em>:case insensitive</em></p>
+                <p><em>:can be multiple terms separated by </em>"|"</p>
+                <br /><br /><br />
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p><em>*</em></p>
+                <p>flowrate</p>
+                <p>discharge, stream</p>
+                <p>Level</p>
+                <p>snow depth</p>
+                <p>ch4</p>
+                <p>methane | Carbon, total</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>networkIDs</strong></p>
+                <br />
+                <p><em>:default=[blank]</em>|<em>*</em>|<em>all, search for all services</em></p>
+                <br />
+                <p><em>:a single or a list of integers separated by </em>"," or space</p>
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p><em>*</em></p>
+                <p><em>all</em></p>
+                <p>1</p>
+                <p>1, 3, 52</p>
+                <p>1 3 52</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>beginDate</strong></p>
+                <br />
+                <p><em>:default=[blank], set to </em>"1800-01-01"</p>
+                <br />
+                <p>:input format conforming to ISO_8601 datetime standard</p>
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>[blank]</em></p>
+                <p>2011-05-21T00:00:00Z</p>
+                <p>2011-05-21 09:30</p>
+                <p>2011-05-21</p>
+                <p>3/20/2000 8:20</p>
+                <p>3/20/2000 8:20:30</p>
+                <p>3/20/2000</p>
+                <p>03/20/2000</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><strong>Optional</strong></p>
+            </td>
+            <td>
+                <p><strong>endDate</strong></p>
+                <br />
+                <p><strong>:same as beginDate</strong></p>
+                <p><em>:default=[blank], set to </em>"2100-01-01"</p>
+            </td>
+            <td>
+                <p><strong>string</strong></p>
+                <br />
+                <p>example:</p>
+                <p><em>&lt;see above&gt;</em></p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p><br /><br /></p>
+
+
+
+<!-- ########################################################### -->
+<hr />
+<a name='GetSitesInBox'></a>
+<h2><strong>GetSitesInBox (deprecated)</strong></h2>
+<p>Get a list of site information within a specified lat/lon box, and other specified query parameters. </p>
+<p>Typically used to subset sites dataset and plot the returned sites on a map</p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetSitesInBox">GetSitesInBox</a> <br>
+<br>
+
+
+<!-- ########################################################### -->
+
+<a name='GetSeriesCatalogInBoxPaged'></a>
+<h2>getSeriesCatalogInBoxPaged (deprecated)</h2>
+<p>Only supported when the database is on SQL server. </p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=getSeriesCatalogInBoxPaged">getSeriesCatalogInBoxPaged</a> <br>
+
+<!-- ########################################################### -->
+
+
+<a name='GetMappedVariables'></a>
+<h2>GetMappedVariables (deprecated)</h2>
+<p>Input conceptid (as defined in ontology tree) for specified services, return the corresponding variable information including variablename, variablecode, valuetype, timeUnitID, datatype, etc.</p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetMappedVariables">GetMappedVariables</a> <br>
+
+
+<!-- ########################################################### -->
+
+<a name='GetMappedVariables2'></a>
+<h2>GetMappedVariables2 (deprecated)</h2>
+<p>Similar to GetMappedVariables</p>
+<br>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetMappedVariables2">GetMappedVariables2</a> <br>
+<br>
+
+<!-- ########################################################### -->
+
+<a name='GetWordList'></a>
+<h2><strong>GetWordList (obsolete)</strong></h2>
+<b>Test: </b> <a href="http://hiscentral.cuahsi.org/webservices/hiscentral.asmx?op=GetWordList">GetWordList</a> <br>
+<br>
+

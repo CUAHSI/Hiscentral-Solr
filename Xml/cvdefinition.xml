@@ -1,0 +1,247 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ControlledVocabularyList>
+  <vocabularyId name="DataType" itemCount="16">
+    <items>
+      <item>
+        <term>average</term>
+        <definition>The values represent the average over a time interval, such as daily mean discharge or daily mean temperature.</definition>
+      </item>
+      <item>
+        <term>best easy systematic estimator</term>
+        <definition>Best Easy Systematic Estimator BES = (Q1 +2Q2 +Q3)/4.  Q1, Q2, and Q3 are first, second, and third quartiles. See Woodcock, F. and Engel, C., 2005: Operational Consensus Forecasts.Weather and Forecasting, 20, 101-111. (http://www.bom.gov.au/nmoc/bulletins/60/article_by_Woodcock_in_Weather_and_Forecasting.pdf) and Wonnacott, T. H., and R. J. Wonnacott, 1972: Introductory Statistics. Wiley, 510 pp.</definition>
+      </item>
+      <item>
+        <term>categorical</term>
+        <definition>The values are categorical rather than continuous valued quantities. Mapping from Value values to categories is through the CategoryDefinitions table.</definition>
+      </item>
+      <item>
+        <term>constant over interval</term>
+        <definition>The values are quantities that can be interpreted as constant for all time, or over the time interval to a subsequent measurement of the same variable at the same site.</definition>
+      </item>
+      <item>
+        <term>continuous</term>
+        <definition>A quantity specified at a particular instant in time measured with sufficient frequency (small spacing) to be interpreted as a continuous record of the phenomenon.</definition>
+      </item>
+      <item>
+        <term>cumulative</term>
+        <definition>The values represent the cumulative value of a variable measured or calculated up to a given instant of time, such as cumulative volume of flow or cumulative precipitation.</definition>
+      </item>
+      <item>
+        <term>incremental</term>
+        <definition>The values represent the incremental value of a variable over a time interval, such as the incremental volume of flow or incremental precipitation.</definition>
+      </item>
+      <item>
+        <term>maximum</term>
+        <definition>The values are the maximum values occurring at some time during a time interval, such as annual maximum discharge or a daily maximum air temperature.</definition>
+      </item>
+      <item>
+        <term>median</term>
+        <definition>The values represent the median over a time interval, such as daily median discharge or daily median temperature.</definition>
+      </item>
+      <item>
+        <term>minimum</term>
+        <definition>The values are the minimum values occurring at some time during a time interval, such as 7-day low flow for a year or the daily minimum temperature.</definition>
+      </item>
+      <item>
+        <term>mode</term>
+        <definition>The values are the most frequent values occurring at some time during a time interval, such as annual most frequent wind direction.</definition>
+      </item>
+      <item>
+        <term>regular sampling</term>
+        <definition>Scheduled sampling at regular time increments with a frequency that is too coarse for interpreting records as continuous but with a resolution that is representative of the time scale of fluctuation of the phenomenon.</definition>
+      </item>
+      <item>
+        <term>sporadic</term>
+        <definition>The phenomenon is sampled at a particular instant in time but with a frequency that is too coarse for interpreting the record as continuous.  This would be the case when the spacing is significantly larger than the support and the time scale of fluctuation of the phenomenon, such as for example infrequent water quality samples.</definition>
+      </item>
+      <item>
+        <term>standarddeviation</term>
+        <definition>The values represent the standard deviation of a set of observations made over a time interval. Standard deviation computed using the unbiased formula SQRT(SUM((Xi-mean)^2)/(n-1)) are preferred. The specific formula used to compute variance can be noted in the methods description.</definition>
+      </item>
+      <item>
+        <term>unknown</term>
+        <definition>The data type is unknown</definition>
+      </item>
+      <item>
+        <term>variance</term>
+        <definition>The values represent the variance of a set of observations made over a time interval.  Variance computed using the unbiased formula SUM((Xi-mean)^2)/(n-1) are preferred.  The specific formula used to compute variance can be noted in the methods description.</definition>
+      </item>
+    </items>
+  </vocabularyId>
+  <vocabularyId name="ValueType" itemCount="7">
+    <items>
+      <item>
+        <term>calibration value</term>
+        <definition>A value used as part of the calibration of an instrument at a particular time.</definition>
+      </item>
+      <item>
+        <term>derived value</term>
+        <definition>Data are the result of a mathematical transformation where there is some subjectivity in the selected equation form and/or where parameters are typically fitted. A rating curve relating stage to discharge is a transformation that fits this definition; therefore stage is observed but discharge is derived.</definition>
+      </item>
+      <item>
+        <term>estimated value</term>
+        <definition>Values that are roughly calculated, judged, or approximated. Values may result from professional judgement or from ancillary data.</definition>
+      </item>
+      <item>
+        <term>field observation</term>
+        <definition>Data reflect the measurement the sensor is designed to make, reported at the frequency of data collection</definition>
+      </item>
+      <item>
+        <term>model simulation result</term>
+        <definition>Values generated by a simulation model</definition>
+      </item>
+      <item>
+        <term>sample</term>
+        <definition>Observation that is the result of analyzing a sample in a laboratory</definition>
+      </item>
+      <item>
+        <term>unknown</term>
+        <definition>The value type is unknown</definition>
+      </item>
+    </items>
+  </vocabularyId>
+  <vocabularyId name="SampleMedium" itemCount="24">
+    <items>
+      <item>
+        <term>air</term>
+        <definition>Sample taken from the atmosphere</definition>
+      </item>
+      <item>
+        <term>benthic zone</term>
+        <definition>Ecological region at the lowest level of a body of water, including the sediment surface and some sub-surface layers.</definition>
+      </item>
+      <item>
+        <term>flowback water</term>
+        <definition>A mixture of formation water and hydraulic fracturing injectates deriving from oil and gas wells prior to placing wells into production</definition>
+      </item>
+      <item>
+        <term>groundwater</term>
+        <definition>Sample taken from water located below the surface of the ground, such as from a well or spring</definition>
+      </item>
+      <item>
+        <term>injection water</term>
+        <definition>Water injected into a well or borehole prior to collection of flowback or production water.</definition>
+      </item>
+      <item>
+        <term>municipal waste water</term>
+        <definition>Sample taken from raw municipal waste water stream.</definition>
+      </item>
+      <item>
+        <term>not relevant</term>
+        <definition>Sample medium not relevant in the context of the measurement</definition>
+      </item>
+      <item>
+        <term>other</term>
+        <definition>Sample medium other than those contained in the CV</definition>
+      </item>
+      <item>
+        <term>precipitation</term>
+        <definition>Sample taken from solid or liquid precipitation</definition>
+      </item>
+      <item>
+        <term>production water</term>
+        <definition>Fluids produced from wells during oil or gas production which may include formation water, injected fluids, oil and gas.</definition>
+      </item>
+      <item>
+        <term>seawater</term>
+        <definition>Observation or sample from a sea or ocean</definition>
+      </item>
+      <item>
+        <term>sediment</term>
+        <definition>Sample taken from the sediment beneath the water column</definition>
+      </item>
+      <item>
+        <term>snow</term>
+        <definition>Observation in, of or sample taken from snow</definition>
+      </item>
+      <item>
+        <term>soil</term>
+        <definition>Sample taken from the soil</definition>
+      </item>
+      <item>
+        <term>soil air</term>
+        <definition>Air contained in the soil pores</definition>
+      </item>
+      <item>
+        <term>soil water</term>
+        <definition>the water contained in the soil pores</definition>
+      </item>
+      <item>
+        <term>storm water</term>
+        <definition>Sample collected from stormwater, runoff generated by precipitation, or stormwater systems</definition>
+      </item>
+      <item>
+        <term>surface water</term>
+        <definition>Observation or sample of surface water such as a stream, river, lake, pond, reservoir, ocean, etc.</definition>
+      </item>
+      <item>
+        <term>suspended particulate matter</term>
+        <definition>Particulate matter entrained in the water column</definition>
+      </item>
+      <item>
+        <term>tissue</term>
+        <definition>Sample taken from the tissue of a biological organism</definition>
+      </item>
+      <item>
+        <term>tree</term>
+        <definition>Sample taken from a tree.</definition>
+      </item>
+      <item>
+        <term>unknown</term>
+        <definition>The sample medium is unknown</definition>
+      </item>
+      <item>
+        <term>wastewater effluent</term>
+        <definition>sample is from wastewater treatment plant effluent that is going directly into a stream</definition>
+      </item>
+      <item>
+        <term>wellhead gas</term>
+        <definition>Gas taken from a wellhead under positive pressure</definition>
+      </item>
+    </items>
+  </vocabularyId>
+  <vocabularyId name="GeneralCategory" itemCount="10">
+    <items>
+      <item>
+        <term>biota</term>
+        <definition>Data associated with biological organisms</definition>
+      </item>
+      <item>
+        <term>chemistry</term>
+        <definition>Data associated with chemistry, chemical analysis or processes</definition>
+      </item>
+      <item>
+        <term>climate</term>
+        <definition>Data associated with the climate, weather, or atmospheric processes</definition>
+      </item>
+      <item>
+        <term>geology</term>
+        <definition>Data associated with geology or geological processes</definition>
+      </item>
+      <item>
+        <term>hydrology</term>
+        <definition>Data associated with hydrologic variables or processes</definition>
+      </item>
+      <item>
+        <term>instrumentation</term>
+        <definition>Data associated with instrumentation and instrument properties such as battery voltages, data logger temperatures, often useful for diagnosis.</definition>
+      </item>
+      <item>
+        <term>limnology</term>
+        <definition>Data collected from lakes</definition>
+      </item>
+      <item>
+        <term>soil</term>
+        <definition>Data associated with soil variables or processes</definition>
+      </item>
+      <item>
+        <term>unknown</term>
+        <definition>The general category is unknown</definition>
+      </item>
+      <item>
+        <term>water quality</term>
+        <definition>Data associated with water quality variables or processes</definition>
+      </item>
+    </items>
+  </vocabularyId>
+</ControlledVocabularyList>

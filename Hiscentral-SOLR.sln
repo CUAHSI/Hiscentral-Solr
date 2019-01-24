@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Hiscentral-Solr", ".", "{61270835-5AA4-4CB8-BEFA-EA6ED8BD6DF6}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
 		Debug.AspNetCompiler.VirtualPath = "/NewCuahsiHisCentral"
 		Debug.AspNetCompiler.PhysicalPath = "..\Hiscentral-Solr\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\NewCuahsiHisCentral\"
@@ -41,5 +41,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E2B83E4A-34D0-46B6-AA0F-B91A4D99DD89}
 	EndGlobalSection
 EndGlobal
