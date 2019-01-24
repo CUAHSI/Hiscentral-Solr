@@ -189,3 +189,7 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/.vs/Hiscentral-SOLR/v15/Server/sqlite3/storage.ide-wal
+/.vs/Hiscentral-SOLR/v15/Server/sqlite3/storage.ide-shm
+/.vs/Hiscentral-SOLR/v15/Server/sqlite3/storage.ide
+/.vs/Hiscentral-SOLR/v15/Server/sqlite3/db.lock
