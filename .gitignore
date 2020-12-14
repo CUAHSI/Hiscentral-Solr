@@ -193,3 +193,6 @@ GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 /.vs/Hiscentral-SOLR/v15/Server/sqlite3
+/.vs/Hiscentral-SOLR/v16/Server/sqlite3
+/.vs/Hiscentral-SOLR/config
+/App_Data/PublishProfiles
